@@ -35,7 +35,7 @@ def image_to_bitmap(im):
     return bitmap
 
 
-def generate_partial_grid():
+def image_to_grid():
     '''Parses walls from a black and white preprocessed image (excludes goal tiles)'''
     im = cv2.imread('magnet_ball_bw.png')
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -45,8 +45,19 @@ def generate_partial_grid():
         print(''.join(row))
 
 
+def load_grid(fname):
+    return {
+        (r, c): ch
+        for r, line in enumerate(open(fname))
+        for c, ch in enumerate(line) if ch in 'x.se'
+    }
+
+
 def main():
-    generate_partial_grid()
+    # image_to_grid()
+
+    grid = load_grid('grid.txt')
+    print(grid)
 
 
 if __name__ == '__main__':
