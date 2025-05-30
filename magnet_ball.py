@@ -35,12 +35,19 @@ def image_to_bitmap(im):
     return bitmap
 
 
-im = cv2.imread('magnet_ball_bw.png')
-im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+def generate_partial_grid():
+    '''Parses walls from a black and white preprocessed image (excludes goal tiles)'''
+    im = cv2.imread('magnet_ball_bw.png')
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
-bitmap = image_to_bitmap(im)
-for row in bitmap:
-    print(''.join(row))
+    bitmap = image_to_bitmap(im)
+    for row in bitmap:
+        print(''.join(row))
 
-# while cv2.waitKey() != ord('q'):
-#     pass
+
+def main():
+    generate_partial_grid()
+
+
+if __name__ == '__main__':
+    main()
