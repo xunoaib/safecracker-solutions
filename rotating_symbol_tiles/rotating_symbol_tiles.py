@@ -67,12 +67,12 @@ def solve(grid):
     visited = {serialize(grid)}
 
     i = 0
-    q = [(0, dist_to_solve(grid), i, grid, tuple())]
+    q = [(dist_to_solve(grid), 0, i, grid, tuple())]
 
     max_len = 0
 
     while q:
-        g, h, _, grid, path = heappop(q)
+        _, g, _, grid, path = heappop(q)
 
         if len(path) > max_len:
             max_len = len(path)
@@ -89,7 +89,7 @@ def solve(grid):
                 visited.add(new_serial)
                 heappush(
                     q, (
-                        g + 1, dist_to_solve(new_grid), i + 1, new_grid, path +
+                        dist_to_solve(new_grid), g + 1, i + 1, new_grid, path +
                         (move, )
                     )
                 )
