@@ -4,7 +4,31 @@ import cv2
 import numpy as np
 import pygame
 
-from rotating_symbol_tiles import parse_subimages
+ROWS = COLS = 5
+
+
+def parse_subimages(im):
+    '''Parses an images into subimages as a 5x5 list'''
+
+    h, w, _ = im.shape
+    rowsize = h / ROWS
+    colsize = w / COLS
+    subimages = []
+
+    for r in range(ROWS):
+        row = []
+        for c in range(COLS):
+            ystart = int(r * rowsize)
+            yend = int(ystart + rowsize)
+            xstart = int(c * colsize)
+            xend = int(xstart + colsize)
+            subim = im[ystart:yend, xstart:xend]
+            if 0 in subim.shape:
+                print('Empty image')
+            row.append(subim)
+        subimages.append(row)
+
+    return subimages
 
 
 def numpy_to_surface(img_np):
