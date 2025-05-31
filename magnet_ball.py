@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from itertools import pairwise
 
 import cv2
 import numpy as np
@@ -64,13 +65,13 @@ def find_accessible_from(r, c):
     pass
 
 
-def solve(grid):
+def solve(grid: dict[tuple[int, int], str]):
     start = next(p for p, ch in grid.items() if ch == Tile.START)
     grid[start] = Tile.EMPTY
     goals = [p for p, ch in grid.items() if ch == Tile.END]
     visited = set()
 
-    q = [(start, tuple())]
+    q = [(start, (start, ))]
     while q:
         p, path = q.pop(0)
         if p in goals:
@@ -116,11 +117,31 @@ def walk_in_dir(grid: dict[tuple[int, int], str], pos, dir: tuple[int, int]):
     return pos
 
 
+def path_to_string(path: tuple[tuple[int, int]]):
+    s = ''
+    for a, b in pairwise(path):
+        roff = b[0] - a[0]
+        coff = b[1] - a[1]
+        if roff < 0:
+            d = 'U'
+        elif roff > 0:
+            d = 'D'
+        elif coff < 0:
+            d = 'L'
+        elif coff > 0:
+            d = 'R'
+        else:
+            raise Exception('Unknown direction')
+        s += d
+    return s
+
+
 def main():
     # image_to_grid()
     grid = load_grid('grid.txt')
+
     if path := solve(grid):
-        print(path)
+        print(path_to_string(path))
     else:
         print('No solution')
 
