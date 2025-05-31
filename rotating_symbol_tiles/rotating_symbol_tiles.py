@@ -2,8 +2,6 @@
 from heapq import heappop, heappush
 from itertools import pairwise
 
-from numpy import random
-
 ROWS = COLS = 5
 
 MOVES = tuple(range(16))
