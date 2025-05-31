@@ -62,17 +62,14 @@ def rotate(grid: dict, move: int):
 
 
 def main():
-    print('cost to solve:', dist_to_solve(INIT))
-
-    init_state = serialize(INIT)
-    visited = {init_state}
-    q = [(dist_to_solve(INIT), 0, init_state)]
+    grid = INIT
+    visited = {serialize(grid)}
+    q = [(dist_to_solve(grid), 0, grid)]
 
     while q:
-        h, g, state = heappop(q)
-        grid = dict(state)
+        h, g, grid = heappop(q)
         for move in MOVES:
-            new_state = rotate(grid, move)
+            new_grid = rotate(grid, move)
 
 
 INIT = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
