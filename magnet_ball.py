@@ -6,6 +6,13 @@ import numpy as np
 rows, cols = 20, 25
 
 
+class Tile:
+    WALL = 'x'
+    EMPTY = '.'
+    START = 's'
+    END = 'e'
+
+
 def image_to_bitmap(im):
 
     out = im.copy()
@@ -53,11 +60,72 @@ def load_grid(fname):
     }
 
 
+def find_accessible_from(r, c):
+    pass
+
+
+def solve(grid):
+    start = next(p for p, ch in grid.items() if ch == Tile.START)
+    grid[start] = Tile.EMPTY
+    goals = [p for p, ch in grid.items() if ch == Tile.END]
+    visited = set()
+    print(start)
+    print(goals)
+
+    print()
+    print(list(neighbors(grid, start)))
+    return
+
+    q = [(start, tuple())]
+    while q:
+        p, path = q.pop(0)
+        if p in goals:
+            return path
+
+        for n in neighbors(grid, p):
+            if n not in visited:
+                visited.add(n)
+                q.append((n, path + n))
+
+
+def neighbors(grid, pos):
+    for dir in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        if end_pos := walk_in_dir(grid, pos, dir):
+            yield end_pos
+
+
+def walk_in_dir(grid: dict[tuple[int, int], str], pos, dir: tuple[int, int]):
+    '''Attempts to move as far as possible in one direction.
+    Returns the final resting position, or None if ball goes out of bounds or
+    doesn't move at all'''
+
+    start = pos
+    while True:
+        npos = (pos[0] + dir[0], pos[1] + dir[1])
+
+        if npos not in grid:
+            return None
+
+        ch = grid[npos]
+
+        if ch == Tile.WALL:
+            break
+
+        pos = npos
+
+        if ch == Tile.END:
+            break
+
+    if pos == start:
+        return None
+
+    return pos
+
+
 def main():
     # image_to_grid()
-
     grid = load_grid('grid.txt')
-    print(grid)
+    solve(grid)
 
 
 if __name__ == '__main__':
