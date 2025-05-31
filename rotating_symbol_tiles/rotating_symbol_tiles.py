@@ -65,7 +65,9 @@ def rotate(grid: dict, move: int):
 
 def solve(grid):
     visited = {serialize(grid)}
-    q = [(dist_to_solve(grid), 0, 0.0, grid, tuple())]
+
+    i = 0
+    q = [(dist_to_solve(grid), 0, i, grid, tuple())]
 
     while q:
         h, g, _, grid, path = heappop(q)
@@ -80,10 +82,11 @@ def solve(grid):
                 visited.add(new_serial)
                 heappush(
                     q, (
-                        dist_to_solve(new_grid), g + 1, random.random(),
-                        new_grid, path + (move, )
+                        dist_to_solve(new_grid), g + 1, i + 1, new_grid, path +
+                        (move, )
                     )
                 )
+                i += 1
 
 
 def main():
