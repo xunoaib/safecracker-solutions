@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from itertools import pairwise
+from itertools import batched, pairwise
 
 import cv2
 import numpy as np
@@ -141,7 +141,9 @@ def main():
     grid = load_grid('grid.txt')
 
     if path := solve(grid):
-        print(path_to_string(path))
+        dirs = path_to_string(path)
+        grouped = [''.join(b) for b in batched(dirs, n=4)]
+        print(*grouped)
     else:
         print('No solution')
 
