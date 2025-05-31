@@ -69,12 +69,6 @@ def solve(grid):
     grid[start] = Tile.EMPTY
     goals = [p for p, ch in grid.items() if ch == Tile.END]
     visited = set()
-    print(start)
-    print(goals)
-
-    print()
-    print(list(neighbors(grid, start)))
-    return
 
     q = [(start, tuple())]
     while q:
@@ -85,7 +79,7 @@ def solve(grid):
         for n in neighbors(grid, p):
             if n not in visited:
                 visited.add(n)
-                q.append((n, path + n))
+                q.append((n, path + (n, )))
 
 
 def neighbors(grid, pos):
@@ -125,7 +119,10 @@ def walk_in_dir(grid: dict[tuple[int, int], str], pos, dir: tuple[int, int]):
 def main():
     # image_to_grid()
     grid = load_grid('grid.txt')
-    solve(grid)
+    if path := solve(grid):
+        print(path)
+    else:
+        print('No solution')
 
 
 if __name__ == '__main__':
