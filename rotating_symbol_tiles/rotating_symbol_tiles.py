@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
+from heapq import heappop, heappush
+from itertools import pairwise
 
 ROWS = COLS = 5
+
+MOVES = tuple(range(16))
 
 
 def dist(src, tar):
@@ -34,15 +38,42 @@ def dist_to_solve(grid):
     return cost
 
 
+def serialize(grid: dict):
+    return tuple(sorted(grid.items()))
+
+
+def rotate(grid: dict, move: int):
+    '''Applies the given move to a copy of the grid'''
+    r, c = divmod(move, COLS)  # upper left tile
+
+    seq = [
+        (r, c),
+        (r, c + 1),
+        (r + 1, c),
+        (r + 1, c + 1),
+        (r, c),
+    ]
+
+    ngrid = grid.copy()
+    for a, b in pairwise(seq):
+        ngrid[b] = grid[a]
+
+    return ngrid
+
+
 def main():
     print('cost to solve:', dist_to_solve(INIT))
 
+    init_state = serialize(INIT)
+    visited = {init_state}
+    q = [(dist_to_solve(INIT), 0, init_state)]
 
-# [23, 4, 14, 10, 17]
-# [8, 13, 24, 3, 9]
-# [0, 21, 2, 18, 11]
-# [19, 12, 22, 1, 7]
-# [6, 16, 5, 15, 20]
+    while q:
+        h, g, state = heappop(q)
+        grid = dict(state)
+        for move in MOVES:
+            new_state = rotate(grid, move)
+
 
 INIT = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
 GOAL = list_to_dict(
@@ -54,6 +85,12 @@ GOAL = list_to_dict(
         [-1, -1, 5, 15, 20],
     ]
 )
+
+# [23, 4, 14, 10, 17]
+# [8, 13, 24, 3, 9]
+# [0, 21, 2, 18, 11]
+# [19, 12, 22, 1, 7]
+# [6, 16, 5, 15, 20]
 
 if __name__ == '__main__':
     main()
