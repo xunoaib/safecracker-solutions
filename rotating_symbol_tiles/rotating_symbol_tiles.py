@@ -2,6 +2,8 @@
 from heapq import heappop, heappush
 from itertools import pairwise
 
+from tabulate import tabulate
+
 ROWS = COLS = 5
 
 MOVES = tuple(range(16))
@@ -98,8 +100,11 @@ def solve(grid):
 
 
 def print_grid(grid: dict):
-    for r in range(ROWS):
-        print(','.join(str(grid[r, c]) for c in range(COLS)))
+    # for r in range(ROWS):
+    #     print(','.join(str(grid[r, c]) for c in range(COLS)))
+
+    rows = [[grid[r, c] for c in range(COLS)] for r in range(ROWS)]
+    print(tabulate(rows, tablefmt='plain'))
 
 
 def main():
@@ -121,7 +126,9 @@ def main():
     #     grid = rotate(grid, m)
     #     print()
     #     print('move', m, divmod(m, COLS + 1))
+    #     print()
     #     print_grid(grid)
+    #     input()
     # return
 
     if solution := solve(INIT):
