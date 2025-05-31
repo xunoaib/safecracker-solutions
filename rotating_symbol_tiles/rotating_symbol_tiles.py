@@ -8,7 +8,7 @@ ROWS = COLS = 5
 def parse_subimages(im):
     '''Parses an images into subimages as a 5x5 list'''
 
-    h, w = im.shape
+    h, w, _ = im.shape
     rowsize = h / ROWS
     colsize = w / COLS
     subimages = []
@@ -33,8 +33,11 @@ def parse_subimages(im):
 def main():
 
     im = cv2.imread('2025-05-30_22-15_safecracker_tiles_cropped.png')
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     subimages = parse_subimages(im)
+
+    # for r, row in enumerate(subimages):
+    #     for c, subim in enumerate(row):
+    #         cv2.imwrite(f'tile_{r}_{c}.png', subim)
 
 
 if __name__ == '__main__':
