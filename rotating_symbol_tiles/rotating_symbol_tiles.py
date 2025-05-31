@@ -69,8 +69,14 @@ def solve(grid):
     i = 0
     q = [(0, dist_to_solve(grid), i, grid, tuple())]
 
+    max_len = 0
+
     while q:
         g, h, _, grid, path = heappop(q)
+
+        if len(path) > max_len:
+            max_len = len(path)
+            print(f'Expanding search to {max_len} moves')
 
         if dist_to_solve(grid) == 0:
             __import__('pprint').pprint(grid)
