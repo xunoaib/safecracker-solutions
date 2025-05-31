@@ -2,6 +2,8 @@
 from heapq import heappop, heappush
 from itertools import pairwise
 
+from numpy import random
+
 ROWS = COLS = 5
 
 MOVES = tuple(range(16))
@@ -44,7 +46,7 @@ def serialize(grid: dict):
 
 def rotate(grid: dict, move: int):
     '''Applies the given move to a copy of the grid'''
-    r, c = divmod(move, COLS)  # upper left tile
+    r, c = divmod(move, COLS - 1)  # upper left tile
 
     seq = [
         (r, c),
@@ -61,15 +63,35 @@ def rotate(grid: dict, move: int):
     return ngrid
 
 
-def main():
-    grid = INIT
+def solve(grid):
     visited = {serialize(grid)}
-    q = [(dist_to_solve(grid), 0, grid)]
+    q = [(dist_to_solve(grid), 0, 0.0, grid, tuple())]
 
     while q:
-        h, g, grid = heappop(q)
+        h, g, _, grid, path = heappop(q)
+
+        if dist_to_solve(grid) == 0:
+            return path
+
         for move in MOVES:
             new_grid = rotate(grid, move)
+            new_serial = serialize(new_grid)
+            if new_serial not in visited:
+                visited.add(new_serial)
+                heappush(
+                    q, (
+                        dist_to_solve(new_grid), g + 1, random.random(),
+                        new_grid, path + (move, )
+                    )
+                )
+
+
+def main():
+    if solution := solve(INIT):
+        print(f'Found solution of length {len(solution)}')
+        print(solution)
+    else:
+        print('No solution')
 
 
 INIT = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
