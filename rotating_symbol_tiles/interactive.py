@@ -26,23 +26,51 @@ def display_image_grid(image_grid):
     # Pre-convert all numpy arrays to surfaces
     surfaces = [[numpy_to_surface(img) for img in row] for row in image_grid]
 
+    selected = None  # No image selected initially
+
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mx, my = pygame.mouse.get_pos()
+                col = mx // img_w
+                row = my // img_h
+
+                if row < rows and col < cols:
+                    if selected is None:
+                        selected = (row, col)
+                    elif selected == (row, col):
+                        selected = None  # Deselect
+                    else:
+                        # Swap in both arrays
+                        r1, c1 = selected
+                        image_grid[row][col], image_grid[r1][c1] = image_grid[
+                            r1][c1], image_grid[row][col]
+                        surfaces[row][col], surfaces[r1][c1] = surfaces[r1][
+                            c1], surfaces[row][col]
+                        selected = None
+
         # Draw the image grid
+        screen.fill((0, 0, 0))
         for y in range(rows):
             for x in range(cols):
-                screen.blit(surfaces[y][x], (x * img_w, y * img_h))
+                px = x * img_w
+                py = y * img_h
+                screen.blit(surfaces[y][x], (px, py))
+
+                if selected == (y, x):
+                    pygame.draw.rect(
+                        screen, (255, 255, 0), (px, py, img_w, img_h), 3
+                    )
 
         pygame.display.flip()
 
     pygame.quit()
 
 
-# Example usage (creates fake RGB images):
 if __name__ == "__main__":
     im = cv2.imread('2025-05-30_22-15_safecracker_tiles_cropped.png')
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
