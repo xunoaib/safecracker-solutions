@@ -2,13 +2,14 @@
 # Solves the rotating tile safe puzzle in the museum (dollar sign image)
 # Make sure the mouse is on the upper left dial before starting
 
-import os
+# NOTE: the game doesn't register pynput mouse events, so evdev is used.
+# permissions may need to be changed on /dev/uinput for this to work
+
 import time
 
 from evdev import UInput
 from evdev import ecodes as e
 from pynput.keyboard import Key, Listener
-from pynput.mouse import Button
 from pynput.mouse import Controller as MouseController
 
 PIXEL_DIST = 84  # might require tweaking on other displays
@@ -18,6 +19,7 @@ def sub(a, b):
     return (b[0] - a[0], b[1] - a[1])
 
 
+# output copied from solver
 solution = (
     9, 1, 2, 4, 1, 0, 7, 2, 9, 14, 15, 4, 0, 1, 6, 6, 2, 6, 6, 11, 15, 11, 6,
     6, 9, 13, 9, 13, 9, 5, 0, 0, 6, 13, 13, 14, 12, 12, 13, 13, 13, 15, 11, 11,
@@ -32,17 +34,14 @@ mouse = MouseController()
 
 pressed_keys = set()
 
-p1 = p2 = None
-
 
 def on_press(key):
-    global p1, p2
     pressed_keys.add(key)
     if Key.shift in pressed_keys and hasattr(key, 'char') and key.char == 'E':
         print("Shift + E pressed. Starting click sequence...")
         time.sleep(1)
         steps = (0, ) + solution
-        for i in range(len(steps)):
+        for i in range(len(steps) - 1):
             m1, m2 = steps[i], steps[i + 1]
             r1, c1 = divmod(m1, 4)
             r2, c2 = divmod(m2, 4)
@@ -50,27 +49,10 @@ def on_press(key):
             yoff = (r2 - r1) * PIXEL_DIST
             xoff = (c2 - c1) * PIXEL_DIST
 
-            tar = (xoff, yoff)
-            print('Moving mouse to', tar)
-            mouse.position = tar
+            print('Moving mouse to', (xoff, yoff))
+            mouse.position = (xoff, yoff)
             click()
-            # mouse.click(Button.left, 1)
-            # pyautogui.click()
             time.sleep(0.2)
-        # return False  # stop the listener
-
-    # try:
-    #     if key.char == 's':
-    #         p2 = p1 or mouse.position
-    #         p1 = mouse.position
-    #         print('Saving mouse coordinate', (p1, p2))
-    #     if key.char == 'c':
-    #         v = sub(p2, p1)
-    #         print("Moving mouse to", v)
-    #         mouse.position = v
-    #         # return False  # stop listener after completion
-    # except AttributeError:
-    #     pass
 
 
 def on_release(key):
