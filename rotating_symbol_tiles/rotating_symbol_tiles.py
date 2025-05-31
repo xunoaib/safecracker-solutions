@@ -51,8 +51,8 @@ def rotate(grid: dict, move: int):
     seq = [
         (r, c),
         (r, c + 1),
-        (r + 1, c),
         (r + 1, c + 1),
+        (r + 1, c),
         (r, c),
     ]
 
