@@ -96,6 +96,11 @@ def solve(grid):
                 i += 1
 
 
+def print_grid(grid: dict):
+    for r in range(ROWS):
+        print(','.join(str(grid[r, c]) for c in range(COLS)))
+
+
 def main():
     if solution := solve(INIT):
         print(f'Found solution of length {len(solution)}')
