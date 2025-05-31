@@ -1,3 +1,5 @@
+import sys
+
 import cv2
 import numpy as np
 import pygame
@@ -15,10 +17,8 @@ def display_image_grid(image_grid_with_ids):
 
     rows = len(image_grid_with_ids)
     cols = len(image_grid_with_ids[0])
-    # image shape from tuple (image, id)
     img_h, img_w, _ = image_grid_with_ids[0][0][0].shape
 
-    # Set up the display window
     window_width = cols * img_w
     window_height = rows * img_h
     screen = pygame.display.set_mode((window_width, window_height))
@@ -30,10 +30,8 @@ def display_image_grid(image_grid_with_ids):
         for row in image_grid_with_ids
     ]
 
-    # Font for labeling tiles
     font = pygame.font.SysFont(None, 24)
-
-    selected = None  # No image selected initially
+    selected = None
 
     running = True
     while running:
@@ -50,9 +48,9 @@ def display_image_grid(image_grid_with_ids):
                     if selected is None:
                         selected = (row, col)
                     elif selected == (row, col):
-                        selected = None  # Deselect
+                        selected = None
                     else:
-                        # Swap images and surfaces
+                        # Swap
                         r1, c1 = selected
                         image_grid_with_ids[row][col], image_grid_with_ids[r1][
                             c1] = image_grid_with_ids[r1][
@@ -61,7 +59,17 @@ def display_image_grid(image_grid_with_ids):
                             c1], surfaces[row][col]
                         selected = None
 
-        # Draw the image grid
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                # Print current configuration of image IDs
+                current_ids = [
+                    [img_id[1] for img_id in row]
+                    for row in image_grid_with_ids
+                ]
+                print("Current grid configuration:")
+                for row in current_ids:
+                    print(row)
+                sys.stdout.flush()  # Ensure output appears immediately
+
         screen.fill((0, 0, 0))
         for y in range(rows):
             for x in range(cols):
@@ -74,7 +82,6 @@ def display_image_grid(image_grid_with_ids):
                         screen, (255, 255, 0), (px, py, img_w, img_h), 3
                     )
 
-                # Draw image ID (bound to image, not grid)
                 image_id = image_grid_with_ids[y][x][1]
                 text_surface = font.render(
                     str(image_id), True, (255, 255, 255)
@@ -91,7 +98,7 @@ if __name__ == "__main__":
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     subimages = parse_subimages(im)
 
-    # Attach a unique ID to each subimage
+    # Tag each image with its original ID
     numbered_subimages = []
     count = 0
     for row in subimages:
