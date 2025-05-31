@@ -70,9 +70,10 @@ def solve(grid):
     q = [(0, dist_to_solve(grid), i, grid, tuple())]
 
     while q:
-        h, g, _, grid, path = heappop(q)
+        g, h, _, grid, path = heappop(q)
 
         if dist_to_solve(grid) == 0:
+            __import__('pprint').pprint(grid)
             return path
 
         for move in MOVES:
