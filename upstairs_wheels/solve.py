@@ -63,27 +63,21 @@ def solve(state: tuple[tuple, tuple]):
     q = [state]
 
     while q:
-        print(q)
         state = bars, wheels = q.pop(0)
+        print(state)
         if bars == GOAL_BAR_IDXS:
+            display_bars(state)
             return True
-            # return reconstruct_path(parent, state)
 
         for n in neighbors(state):
-            print(n)
-            # if n not in parent:
-            #     parent[n] = state
-
-
-def reconstruct_path(parent, state):
-    pass
+            if n not in parent:
+                parent[n] = state
+                q.append(n)
 
 
 def main():
-    assert_wheel_cycles()
-    display_bars(START_STATE)
-    exit(0)
-
+    # assert_wheel_cycles()
+    # display_bars(START_STATE)
     solution = solve(START_STATE)
     print(solution)
 
