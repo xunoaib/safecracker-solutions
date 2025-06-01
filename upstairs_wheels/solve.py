@@ -18,7 +18,7 @@ MAX_BAR_VAL = 2
 # 1 = retracting
 # 0 = fully open
 # 1 = extending
-BAR_SEQUENCE = (2, 1, 0, 1)
+BAR_POS_SEQUENCE = (2, 1, 0, 1)
 
 # bars moved by each wheel on each wheel turn
 # wheel => (bars1, bars2)
@@ -47,7 +47,8 @@ def rotate_wheel(state, wheel: int):
 
     for bar_id in WHEEL_BARS[wheel][wheel_seq_idx]:
         # advance bar state
-        bar_seq_idxs[bar_id] = (bar_seq_idxs[bar_id] + 1) % len(BAR_SEQUENCE)
+        bar_seq_idxs[bar_id] = (bar_seq_idxs[bar_id]
+                                + 1) % len(BAR_POS_SEQUENCE)
 
     return tuple(bar_seq_idxs), tuple(wheels)
 
@@ -86,11 +87,17 @@ def main():
         print(i, state)
 
     assert state == START_STATE
+    display_bars(state)
 
     exit(0)
 
     solution = solve(START_STATE)
     print(solution)
+
+
+def display_bars(state):
+    bars, wheels = state
+    print('Bars:', *(BAR_POS_SEQUENCE[b] for b in bars))
 
 
 if __name__ == '__main__':
