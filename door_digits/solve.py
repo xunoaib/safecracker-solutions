@@ -34,37 +34,39 @@ def str_to_segment(s):
 def decode_segments(segment_strs):
     segments = []
     for g in segment_strs:
-        segment = [0] * 7
+        segment = 0
         for s in g.split():
-            segment[int(str_to_segment(s))] = 1
+            segment |= 1 << int(str_to_segment(s))
         segments.append(segment)
     return segments
 
 
-def display_segment(segment: list[int]):
+def display_segment(segment):
     out = TEMPLATE
-    for i, v in enumerate(segment):
-        out = out.replace(str(i), 'X' if v else '.')
+    for i, v in enumerate(f'{segment:07b}'):
+        out = out.replace(str(i), 'X' if v == '1' else '.')
     return out
 
 
 def display(segment_or_segments):
-    if isinstance(segment_or_segments[0], int):
+    if isinstance(segment_or_segments, int):
         return display_segment(segment_or_segments)
 
     outs = [display_segment(s).split('\n') for s in segment_or_segments]
-    print()
     print(*(''.join(g) for g in zip(*outs)), sep='\n')
     print()
 
 
 NUM_DIGITS = 4
 
-segments = [[0] * 7 for _ in range(NUM_DIGITS)]
+segments = [0 for _ in range(NUM_DIGITS)]
 
 panel = decode_segments(['tr m b', 't br', 'tl tr br', 'tl m bl'])
 x = violet = decode_segments(['br', 'b', 't m', 'b tr'])
 x = yellow = decode_segments(['t m', 't', 'bl', 't m'])
 x = corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
 
-display(x)
+display(violet)
+display(panel)
+display(yellow)
+display(corridor)
