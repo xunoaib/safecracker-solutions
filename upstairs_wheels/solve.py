@@ -79,6 +79,16 @@ def reconstruct_path(parent, state):
 
 
 def main():
+    state = START_STATE
+    print('i', state)
+    for i in range(8):
+        state = rotate_wheel(state, 0)
+        print(i, state)
+
+    assert state == START_STATE
+
+    exit(0)
+
     solution = solve(START_STATE)
     print(solution)
 
