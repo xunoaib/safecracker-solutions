@@ -6,6 +6,9 @@
 # until it reaches a maximum position (left or right), where it will
 # then reverse direction.
 
+# Wheels are numbered from 0-4 from top to bottom
+# Bars are numberes from 0-5 from top to bottom
+
 NUM_WHEELS = 5
 NUM_BARS = 6
 
@@ -55,31 +58,30 @@ def rotate_wheel(state, wheel: int):
 
 def neighbors(state):
     for wheel in range(NUM_WHEELS):
-        yield rotate_wheel(state, wheel)
+        yield rotate_wheel(state, wheel), wheel
 
 
 def solve(state: tuple[tuple, tuple]):
-    parent = {state: None}
-    q = [state]
+    visited = {state}
+    q = [(state, tuple())]
 
     while q:
-        state = bars, wheels = q.pop(0)
-        print(state)
+        state, path = q.pop(0)
+        bars, wheels = state
         if bars == GOAL_BAR_IDXS:
-            display_bars(state)
-            return True
+            return path
 
-        for n in neighbors(state):
-            if n not in parent:
-                parent[n] = state
-                q.append(n)
+        for n, move in neighbors(state):
+            if n not in visited:
+                visited.add(n)
+                q.append((n, path + (move, )))
 
 
 def main():
     # assert_wheel_cycles()
     # display_bars(START_STATE)
     solution = solve(START_STATE)
-    print(solution)
+    print('Wheels:', solution)
 
 
 def display_bars(state):
