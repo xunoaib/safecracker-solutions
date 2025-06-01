@@ -80,15 +80,8 @@ def reconstruct_path(parent, state):
 
 
 def main():
-    state = START_STATE
-    print('i', state)
-    for i in range(8):
-        state = rotate_wheel(state, 0)
-        print(i, state)
-
-    assert state == START_STATE
-    display_bars(state)
-
+    assert_wheel_cycles()
+    display_bars(START_STATE)
     exit(0)
 
     solution = solve(START_STATE)
@@ -98,6 +91,17 @@ def main():
 def display_bars(state):
     bars, wheels = state
     print('Bars:', *(BAR_POS_SEQUENCE[b] for b in bars))
+
+
+def assert_wheel_cycles():
+    # Ensure 8 turns of any wheel returns it to its starting position
+    state = START_STATE
+    print('i', state)
+    for wheel in range(NUM_WHEELS):
+        for i in range(8):
+            state = rotate_wheel(state, wheel)
+            print(i, state)
+        assert state == START_STATE
 
 
 if __name__ == '__main__':
