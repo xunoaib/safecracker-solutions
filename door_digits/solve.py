@@ -63,5 +63,8 @@ NUM_DIGITS = 4
 segments = [[0] * 7 for _ in range(NUM_DIGITS)]
 
 panel = decode_segments(['tr m b', 't br', 'tl tr br', 'tl m bl'])
+x = violet = decode_segments(['br', 'b', 't m', 'b tr'])
+x = yellow = decode_segments(['t m', 't', 'bl', 't m'])
+x = corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
 
-display(panel)
+display(x)
