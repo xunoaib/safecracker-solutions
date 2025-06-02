@@ -12,6 +12,7 @@ start = '''
 '''.strip()
 
 ROWS, COLS = 6, 6
+KEY_TILE_ID = 'k'
 
 
 @dataclass(frozen=True)
@@ -60,16 +61,23 @@ class Tile:
         Only returns moves which keep the tile within the grid boundaries.
         '''
 
+        # list of ((roff, coff), move)
         offsets = [
-            (self.offset[0], self.offset[1]),
-            (-self.offset[0], -self.offset[1])
+            (
+                (self.offset[0], self.offset[1]),
+                'down' if self.orientation == 'v' else 'right'
+            ),
+            (
+                (-self.offset[0], -self.offset[1]),
+                'up' if self.orientation == 'v' else 'left'
+            ),
         ]
 
-        for roff, coff in offsets:
+        for (roff, coff), move in offsets:
             newpos = (self.pos[0] + roff, self.pos[1] + coff)
             newtile = Tile(self.id, newpos, self.orientation, self.length)
             if all(0 <= r < ROWS and 0 <= c < COLS for r, c in newtile.spots):
-                yield newtile
+                yield newtile, self.id + ' ' + move
 
 
 def display(all_tiles: list[Tile] | frozenset[Tile]):
@@ -111,12 +119,30 @@ def neighbors(all_tiles: list[Tile]):
 
     for tile in all_tiles:
         other_tiles = [t for t in all_tiles if t != tile]
-        for n in tile.neighbors():
-
+        for n, move in tile.neighbors():
             # check for overlap
             other_spots = {s for t in other_tiles for s in t.spots}
             if not n.spots & other_spots:
-                yield frozenset(other_tiles + [n])
+                yield frozenset(other_tiles + [n]), move
+
+
+def solved(tiles):
+    key_tile = next(t for t in tiles if t.id == KEY_TILE_ID)
+    return key_tile[1] == 4
+
+
+def solve(tiles):
+    start = frozenset(tiles)
+    q = [(start, tuple())]
+    visited = {start}
+    while q:
+        tiles, moves = q.pop(0)
+        if solved(tiles):
+            return moves
+        for ntiles, move in neighbors(tiles):
+            if ntiles not in visited:
+                visited.add(ntiles)
+                q.append((ntiles, moves + (move, )))
 
 
 def main():
@@ -126,7 +152,8 @@ def main():
         print(t)
 
     print()
-    for n in neighbors(all_tiles):
+    for n, move in neighbors(all_tiles):
+        print(move)
         display(n)
 
     print(len(list(neighbors(all_tiles))))
