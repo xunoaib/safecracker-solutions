@@ -82,28 +82,19 @@ NUM_DIGITS = 4
 
 segments = [0 for _ in range(NUM_DIGITS)]
 
-panel = decode_segments(['tr m b', 't br', 'tl tr br', 'tl m bl'])
 violet = decode_segments(['br', 'b', 't m', 'b tr'])
 yellow = decode_segments(['t m', 't', 'bl', 't m'])
 corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
 
 # display(violet)
-# display(panel)
 # display(yellow)
 # display(corridor)
 
 bathrooms = [violet, yellow, corridor]
-all = [panel, violet, yellow, corridor]
+all = [violet, yellow, corridor]
 
 v = merge(all)
 display(v)
 
-# display(invert(v))
-# display(merge([invert(v), panel]))
-
 # display(merge(bathrooms))
 exit(0)
-
-for p in bathrooms:
-    v = merge([panel, p])
-    display(v)
