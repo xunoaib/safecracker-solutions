@@ -1,3 +1,5 @@
+from itertools import product
+
 # 7-segment displays on doors
 
 TEMPLATE = '''
@@ -101,23 +103,23 @@ segments = [0 for _ in range(NUM_DIGITS)]
 violet = decode_segments(['br', 'b', 't m', 'b tr'])
 yellow = decode_segments(['t m', 't', 'bl', 't m'])
 corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
-
-# display(violet)
-# display(yellow)
-# display(corridor)
-
-bathrooms = [violet, yellow, corridor]
-all = [violet, yellow, corridor]
-
-vals = merge(all)
-display(vals)
+merged = merge([violet, yellow, corridor])
+display(merged)
 
 candidates = []
-for v in vals:
+for v in merged:
     row = []
     for d, u in KNOWN_DIGITS.items():
         if (v | u) ^ u == 0:
             row.append(d)
     candidates.append(row)
 
-__import__('pprint').pprint(candidates)
+print('Candidates:', candidates)
+
+print('\nPossible codes:')
+print()
+
+# Without more info, we assume a digit may be used no more than once
+for p in product(*candidates):
+    if len(set(p)) == len(p):
+        print('  ' + ''.join(map(str, p)))
