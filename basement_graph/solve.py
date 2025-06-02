@@ -1,6 +1,7 @@
 import json
 import math
 from collections import defaultdict
+from itertools import batched
 
 DIRNAMES = ['R', 'DR', 'D', 'DL', 'L', 'UL', 'U', 'UR']
 
@@ -47,7 +48,25 @@ def main():
             if jump_tar is not None:
                 jump_graph[src][dir] = jump_tar
 
-    __import__('pprint').pprint(jump_graph)
+    solution = solve(jump_graph, start=0, goal=28)
+    for i, v in enumerate(solution):
+        print(v, end=' ')
+        if not (i + 1) % 4:
+            print()
+    print()
+
+
+def solve(graph, start, goal):
+    q = [(start, tuple())]
+    visited = {start}
+    while q:
+        node, path = q.pop(0)
+        if node == goal:
+            return path
+        for dir, tar in graph[node].items():
+            if tar not in visited:
+                visited.add(tar)
+                q.append((tar, path + (dir, )))
 
 
 if __name__ == '__main__':
