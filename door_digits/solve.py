@@ -79,7 +79,7 @@ def invert(segments):
 
 
 KNOWN_DIGITS = {
-    k: decode_segments([v])
+    k: decode_segments([v])[0]
     for k, v in {
         0: 't b tr tl br bl',
         1: 'tr br',
@@ -109,11 +109,15 @@ corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
 bathrooms = [violet, yellow, corridor]
 all = [violet, yellow, corridor]
 
-v = merge(all)
-display(v)
+vals = merge(all)
+display(vals)
 
-for d, s in KNOWN_DIGITS.items():
-    display(s)
+candidates = []
+for v in vals:
+    row = []
+    for d, u in KNOWN_DIGITS.items():
+        if (v | u) ^ u == 0:
+            row.append(d)
+    candidates.append(row)
 
-# display(merge(bathrooms))
-exit(0)
+__import__('pprint').pprint(candidates)
