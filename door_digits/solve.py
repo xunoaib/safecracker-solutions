@@ -1,6 +1,6 @@
 from itertools import product
 
-# 7-segment displays on doors
+# Final puzzle: A composite of the 7-segment displays on bathroom doors
 
 TEMPLATE = '''
   00  
