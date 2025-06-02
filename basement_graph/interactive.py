@@ -24,6 +24,8 @@ selected_node = None
 running = True
 NODE_RADIUS = 18
 
+font = pygame.font.Font(None, 24)
+
 
 def draw():
     screen.blit(ss_image, (0, 0))
@@ -42,6 +44,10 @@ def draw():
         pygame.draw.circle(
             screen, color, (node['x'], node['y']), NODE_RADIUS, 2
         )
+
+        text_surface = font.render(str(node['id']), True, (255, 255, 0))
+        text_rect = text_surface.get_rect(center=(node['x'], node['y']))
+        screen.blit(text_surface, text_rect)
 
 
 def get_clicked_node(pos):
