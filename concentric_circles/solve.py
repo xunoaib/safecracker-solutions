@@ -28,7 +28,7 @@ BLUE_RING = '..gb.r'
 START_STATE = tuple(map(tuple, [RED_RING, GREEN_RING, BLUE_RING]))
 
 
-def rotate(state, ring_idx: int):
+def rotate_cw(state, ring_idx: int):
     result = list(map(list, state))
     result[ring_idx] = result[ring_idx][-1:] + result[ring_idx][:-1]
 
@@ -44,10 +44,16 @@ def rotate(state, ring_idx: int):
     return tuple(map(tuple, result))
 
 
+def rotate_ccw(state, ring_idx: int):
+    for _ in range(len(RED_RING) - 1):
+        state = rotate_cw(state, ring_idx)
+    return state
+
+
 def main():
     state = START_STATE
     print(state)
-    print(rotate(state, 0))
+    print(rotate_ccw(rotate_cw(state, 0), 0))
 
 
 if __name__ == '__main__':
