@@ -78,6 +78,22 @@ def invert(segments):
     return [0b1111111 - s for s in segments]
 
 
+KNOWN_DIGITS = {
+    k: decode_segments([v])
+    for k, v in {
+        0: 't b tr tl br bl',
+        1: 'tr br',
+        2: 't m b tr bl',
+        3: 't m b tr br',
+        4: 'tl m tr br',
+        5: 't m b tl br',
+        6: 't m b tl bl br',
+        7: 't tr br',
+        8: 't m b tl tr bl br',
+        9: 't m tl tr br b'
+    }.items()
+}
+
 NUM_DIGITS = 4
 
 segments = [0 for _ in range(NUM_DIGITS)]
@@ -95,6 +111,9 @@ all = [violet, yellow, corridor]
 
 v = merge(all)
 display(v)
+
+for d, s in KNOWN_DIGITS.items():
+    display(s)
 
 # display(merge(bathrooms))
 exit(0)
