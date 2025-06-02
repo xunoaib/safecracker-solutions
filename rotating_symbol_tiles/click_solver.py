@@ -52,7 +52,7 @@ def on_press(key):
             print('Moving mouse to', (xoff, yoff))
             mouse.position = (xoff, yoff)
             click()
-            time.sleep(0.2)
+            time.sleep(0.08)
 
 
 def on_release(key):
@@ -62,7 +62,7 @@ def on_release(key):
 def click():
     ui.write(e.EV_KEY, e.BTN_LEFT, 1)  # Press
     ui.syn()
-    time.sleep(0.1)
+    time.sleep(0.15)
     ui.write(e.EV_KEY, e.BTN_LEFT, 0)  # Release
     ui.syn()
 
