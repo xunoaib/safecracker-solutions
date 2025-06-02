@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 
 selected_node = None
 running = True
-NODE_RADIUS = 10
+NODE_RADIUS = 18
 
 
 def draw():
@@ -33,12 +33,12 @@ def draw():
         n1 = next(n for n in nodes if n['id'] == id1)
         n2 = next(n for n in nodes if n['id'] == id2)
         pygame.draw.line(
-            screen, (0, 255, 0), (n1['x'], n1['y']), (n2['x'], n2['y']), 2
+            screen, (0, 255, 0), (n1['x'], n1['y']), (n2['x'], n2['y']), 4
         )
 
     # draw nodes
     for node in nodes:
-        color = (255, 255, 0) if selected_node == node['id'] else (255, 0, 0)
+        color = (255, 255, 0) if selected_node == node['id'] else (0, 255, 0)
         pygame.draw.circle(
             screen, color, (node['x'], node['y']), NODE_RADIUS, 2
         )
