@@ -2,7 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
 
-start = '''
+START = '''
 .1.222
 31.45.
 3kk456
@@ -38,28 +38,11 @@ class Tile:
             for i in range(self.length)
         }
 
-    @property
-    def positions_past_end(self):
-        '''Returns the adjacent positions immediately beyond either "end" of
-        this piece'''
-
-        return [
-            (
-                self.pos[0] - self.offset[0],
-                self.pos[1] - self.offset[1],
-            ),
-            (
-                self.pos[0] + self.offset[0] * self.length,
-                self.pos[1] + self.offset[1] * self.length
-            )
-        ]
-
     def neighbors(self):
         '''Returns moved versions of this tile (in both possible directions).
         Only returns moves which keep the tile within the grid boundaries.
         '''
 
-        # list of ((roff, coff), move)
         offsets = [
             (
                 (self.offset[0], self.offset[1]),
@@ -97,7 +80,7 @@ def string_to_grid(start):
 
 
 def get_orientation(spots):
-    rows, cols = zip(*spots)
+    rows, _ = zip(*spots)
     return 'h' if len(set(rows)) == 1 else 'v'
 
 
@@ -144,7 +127,7 @@ def solve(tiles):
 
 
 def main():
-    grid = string_to_grid(start)
+    grid = string_to_grid(START)
     tiles = parse_tiles(grid)
 
     if moves := solve(tiles):
