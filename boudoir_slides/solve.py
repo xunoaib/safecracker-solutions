@@ -43,7 +43,7 @@ def parse_tiles(grid):
 
     return [
         Tile(id, min(spots), get_orientation(spots), len(spots))
-        for id, spots in id_positions.items()
+        for id, spots in sorted(id_positions.items())
     ]
 
 
