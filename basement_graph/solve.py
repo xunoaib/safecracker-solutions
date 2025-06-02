@@ -39,7 +39,15 @@ def main():
             direction = DIRNAMES[dir_idx]
             dirs[src][direction] = tar
 
-    __import__('pprint').pprint(dirs)
+    # create a graph of possible moves, respecting the "jump" requirement
+    jump_graph = defaultdict(dict)
+    for src, dir_tars in dirs.items():
+        for dir, tar in dir_tars.items():
+            jump_tar = dirs[tar].get(dir)
+            if jump_tar is not None:
+                jump_graph[src][dir] = jump_tar
+
+    __import__('pprint').pprint(jump_graph)
 
 
 if __name__ == '__main__':
