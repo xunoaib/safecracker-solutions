@@ -72,12 +72,13 @@ class Tile:
                 yield newtile
 
 
-def display(all_tiles: list[Tile]):
+def display(all_tiles: list[Tile] | frozenset[Tile]):
     grid = {p: t.id for t in all_tiles for p in t.spots}
     for r in range(ROWS):
         for c in range(COLS):
             print(grid.get((r, c), '.'), end='')
         print()
+    print()
 
 
 def string_to_grid(start):
@@ -126,7 +127,7 @@ def main():
 
     print()
     for n in neighbors(all_tiles):
-        print(n)
+        display(n)
 
     print(len(list(neighbors(all_tiles))))
 
