@@ -72,6 +72,14 @@ class Tile:
                 yield newtile
 
 
+def display(all_tiles: list[Tile]):
+    grid = {p: t.id for t in all_tiles for p in t.spots}
+    for r in range(ROWS):
+        for c in range(COLS):
+            print(grid.get((r, c), '.'), end='')
+        print()
+
+
 def string_to_grid(start):
     grid_lst = [tuple(row) for row in start.splitlines()]
     return {
