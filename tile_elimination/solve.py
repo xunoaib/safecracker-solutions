@@ -22,10 +22,6 @@ def neighbors(tiles, r, c):
             (d, 0),
             (0, d),
             (0, -d),
-            (d, d),
-            (d, -d),
-            (-d, d),
-            (-d, -d),
         ]:
             n = (r + roff, c + coff)
             if n in tiles:
