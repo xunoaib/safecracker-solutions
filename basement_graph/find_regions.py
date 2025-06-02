@@ -43,12 +43,17 @@ cv2.imwrite('output_with_matches.png', ss)
 # sort coordinates
 matched_sorted = sorted(matched, key=lambda pt: (pt[1], pt[0]))
 
+template_width, template_height = template_rgb.shape[1], template_rgb.shape[0]
+half_w, half_h = template_width // 2, template_height // 2
+
+matched_sorted = sorted(matched, key=lambda pt: (pt[1], pt[0]))
+
 # assign incremental IDs
 nodes = [
     {
         "id": int(i),
-        "x": int(x),
-        "y": int(y)
+        "x": int(x + half_w),
+        "y": int(y + half_h)
     } for i, (x, y) in enumerate(matched_sorted)
 ]
 
