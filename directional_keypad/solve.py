@@ -26,5 +26,22 @@ def raw_to_offsets(raw: str):
     return result
 
 
-for row in raw_to_offsets(RAW):
-    print(row)
+# Create a dependency graph of jumps
+graph = {}
+offsets = raw_to_offsets(RAW)
+for r, row in enumerate(offsets):
+    for c, (roff, coff) in enumerate(row):
+        graph[r, c] = r + roff, c + coff
+
+# Find the only position not pointed to by any other position
+pos = next(iter(set(graph) - set(graph.values())))
+
+print('Row Col')
+i = 0
+while pos:
+    print(f'{i:>2} {pos}')
+    npos = graph[pos]
+    if npos == pos:
+        break
+    pos = npos
+    i += 1
