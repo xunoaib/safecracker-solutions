@@ -1,7 +1,4 @@
-from enum import Enum
-
-# Safe contains 4 bars.
-# Pressing 6666, 7777, 8888, or 9999 causes one bar to temporarily retract.
+# 7-segment displays on doors
 
 TEMPLATE = '''
   00  
