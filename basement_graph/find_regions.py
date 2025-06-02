@@ -1,3 +1,5 @@
+import json
+
 import cv2
 import numpy as np
 
@@ -37,3 +39,19 @@ print(f"{len(matched)} matches")
 assert len(matched) == 113
 
 cv2.imwrite('output_with_matches.png', ss)
+
+# sort coordinates
+matched_sorted = sorted(matched, key=lambda pt: (pt[1], pt[0]))
+
+# assign incremental IDs
+nodes = [
+    {
+        "id": int(i),
+        "x": int(x),
+        "y": int(y)
+    } for i, (x, y) in enumerate(matched_sorted)
+]
+
+# save for later use
+with open("nodes.json", "w") as f:
+    json.dump(nodes, f, indent=2)
