@@ -45,7 +45,7 @@ def image_to_bitmap(im):
 
 def image_to_grid():
     '''Parses walls from a black and white preprocessed image (excludes goal tiles)'''
-    im = cv2.imread('magnet_ball_bw.png')
+    im = cv2.imread('ss_bw.png')
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
     bitmap = image_to_bitmap(im)
