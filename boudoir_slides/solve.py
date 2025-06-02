@@ -22,9 +22,6 @@ class Tile:
     orientation: Literal['v'] | Literal['h']
     length: int
 
-    # def __repr__(self):
-    #     return f'Tile(id={self.id} @ {self.pos})'
-
     @property
     def offset(self):
         return (1, 0) if self.orientation == 'v' else (0, 1)
@@ -43,7 +40,8 @@ class Tile:
 
     @property
     def positions_past_end(self):
-        '''Returns the adjacent positions immediately beyond either "end" of this piece'''
+        '''Returns the adjacent positions immediately beyond either "end" of
+        this piece'''
 
         return [
             (
@@ -114,7 +112,7 @@ def parse_tiles(grid):
     ]
 
 
-def neighbors(all_tiles: list[Tile]):
+def neighbors(all_tiles: list[Tile] | frozenset[Tile]):
     '''Returns all valid neighboring states for this tile'''
 
     for tile in all_tiles:
@@ -128,7 +126,7 @@ def neighbors(all_tiles: list[Tile]):
 
 def solved(tiles):
     key_tile = next(t for t in tiles if t.id == KEY_TILE_ID)
-    return key_tile[1] == 4
+    return key_tile.pos[1] == 4
 
 
 def solve(tiles):
@@ -147,16 +145,15 @@ def solve(tiles):
 
 def main():
     grid = string_to_grid(start)
-    all_tiles = parse_tiles(grid)
-    for t in all_tiles:
-        print(t)
+    tiles = parse_tiles(grid)
 
-    print()
-    for n, move in neighbors(all_tiles):
-        print(move)
-        display(n)
-
-    print(len(list(neighbors(all_tiles))))
+    if moves := solve(tiles):
+        for i, m in enumerate(moves):
+            if not i % 4:
+                print()
+            print(f'{i}. {m}')
+    else:
+        print('No solution')
 
 
 if __name__ == '__main__':
