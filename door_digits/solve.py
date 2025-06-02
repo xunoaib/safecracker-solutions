@@ -103,14 +103,16 @@ segments = [0 for _ in range(NUM_DIGITS)]
 violet = decode_segments(['br', 'b', 't m', 'b tr'])
 yellow = decode_segments(['t m', 't', 'bl', 't m'])
 corridor = decode_segments(['tr', 'm', 'tr', 'bl br'])
-merged = merge([violet, yellow, corridor])
+dressing = decode_segments(['b', 'tl br', 'b', 'tl'])
+merged = merge([violet, yellow, corridor, dressing])
 display(merged)
 
 candidates = []
 for v in merged:
     row = []
     for d, u in KNOWN_DIGITS.items():
-        if (v | u) ^ u == 0:
+        # if (v | u) ^ u == 0:  # finds all possible digits
+        if v == u:  # finds exact matching digits
             row.append(d)
     candidates.append(row)
 
