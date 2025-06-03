@@ -3,6 +3,8 @@ from collections import defaultdict
 
 from z3 import And, If, Int, Or, Solver
 
+NUM_ROWS = NUM_COLS = 5
+
 DIR_INDEXES = 'N NE E SE S SW W NW'.split()
 N, NE, E, SE, S, SW, W, NW = range(len(DIR_INDEXES))
 
@@ -26,6 +28,10 @@ def rotate(dir_indexes: set[int], offset: int):
 def tile_in_direction(pos: tuple[int, int], direction: int):
     roff, coff = DIR_OFFSETS[direction]
     return pos[0] + roff, pos[1] + coff
+
+
+def inbounds(pos: tuple[int, int]):
+    return 0 <= pos[0] < NUM_ROWS and 0 <= pos[1] < NUM_COLS
 
 
 def main():
@@ -62,17 +68,22 @@ def main():
 
     tiles_in_dirs = [tile_in_direction(p, d) for d in range(8)]
 
-    d = N
-    d_op = (d + 4) % 8
-
-    q = tiles_in_dirs[d]
-    q_dirs = connections[q]
-
-    for pd in p_dirs:
-        s.add(If(pd == d, Or(q_dirs[0] == d_op, q_dirs[1] == d_op), True))
-
-    print(connections[p], tiles[p])
-    print(connections[q], tiles[q])
+    # apply conditional constraint to each direction
+    for d in range(8):
+        d_op = (d + 4) % 8
+        q = tiles_in_dirs[d]
+        q_dirs = connections.get(q)
+        for pd in p_dirs:
+            if q_dirs is None:  # q is out of bounds
+                s.add(pd != d)  # p must stay in bounds
+            else:  # require q to connect back to p
+                s.add(
+                    If(
+                        pd == d, Or(q_dirs[0] == d_op, q_dirs[1] == d_op), True
+                    )
+                )
+        print(connections.get(p), tiles.get(p))
+        print(connections.get(q), tiles.get(q))
 
 
 if __name__ == '__main__':
