@@ -2,6 +2,10 @@
 # The number of retracting bars indicates how many digits are in the correct
 # position.
 
+from itertools import product
+
+from z3 import And, Int, Not, Or, Solver, sat
+
 TEMPLATE = '''
   00  
  6  1 
@@ -92,25 +96,72 @@ KNOWN_DIGITS = {
 
 NUM_DIGITS = 4
 
-segments = [0 for _ in range(NUM_DIGITS)]
 
-partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
-display(partial)
+def interactive_z3(candidates):
+    solver = Solver()
+    zdigits = [Int(f'z{i}') for i in range(len(candidates))]
+    for z, possible_digits in zip(zdigits, candidates):
+        # solver.add(1 <= z)
+        # solver.add(z <= 9)
+        solver.add(Or(*(z == d for d in possible_digits)))
 
-candidates = []
-for v in partial:
-    row = []
-    for d, u in KNOWN_DIGITS.items():
-        if (v | u) ^ u == 0:  # finds all possible digits
-            row.append(d)
-    candidates.append(row)
+    if solver.check() == sat:
+        # m = solver.model()
+        # print(''.join(str(m[z]) for z in zdigits))
 
-print('Candidates:', candidates)
+        slns = find_all_solutions(solver)
+        print(*map(format, slns))
 
-# print('\nPossible codes:')
-# print()
-#
-# # Without more info, we assume a digit may be used no more than once
-# for p in product(*candidates):
-#     if len(set(p)) == len(p):
-#         print('  ' + ''.join(map(str, p)))
+    else:
+        print('No solution')
+
+    exit(0)
+
+
+def format(digits):
+    return int(''.join(str(d) for d in digits))
+
+
+def find_all_solutions(solver: Solver):
+    solver.push()
+
+    solutions = []
+    while solver.check() == sat:
+        model = solver.model()
+        solution = [model[d].as_long() for d in model.decls()]
+        solutions.append(solution)
+
+        block = []
+        for d in model.decls():
+            var = d()
+            val = model[d]
+            block.append(var != val)
+        solver.add(Or(block))
+
+    solver.pop()
+    return sorted(solutions)
+
+
+def main():
+    segments = [0 for _ in range(NUM_DIGITS)]
+
+    partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
+    display(partial)
+
+    candidates = []
+    for v in partial:
+        row = []
+        for d, u in KNOWN_DIGITS.items():
+            if (v | u) ^ u == 0:  # finds all possible digits
+                row.append(d)
+        candidates.append(row)
+
+    print('Candidates:', candidates, end='\n\n')
+
+    interactive_z3(candidates)
+
+    pool = set(product(*candidates))
+
+
+if __name__ == '__main__':
+    main()
