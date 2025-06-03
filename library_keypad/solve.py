@@ -121,11 +121,14 @@ def init_solver(candidates):
 
 
 def interactive_z3(candidates):
+    '''Allows the user to manually enter their own guesses and feedback, using
+    z3 to narrow down possible codes'''
+
     solver, zdigits = init_solver(candidates)
     while True:
         slns = find_all_solutions(solver, zdigits)
         if len(slns) == 1:
-            print('Found solution:', slns[0])
+            print('Found solution: ', *slns[0], sep='')
             break
         elif len(slns) == 0:
             print('No solution')
