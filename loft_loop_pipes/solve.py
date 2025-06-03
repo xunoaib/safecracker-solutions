@@ -67,8 +67,9 @@ def main():
 
     d = N
     d_op = (d + 4) % 8
-    s.add(If(pd1 == d, Or(qd1 == d_op, qd2 == d_op), True))
-    s.add(If(pd2 == d, Or(qd1 == d_op, qd2 == d_op), True))
+
+    for pd in p_dirs:
+        s.add(If(pd == d, Or(qd1 == d_op, qd2 == d_op), True))
 
     # s.add(If(pd1 == N, Or(qd1 == S, qd2 == S), True))
     # s.add(If(pd2 == N, Or(qd1 == S, qd2 == S), True))
