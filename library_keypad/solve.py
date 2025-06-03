@@ -101,15 +101,10 @@ def interactive_z3(candidates):
     solver = Solver()
     zdigits = [Int(f'z{i}') for i in range(len(candidates))]
     for z, possible_digits in zip(zdigits, candidates):
-        # solver.add(1 <= z)
-        # solver.add(z <= 9)
         solver.add(Or(*(z == d for d in possible_digits)))
 
     if solver.check() == sat:
-        # m = solver.model()
-        # print(''.join(str(m[z]) for z in zdigits))
-
-        slns = find_all_solutions(solver)
+        slns = find_all_solutions(solver, zdigits)
         print(*map(format, slns))
 
     else:
@@ -122,13 +117,13 @@ def format(digits):
     return int(''.join(str(d) for d in digits))
 
 
-def find_all_solutions(solver: Solver):
+def find_all_solutions(solver: Solver, zdigits):
     solver.push()
 
     solutions = []
     while solver.check() == sat:
         model = solver.model()
-        solution = [model[d].as_long() for d in model.decls()]
+        solution = [model[z].as_long() for z in zdigits]
         solutions.append(solution)
 
         block = []
