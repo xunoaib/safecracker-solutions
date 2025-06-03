@@ -12,13 +12,7 @@ TEMPLATE = '''
   33  
 '''.strip('\n')
 
-TOP = 0
-TOP_RIGHT = 1
-BOT_RIGHT = 2
-BOT = 3
-BOT_LEFT = 4
-MID = 5
-TOP_LEFT = 6
+TOP, TOP_RIGHT, BOT_RIGHT, BOT, BOT_LEFT, MID, TOP_LEFT = range(7)
 
 
 def str_to_segment(s):
@@ -112,7 +106,7 @@ for v in partial:
     candidates.append(row)
 
 print('Candidates:', candidates)
-#
+
 # print('\nPossible codes:')
 # print()
 #
