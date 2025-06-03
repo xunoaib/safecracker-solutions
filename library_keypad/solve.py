@@ -19,6 +19,14 @@ TEMPLATE = '''
 TOP, TOP_RIGHT, BOT_RIGHT, BOT, BOT_LEFT, MID, TOP_LEFT = range(7)
 
 
+def feedback(guess):
+    '''Returns the number of correct digits in the correct positions given a guess.'''
+
+    if isinstance(guess, int):
+        guess = tuple(map(int, str(guess)))
+    return sum(g == d for g, d in zip(guess, (8, 7, 9, 6)))
+
+
 def str_to_segment(s):
     return {
         't': TOP,
