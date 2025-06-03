@@ -1,10 +1,10 @@
 # Glitchy library keypad safe.
-# The number of retracting bars indicates how many digits are in the correct
-# position.
-
+# The number of retracting bars indicates the number of correctly placed digits.
+import sys
+from collections import defaultdict
 from itertools import product
 
-from z3 import And, If, Int, Not, Or, Solver, Sum, sat
+from z3 import If, Int, Or, Solver, Sum, sat
 
 TEMPLATE = '''
   00  
@@ -117,6 +117,8 @@ def init_solver(candidates):
     zdigits = [Int(f'z{i}') for i in range(len(candidates))]
     for z, possible_digits in zip(zdigits, candidates):
         solver.add(Or(*(z == d for d in possible_digits)))
+        solver.add(z >= 1)
+        solver.add(z <= 9)
     return solver, zdigits
 
 
@@ -142,8 +144,64 @@ def interactive_z3(candidates):
         add_guess_knowledge(solver, zdigits, guess, ncorrect)
 
 
+def automatic_z3(candidates):
+    '''Automatically suggests guesses, accepting feedback and using z3 to
+    narrow down possible codes'''
+
+    solver, zdigits = init_solver(candidates)
+    while True:
+        slns = find_all_solutions(solver, zdigits)
+
+        if len(slns) == 1:
+            print('\n\033[92;1mSolution: ', *slns[0], '\033[0m', sep='')
+            break
+
+        elif len(slns) == 0:
+            print('\033[91;1mNo solution\033[0m')
+            break
+
+        guess = best_guess(slns)
+
+        print('Candidates:\n')
+        print('\033[38;5;248m' + ' '.join(map(format, slns)) + '\033[m')
+        print('\n\033[93;1mGuess: ', *guess, '\033[0m', sep='')
+
+        # We could read input from the user here, but for ease of use, we'll
+        # just simulate what the actual response would be.
+
+        # ncorrect = int(input('Number correct? > '))
+        ncorrect = feedback(guess)
+        print('\033[96mFeedback:', ncorrect, 'correct\033[0m')
+
+        add_guess_knowledge(solver, zdigits, guess, ncorrect)
+
+
 def format(digits):
-    return int(''.join(str(d) for d in digits))
+    return ''.join(str(d) for d in digits)
+
+
+def score_guess(guess, solution_candidates):
+    '''Returns a score indicating how well the guess splits the solution candidates'''
+
+    buckets = defaultdict(list)
+    for code in solution_candidates:
+        feedback = sum(g == c for g, c in zip(guess, code))
+        buckets[feedback].append(code)
+
+    # a good guess minimizes the size of the largest bucket (worst-case).
+    # however, im not 100% sure feedback frequency is the best metric to use.
+    return max(len(b) for b in buckets.values())
+
+
+def best_guess(solution_candidates):
+    min_score = float('inf')
+    best = None
+    for guess in product(range(1, 10), repeat=4):
+        score = score_guess(guess, solution_candidates)
+        if score < min_score:
+            min_score = score
+            best = guess
+    return best
 
 
 def find_all_solutions(solver: Solver, zdigits):
@@ -168,7 +226,7 @@ def find_all_solutions(solver: Solver, zdigits):
 
 def main():
     partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
-    display(partial)
+    # display(partial)
 
     candidates = []
     for v in partial:
@@ -178,9 +236,18 @@ def main():
                 row.append(d)
         candidates.append(row)
 
-    print('Candidates:', candidates, end='\n\n')
+    if '-i' in sys.argv:
+        print('Candidates:', candidates, end='\n\n')
+        interactive_z3(candidates)
 
-    interactive_z3(candidates)
+    elif '-a' in sys.argv:
+        print('Automatic solving:')
+        automatic_z3(candidates)
+
+    else:
+        print(
+            'No option selected. Pass -i for interactive or -a for automatic'
+        )
 
 
 if __name__ == '__main__':
