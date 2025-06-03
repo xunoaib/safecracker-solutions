@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 
-from z3 import And, If, Int, Or, Solver, sat
+from z3 import And, If, Int, Optimize, Or, sat
 
 NUM_ROWS = NUM_COLS = 5
 
@@ -44,7 +44,7 @@ def main():
 
     rotations = {p: Int(f'o{i}') for i, p in enumerate(sorted(tiles))}
 
-    s = Solver()
+    s = Optimize()
     s.add([And(0 <= z, z < 4) for z in rotations.values()])
 
     # create variables for the directions of each tile's final connections
@@ -58,9 +58,7 @@ def main():
             s.add(nodedir == (2 * rotations[p] + dir_idx) % 8)
         connections[p] = tuple(vals)
 
-    # require that each pipe has a corresponding connection in the opposite tile.
-    # for now, enforce only one constraint for a tile (UP)
-
+    # require that each pipe has a corresponding connection in the opposite tile
     for p in sorted(tiles):
         p_dirs = connections[p]
         tiles_in_dirs = [tile_in_direction(p, d) for d in range(8)]
@@ -81,10 +79,12 @@ def main():
                         )
                     )
 
+    # minimize the number of rotations (ie: to eliminate redundant moves)
+    s.minimize(sum(rotations.values()))
+
     assert s.check() == sat
     m = s.model()
 
-    print()
     for r in range(5):
         for c in range(5):
             v = rotations[r, c]
