@@ -1,3 +1,7 @@
+# Dial numbering:
+#   0 1 2
+#   3 4 5
+
 DIAL_LETTERS = [
     'GDLF',
     'OTNI',
@@ -25,4 +29,8 @@ def solve_recursive(letters: list[str] | str, dial=0):
 
 letters = 'WALTER'
 assignments = solve_recursive(letters)
-print(assignments)
+print('Dials:', assignments)
+
+for dial, ch in enumerate(assignments):
+    times = DIAL_LETTERS[dial].index(ch)
+    print(f'Turn dial {dial} x {times} times')
