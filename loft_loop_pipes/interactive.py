@@ -1,9 +1,13 @@
 # Generated with ChatGPT
 
+import json
 import math
 import sys
+from pathlib import Path
 
 import pygame
+
+STATE_FILE = 'nodes.json'
 
 # --- Settings ---
 IMAGE_PATH = 'cropped.jpg'  # Replace with your image path
@@ -27,6 +31,21 @@ DIR_OFFSETS = {
     'NW': (0.1, 0.1),
 }
 
+
+def save_state(selected_nodes):
+    with open(STATE_FILE, 'w') as f:
+        json.dump([((x, y), d) for ((x, y), d) in selected_nodes], f)
+
+
+def load_state():
+    if not Path(STATE_FILE).exists():
+        return set()
+    with open(STATE_FILE, 'r') as f:
+        return set(
+            tuple((tuple(pos), direction)) for pos, direction in json.load(f)
+        )
+
+
 # --- Main Program ---
 pygame.init()
 image = pygame.image.load(IMAGE_PATH)
@@ -38,7 +57,7 @@ clock = pygame.time.Clock()
 box_w = img_w // GRID_COLS
 box_h = img_h // GRID_ROWS
 
-selected_nodes = set()
+selected_nodes = load_state()
 
 running = True
 while running:
@@ -87,6 +106,10 @@ while running:
                     else:
                         selected_nodes.add(key)
                     print(f"Clicked box {grid_pos}, direction {direction}")
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                save_state(selected_nodes)
+                print("State saved.")
 
     pygame.display.flip()
     clock.tick(60)
