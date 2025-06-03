@@ -4,7 +4,7 @@
 
 from itertools import product
 
-from z3 import And, Int, Not, Or, Solver, sat
+from z3 import And, If, Int, Not, Or, Solver, Sum, sat
 
 TEMPLATE = '''
   00  
@@ -103,14 +103,26 @@ def interactive_z3(candidates):
     for z, possible_digits in zip(zdigits, candidates):
         solver.add(Or(*(z == d for d in possible_digits)))
 
-    if solver.check() == sat:
+    while True:
         slns = find_all_solutions(solver, zdigits)
+        if len(slns) == 1:
+            print('Found solution:', slns[0])
+            break
+        elif len(slns) == 0:
+            print('No solution')
+            break
+
+        print('Current candidates:\n')
         print(*map(format, slns))
+        guess = input('Guess? [xxxx] > ')
+        ncorrect = int(input('Number correct? > '))
 
-    else:
-        print('No solution')
+        correct_positions = [
+            If(zdigits[i] == guess[i], 1, 0) for i in range(4)
+        ]
+        solver.add(Sum(correct_positions) == ncorrect)
 
-    exit(0)
+        solver.add()
 
 
 def format(digits):
