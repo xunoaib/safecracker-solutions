@@ -1,24 +1,30 @@
-import cv2
+import json
+from collections import defaultdict
 
-# --- Step 1: Load the image ---
-image = cv2.imread('ss.jpg', cv2.IMREAD_GRAYSCALE)  # Load in grayscale
-if image is None:
-    raise ValueError("Image not found or path is incorrect")
+DIR_INDEXES = 'N NE E SE S SW W NW'.split()
 
-# --- Step 2: Crop the region of interest ---
-# Example region (top-left x,y and width, height)
-x, y, w, h = 100, 50, 200, 150
-# cropped = image[y:y + h, x:x + w]
-cropped = image
 
-# --- Step 3: Apply thresholding ---
-# Threshold value (e.g., 127); you can adjust this
-thresholded = cv2.adaptiveThreshold(
-    cropped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-)
+def rotate(dir_indexes: set[int], offset: int):
+    assert offset in (-1, 1)
+    return {(d + offset) % len(DIR_INDEXES) for d in dir_indexes}
 
-# --- Optionally: Save or display results ---
-cv2.imwrite('cropped_thresholded.jpg', thresholded)
-cv2.imshow('Thresholded Image', thresholded)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+def main():
+    with open('nodes.json') as f:
+        nodes = json.load(f)
+
+    tiles = defaultdict(set)
+    for (x, y), d in nodes:
+        tiles[x, y].add(DIR_INDEXES.index(d))
+
+    print(tiles)
+
+    s = tiles[0, 0]
+    print(s)
+    for _ in range(8):
+        s = rotate(s, -1)
+        print(s)
+
+
+if __name__ == '__main__':
+    main()
