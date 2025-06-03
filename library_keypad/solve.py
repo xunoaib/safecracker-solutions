@@ -105,6 +105,11 @@ KNOWN_DIGITS = {
 NUM_DIGITS = 4
 
 
+def add_guess_knowledge(solver: Solver, zdigits, guess, ncorrect):
+    correct_positions = [If(zdigits[i] == guess[i], 1, 0) for i in range(4)]
+    solver.add(Sum(correct_positions) == ncorrect)
+
+
 def interactive_z3(candidates):
     solver = Solver()
     zdigits = [Int(f'z{i}') for i in range(len(candidates))]
@@ -125,12 +130,7 @@ def interactive_z3(candidates):
         guess = input('Guess? [xxxx] > ')
         ncorrect = int(input('Number correct? > '))
 
-        correct_positions = [
-            If(zdigits[i] == guess[i], 1, 0) for i in range(4)
-        ]
-        solver.add(Sum(correct_positions) == ncorrect)
-
-        solver.add()
+        add_guess_knowledge(solver, zdigits, guess, ncorrect)
 
 
 def format(digits):
