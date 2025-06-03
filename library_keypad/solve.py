@@ -1,5 +1,6 @@
 # Glitchy library keypad safe.
-# The number of retracting bars indicates the number of correctly placed digits.
+# The number of retracting bars indicates the number of correctly placed digits
+
 import sys
 from collections import defaultdict
 from itertools import product
@@ -225,9 +226,9 @@ def find_all_solutions(solver: Solver, zdigits):
 
 
 def main():
-    partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
-    # display(partial)
 
+    # Identify initial candidates based on revealed segments
+    partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
     candidates = []
     for v in partial:
         row = []
@@ -239,15 +240,9 @@ def main():
     if '-i' in sys.argv:
         print('Candidates:', candidates, end='\n\n')
         interactive_z3(candidates)
-
-    elif '-a' in sys.argv:
+    else:
         print('Automatic solving:')
         automatic_z3(candidates)
-
-    else:
-        print(
-            'No option selected. Pass -i for interactive or -a for automatic'
-        )
 
 
 if __name__ == '__main__':
