@@ -58,21 +58,18 @@ def main():
     # for now, enforce only one constraint for a tile (UP)
 
     p = (4, 0)
-    p_dirs = pd1, pd2 = connections[p]
-
-    q = (p[0] - 1, p[1])
-    q_dirs = qd1, qd2 = connections[q]
+    p_dirs = connections[p]
 
     tiles_in_dirs = [tile_in_direction(p, d) for d in range(8)]
 
     d = N
     d_op = (d + 4) % 8
 
-    for pd in p_dirs:
-        s.add(If(pd == d, Or(qd1 == d_op, qd2 == d_op), True))
+    q = tiles_in_dirs[d]
+    q_dirs = connections[q]
 
-    # s.add(If(pd1 == N, Or(qd1 == S, qd2 == S), True))
-    # s.add(If(pd2 == N, Or(qd1 == S, qd2 == S), True))
+    for pd in p_dirs:
+        s.add(If(pd == d, Or(q_dirs[0] == d_op, q_dirs[1] == d_op), True))
 
     print(connections[p], tiles[p])
     print(connections[q], tiles[q])
