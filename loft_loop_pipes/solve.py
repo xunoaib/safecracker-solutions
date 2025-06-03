@@ -5,7 +5,7 @@ DIR_INDEXES = 'N NE E SE S SW W NW'.split()
 
 
 def rotate(dir_indexes: set[int], offset: int):
-    assert offset in (-1, 1)
+    assert offset in (-2, 2)
     return {(d + offset) % len(DIR_INDEXES) for d in dir_indexes}
 
 
@@ -21,8 +21,8 @@ def main():
 
     s = tiles[0, 0]
     print(s)
-    for _ in range(8):
-        s = rotate(s, -1)
+    for _ in range(4):
+        s = rotate(s, -2)
         print(s)
 
 
