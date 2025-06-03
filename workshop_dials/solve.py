@@ -8,16 +8,21 @@ DIAL_LETTERS = [
 ]
 
 
-def solve_recursive(letters: set[str], dial=0):
-    if dial >= len(DIAL_LETTERS):
+def solve_recursive(letters: list[str] | str, dial=0):
+    if len(letters) == 0:
         return ''
 
-    for ch in set(DIAL_LETTERS[dial]) & letters:
-        result = solve_recursive(letters - {ch}, dial + 1)
+    if dial >= len(DIAL_LETTERS):
+        return None
+
+    for ch in set(DIAL_LETTERS[dial]) & set(letters):
+        new_letters = list(letters)
+        new_letters.remove(ch)
+        result = solve_recursive(new_letters, dial + 1)
         if isinstance(result, str):
             return ch + result
 
 
-letters = set('WALTER')  # doesnt support duplicate letters
+letters = 'WALTER'
 assignments = solve_recursive(letters)
 print(assignments)
