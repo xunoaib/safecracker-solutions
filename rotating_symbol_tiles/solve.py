@@ -122,10 +122,6 @@ def solve_custom(grid, solved: Callable, heuristic: Callable):
 
         if len(path) > max_len:
             max_len = len(path)
-            print(f'Expanding search to {max_len} moves')
-
-        # if len(path) > 150:
-        #     continue
 
         if solved(grid):
             return grid, path
@@ -144,6 +140,8 @@ def solve_custom(grid, solved: Callable, heuristic: Callable):
                         path + (move, ),
                     )
                 )
+    print('No solution')
+    exit()
 
 
 def solve(grid):
@@ -257,9 +255,10 @@ def solve_new():
         def heuristic(grid, n=n):
             return heuristic_up_to(grid, n)
 
-        print('Solving for tile', n)
+        print('\nSolving for tile', n, '\n')
         grid, path = solve_custom(grid, solved, heuristic)
-        print(path)
+        print('Steps:', path)
+        print()
         print_grid(grid)
         break
 
