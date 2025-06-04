@@ -235,6 +235,30 @@ GOAL = list_to_dict(
     ]
 )
 
+# INIT = list_to_dict(
+#     [
+#         [23, 4, 14, -1, -1],
+#         [8, 13, 24, 3, -1],
+#         [0, 21, 2, 18, 11],
+#         [-1, 12, 22, 1, 7],
+#         [-1, -1, 5, 15, 20],
+#     ]
+# )
+# GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
+
+# NEW = {find_num_pos(INIT, v): v for p, v in GOAL.items()}
+
+NEW = {(r, c): -1 for r in range(ROWS) for c in range(COLS)}
+for p, v in GOAL.items():
+    if v != -1:
+        np = next((n for n, u in INIT.items() if u == v))
+        NEW[np] = v
+
+print(NEW)
+print(len(NEW))
+print_grid(NEW)
+exit(0)
+
 # [23, 4, 14, 10, 17]
 # [8, 13, 24, 3, 9]
 # [0, 21, 2, 18, 11]
