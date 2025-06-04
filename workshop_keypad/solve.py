@@ -7,6 +7,7 @@ from itertools import batched
 # it cycles through when pressed.
 
 # Correct combination: 5841
+# One solution: 3299 3229
 
 
 def press(number, times=1):
