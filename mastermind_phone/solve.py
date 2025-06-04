@@ -9,8 +9,6 @@ import sys
 from collections import defaultdict
 from itertools import product
 
-from z3 import If, Int, Or, Solver, Sum, sat
-
 WRONG, PARTIAL, CORRECT = range(3)
 
 
@@ -44,23 +42,6 @@ def feedback(guess, solution):
         else:
             result += (WRONG, )
     return result
-
-
-def add_guess_knowledge(solver: Solver, zdigits: list, guess, ncorrect):
-    '''Adds the result of a guess to the knowledge base'''
-
-    correct_positions = [If(zdigits[i] == guess[i], 1, 0) for i in range(4)]
-    solver.add(Sum(correct_positions) == ncorrect)
-
-
-def init_solver(candidates):
-    solver = Solver()
-    zdigits = [Int(f'z{i}') for i in range(len(candidates))]
-    for z, possible_digits in zip(zdigits, candidates):
-        solver.add(Or(*(z == d for d in possible_digits)))
-        solver.add(z >= 1)
-        solver.add(z <= 9)
-    return solver, zdigits
 
 
 def interactive(candidates):
