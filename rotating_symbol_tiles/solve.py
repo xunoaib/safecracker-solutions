@@ -184,7 +184,10 @@ def print_grid(grid: dict):
     # for r in range(ROWS):
     #     print(','.join(str(grid[r, c]) for c in range(COLS)))
 
-    rows = [[grid[r, c] for c in range(COLS)] for r in range(ROWS)]
+    rows = [
+        [grid[r, c] if grid[r, c] != -1 else '•' for c in range(COLS)]
+        for r in range(ROWS)
+    ]
     print(tabulate(rows, tablefmt='plain'))
 
 
