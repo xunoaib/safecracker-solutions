@@ -1,5 +1,9 @@
-# Glitchy library keypad safe.
-# The number of retracting bars indicates the number of correctly placed digits
+# Mastermind Phone Puzzle
+# Must guess a 4 digit code in 5 guesses.
+# Feedback is given for each digit in the guess, indicating whether it is:
+# - present in the solution and in the correct position
+# - present in the solution but in the incorrect position
+# - not present in the solution
 
 import sys
 from collections import defaultdict
