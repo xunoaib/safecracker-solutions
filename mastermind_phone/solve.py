@@ -7,15 +7,42 @@ from itertools import product
 
 from z3 import If, Int, Or, Solver, Sum, sat
 
-NUM_DIGITS = 4
+WRONG, PARTIAL, CORRECT = range(3)
 
 
-def feedback(guess):
-    '''Returns the number of correct digits in the correct positions given a guess.'''
+class Guesser:
+    '''Accepts guesses and responses and generates possible candidates'''
 
-    if isinstance(guess, int):
-        guess = tuple(map(int, str(guess)))
-    return sum(g == d for g, d in zip(guess, (8, 7, 9, 6)))
+    def __init__(self):
+        self.responses = []
+
+    def add(
+        self, guess: tuple[int, int, int, int], response: tuple[int, int, int,
+                                                                int]
+    ):
+        self.responses.append((guess, response))
+
+    def candidates(self):
+        for candidate in product(range(1, 10), repeat=4):
+            if all(
+                feedback(guess, candidate) == response
+                for guess, response in self.responses
+            ):
+                yield candidate
+
+
+def feedback(guess, solution):
+    '''Returns feedback for a guess given the solution'''
+
+    result = tuple()
+    for s, g in zip(solution, guess):
+        if g == s:
+            result += (CORRECT, )
+        elif g in solution:
+            result += (PARTIAL, )
+        else:
+            result += (WRONG, )
+    return result
 
 
 def add_guess_knowledge(solver: Solver, zdigits: list, guess, ncorrect):
@@ -64,8 +91,6 @@ def automatic_z3(candidates):
     solver, zdigits = init_solver(candidates)
     print(zdigits)
     while True:
-        slns = find_all_solutions(solver, zdigits)
-
         if len(slns) == 1:
             print('\n\033[92;1mSolution: ', *slns[0], '\033[0m', sep='')
             break
@@ -141,6 +166,11 @@ def find_all_solutions(solver: Solver, zdigits):
 def main():
 
     candidates = [list(range(1, 10)) for _ in range(10)]
+
+    g = Guesser()
+    g.add((1, 2, 3, 4), (WRONG, WRONG, PARTIAL, CORRECT))
+    print(list(g.candidates()))
+    exit(0)
 
     if '-i' in sys.argv:
         print('Candidates:', candidates, end='\n\n')
