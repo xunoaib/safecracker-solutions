@@ -21,7 +21,7 @@ GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
 for i in (3, 4, 9, 15, 20, 21):
     GOAL[divmod(i, COLS)] = -1
 
-INIT = list_to_dict(
+X = list_to_dict(
     [
         [23, 4, 14, -1, -1],
         [8, 13, 24, 3, -1],
@@ -30,6 +30,18 @@ INIT = list_to_dict(
         [-1, -1, 5, 15, 20],
     ]
 )
+
+INIT = {p: -1 for p in GOAL}
+for r in range(ROWS):
+    for c in range(COLS):
+        srch = r * COLS + c
+        ipos = next((p for p, v in X.items() if v == srch), None)
+        opos = divmod(srch, COLS)
+        if ipos:
+            nr, nc = ipos
+            oval = nr * COLS + nc
+            print(srch, ipos, opos, oval)
+            INIT[r, c] = oval
 
 
 def dist(src, tar):
@@ -191,14 +203,15 @@ def main():
     #     print('move', m, divmod(m, COLS + 1))
     #     print()
     #     print_grid(grid)
-    #     input()
+    #     # input()
     # return
 
-    # if solution := solve(INIT):
-    #     print(f'Found solution of length {len(solution)}')
-    #     print(solution)
-    # else:
-    #     print('No solution')
+    if solution := solve(INIT):
+        print(f'Found solution of length {len(solution)}')
+        print(solution)
+    else:
+        print('No solution')
+    exit()
 
     grid = INIT
 
@@ -237,6 +250,9 @@ def main():
         print_grid(grid)
         break
 
+
+print_grid(INIT)
+exit(0)
 
 if __name__ == '__main__':
     main()
