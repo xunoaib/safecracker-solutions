@@ -273,13 +273,18 @@ def solve_new():
     grid = INIT
     for n in range(ROWS * COLS):
 
+        # Individually solve the first 11 tiles, then perform a full search on
+        # the rest.
+        if n > 10:
+            n = ROWS * COLS - 1
+
         def solved(grid, n=n):
             return solved_up_to(grid, n)
 
         def heuristic(grid, n=n):
             return heuristic_up_to(grid, n)
 
-        print('\n>>> Solving for tile', n, '\n')
+        print(f'\n>>> Solving tiles 0 through {n}', '\n')
         grid, moves = solve_custom(grid, solved, heuristic)
         print_grid(grid)
         print()
