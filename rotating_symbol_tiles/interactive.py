@@ -118,7 +118,7 @@ def display_image_grid(image_grid_with_ids):
 
 
 if __name__ == "__main__":
-    im = cv2.imread('2025-05-30_22-15_safecracker_tiles_cropped.png')
+    im = cv2.imread('cropped.jpg')
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     subimages = parse_subimages(im)
 
