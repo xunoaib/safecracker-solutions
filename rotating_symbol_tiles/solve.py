@@ -21,7 +21,10 @@ GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
 for i in (3, 4, 9, 15, 20, 21):
     GOAL[divmod(i, COLS)] = -1
 
-X = list_to_dict(
+# Correct arrangement of INITIAL (scrambled) tiles, numbered
+# incrementally according to the INITIAL (scrambled) ordering.
+# TLDR: This is direct output from interactive.py
+NUM_BY_INIT_FIXED = list_to_dict(
     [
         [23, 4, 14, -1, -1],
         [8, 13, 24, 3, -1],
@@ -31,17 +34,30 @@ X = list_to_dict(
     ]
 )
 
+# We must convert from "scramble-relative" numbering to "goal-ordered"
+# numbering. TLDR: We want to number tiles based on their GOAL positions, not
+# their scrambled positions.
 INIT = {p: -1 for p in GOAL}
 for r in range(ROWS):
     for c in range(COLS):
         srch = r * COLS + c
-        ipos = next((p for p, v in X.items() if v == srch), None)
+        ipos = next(
+            (p for p, v in NUM_BY_INIT_FIXED.items() if v == srch), None
+        )
         opos = divmod(srch, COLS)
         if ipos:
             nr, nc = ipos
             oval = nr * COLS + nc
-            print(srch, ipos, opos, oval)
             INIT[r, c] = oval
+
+g = []
+for r in range(ROWS):
+    row = []
+    for c in range(ROWS):
+        row.append(INIT[r, c])
+    g.append(row)
+
+__import__('pprint').pprint(g)
 
 
 def dist(src, tar):
@@ -251,7 +267,6 @@ def main():
         break
 
 
-print_grid(INIT)
 exit(0)
 
 if __name__ == '__main__':
