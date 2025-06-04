@@ -65,17 +65,13 @@ def interactive(candidates):
 
         print()
         guess_str = input('\033[93mGuess? [xxxx] > \033[0m')
-        guess = tuple(map(int, guess_str))
         response_str = input(
             '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
         ).lower()
-        response = tuple(
-            {
-                'w': WRONG,
-                'c': CORRECT,
-                'p': PARTIAL
-            }[v] for v in response_str
-        )
+
+        guess = tuple(map(int, guess_str))
+        response = tuple(map('wpc'.index, response_str))
+
         guesser.add(guess, response)
         print()
 
