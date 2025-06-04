@@ -3,16 +3,16 @@ from dataclasses import dataclass
 from typing import Literal
 
 START = '''
-.1.222
-31.45.
-3kk456
-788856
-7.9..0
-..9aa0
+.C.iii
+AC.EF.
+AjjEFG
+BkkkFG
+B.D..H
+..DllH
 '''.strip()
 
 ROWS, COLS = 6, 6
-KEY_TILE_ID = 'k'
+KEY_TILE_ID = 'j'
 
 
 @dataclass(frozen=True)
