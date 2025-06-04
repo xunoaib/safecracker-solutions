@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
@@ -166,6 +167,9 @@ def main():
     grid = string_to_grid(START)
     tiles = parse_tiles(grid)
 
+    stepwise = '-s' in sys.argv
+    visualize = stepwise or '-v' in sys.argv
+
     if moves := solve(tiles):
         for i, m in enumerate(moves):
             if not i % 4:
@@ -173,8 +177,13 @@ def main():
             print(f'{i}. {m}')
             tiles = move(tiles, m)
             tid, dir, _, amt = m.split()
-            print()
-            display(tiles, highlight=tid)
+
+            if visualize:
+                print()
+                display(tiles, highlight=tid)
+
+            if stepwise:
+                input()
     else:
         print('No solution')
 
