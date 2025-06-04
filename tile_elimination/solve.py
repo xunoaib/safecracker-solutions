@@ -1,6 +1,7 @@
 # Rules: must eliminate all tiles by jumping between them (no farther than 2
 # tiles away), in any direction (orthogonal and diagonal)
 
+from heapq import heappop, heappush
 from itertools import pairwise
 
 input_grid = '''
@@ -29,13 +30,14 @@ def neighbors(tiles, r, c):
 
 
 def solve(tiles, start):
-    q = [(start, tiles, (start, ))]
+    q = [(0, start, tiles, (start, ))]
     while q:
-        p, tiles, path = q.pop()
+        g, p, tiles, path = heappop(q)
         if not tiles:
             return path
         for n in neighbors(tiles, *p):
-            q.append((n, tiles - {n}, path + (n, )))
+            d = abs(p[0] - n[0]) + abs(p[1] - n[1])
+            heappush(q, (g + d, n, tiles - {n}, path + (n, )))
 
 
 def format_solution(solution):
