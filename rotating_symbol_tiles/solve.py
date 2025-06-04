@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+from functools import cache
 from heapq import heappop, heappush
-from itertools import pairwise
+from itertools import count, pairwise
+from typing import Callable
 
 from tabulate import tabulate
 
@@ -40,6 +42,17 @@ def dist_to_solve(grid):
     return cost
 
 
+def dist_to_solve_numbers(grid, numbers):
+    cost = 0
+    num_to_pos = {v: k for k, v in grid.items()}
+
+    for num in numbers:
+        goal_pos = find_num_pos(GOAL, num)
+        if goal_pos is not None:
+            cost += dist(pos, goal_pos)
+    return cost
+
+
 def serialize(grid: dict):
     return tuple(sorted(grid.items()))
 
@@ -61,6 +74,43 @@ def rotate(grid: dict, move: int):
         ngrid[b] = grid[a]
 
     return ngrid
+
+
+def solve_custom(grid, solved: Callable, heuristic: Callable):
+    visited = {serialize(grid)}
+
+    counter = count()
+    q = [(heuristic(grid), 0, next(counter), grid, tuple())]
+
+    max_len = 0
+
+    while q:
+        h, g, i, grid, path = heappop(q)
+
+        if len(path) > max_len:
+            max_len = len(path)
+            print(f'Expanding search to {max_len} moves')
+
+        # if len(path) > 150:
+        #     continue
+
+        if solved(grid):
+            return grid, path
+
+        for move in MOVES:
+            new_grid = rotate(grid, move)
+            new_serial = serialize(new_grid)
+            if new_serial not in visited:
+                visited.add(new_serial)
+                heappush(
+                    q, (
+                        heuristic(new_grid) + g + 1,
+                        g + 1,
+                        next(counter),
+                        new_grid,
+                        path + (move, ),
+                    )
+                )
 
 
 def solve(grid):
@@ -131,11 +181,47 @@ def main():
     #     input()
     # return
 
-    if solution := solve(INIT):
-        print(f'Found solution of length {len(solution)}')
-        print(solution)
-    else:
-        print('No solution')
+    # if solution := solve(INIT):
+    #     print(f'Found solution of length {len(solution)}')
+    #     print(solution)
+    # else:
+    #     print('No solution')
+
+    grid = INIT
+
+    def solved_up_to(grid, n):
+        '''Returns whether tiles from 0 through n are solved'''
+        for j in range(n + 1):
+            src = find_num_pos(grid, j)
+            tar = find_num_pos(GOAL, j)
+            if None not in (src, tar) and src != tar:
+                return False
+        return True
+
+    def heuristic_up_to(grid, n):
+        '''Heuristic cost function only considering tiles from 0 through n'''
+        cost = 0
+        for j in range(n + 1):
+            src = find_num_pos(grid, j)
+            tar = find_num_pos(GOAL, j)
+            if None not in (src, tar):
+                cost += sum(abs(a - b) for a, b in zip(src, tar))
+        return cost
+
+    for idx in range(ROWS * COLS):
+        n = GOAL[divmod(idx, COLS)]
+
+        def solved(grid, n=n):
+            return solved_up_to(grid, n)
+
+        def heuristic(grid, n=n):
+            return heuristic_up_to(grid, n)
+
+        print('Solving for tile', n)
+        grid, path = solve_custom(grid, solved, heuristic)
+        print(path)
+        print_grid(grid)
+        break
 
 
 INIT = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
