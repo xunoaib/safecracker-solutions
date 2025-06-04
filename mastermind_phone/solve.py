@@ -27,6 +27,15 @@ class Guesser:
         return find_candidates(self.responses)
 
 
+class InformedGuesser(Guesser):
+    '''A Guesser with prior knowledge that the last digit is always 9'''
+
+    def candidates(self):
+        for candidate in super().candidates():
+            if candidate[-1] == 9:
+                yield candidate
+
+
 def find_candidates(responses):
     for candidate in ALL_POSSIBLE_CODES:
         if all(
@@ -50,11 +59,10 @@ def feedback(guess, solution):
     return result
 
 
-def interactive():
+def interactive(guesser: Guesser):
     '''Allows the user to manually enter their own guesses and feedback to
     narrow down possible codes'''
 
-    guesser = Guesser()
     while True:
         candidates = list(guesser.candidates())
 
@@ -82,11 +90,10 @@ def interactive():
         print()
 
 
-def automatic():
+def automatic(guesser: Guesser):
     '''Allows the user to manually enter their own guesses and feedback to
     narrow down possible codes'''
 
-    guesser = Guesser()
     while True:
         candidates = list(guesser.candidates())
 
@@ -103,8 +110,9 @@ def automatic():
 
         print()
 
-        if len(candidates) == len(ALL_POSSIBLE_CODES):
-            guess = (1, 2, 3, 4)  # hardcode the first guess for time
+        if not guesser.responses:
+            # hardcode what the guesser would return as a best first guess
+            guess = (1, 2, 3, 4)
         else:
             guess = best_guess(candidates)
             assert guess is not None
@@ -148,14 +156,12 @@ def best_guess(candidates):
 def main():
 
     # g = Guesser()
-    # g.add((1, 2, 3, 4), (WRONG, WRONG, PARTIAL, CORRECT))
-    # print(list(g.candidates()))
-    # exit(0)
+    g = InformedGuesser()
 
     if '-i' in sys.argv:
-        interactive()
+        interactive(g)
     else:
-        automatic()
+        automatic(g)
 
 
 if __name__ == '__main__':
