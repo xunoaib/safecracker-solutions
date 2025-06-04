@@ -38,7 +38,7 @@ class Tile:
             for i in range(self.length)
         }
 
-    def neighbors(self):
+    def neighbors(self, other_tiles):
         '''Returns moved versions of this tile (in both possible directions).
         Only returns moves which keep the tile within the grid boundaries.
         '''
@@ -54,11 +54,28 @@ class Tile:
             ),
         ]
 
+        other_spots = {s for t in other_tiles for s in t.spots}
+
+        # try moving in both directions
         for (roff, coff), move in offsets:
-            newpos = (self.pos[0] + roff, self.pos[1] + coff)
-            newtile = Tile(self.id, newpos, self.orientation, self.length)
-            if all(0 <= r < ROWS and 0 <= c < COLS for r, c in newtile.spots):
+            # try moving each piece every possible distance
+            pos = self.pos
+            while True:
+                newpos = (pos[0] + roff, pos[1] + coff)
+                newtile = Tile(self.id, newpos, self.orientation, self.length)
+
+                # check for out of bounds
+                if not all(
+                    0 <= r < ROWS and 0 <= c < COLS for r, c in newtile.spots
+                ):
+                    break
+
+                # check for overlap with other tiles
+                if newtile.spots & other_spots:
+                    break
+
                 yield newtile, self.id + ' ' + move
+                pos = newpos
 
 
 def display(all_tiles: list[Tile] | frozenset[Tile]):
@@ -100,11 +117,8 @@ def neighbors(all_tiles: list[Tile] | frozenset[Tile]):
 
     for tile in all_tiles:
         other_tiles = [t for t in all_tiles if t != tile]
-        for n, move in tile.neighbors():
-            # check for overlap
-            other_spots = {s for t in other_tiles for s in t.spots}
-            if not n.spots & other_spots:
-                yield frozenset(other_tiles + [n]), move
+        for n, move in tile.neighbors(other_tiles):
+            yield frozenset(other_tiles + [n]), move
 
 
 def solved(tiles):
