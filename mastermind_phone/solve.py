@@ -22,12 +22,16 @@ class Guesser:
         self.responses.append((guess, response))
 
     def candidates(self):
-        for candidate in product(range(1, 10), repeat=4):
-            if all(
-                feedback(guess, candidate) == response
-                for guess, response in self.responses
-            ):
-                yield candidate
+        return find_candidates(self.responses)
+
+
+def find_candidates(responses):
+    for candidate in product(range(1, 10), repeat=4):
+        if all(
+            feedback(guess, candidate) == response
+            for guess, response in responses
+        ):
+            yield candidate
 
 
 def feedback(guess, solution):
