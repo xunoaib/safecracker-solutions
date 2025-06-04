@@ -180,15 +180,37 @@ def solve(grid):
                 i += 1
 
 
-def print_grid(grid: dict):
-    # for r in range(ROWS):
-    #     print(','.join(str(grid[r, c]) for c in range(COLS)))
+def make_color_map(grid: dict):
+    '''Generates a color map (value -> ANSI color code)'''
+    vals = sorted(v for v in grid.values() if v != -1)
+    min_val, max_val = min(vals), max(vals)
+    range_val = max_val - min_val if max_val != min_val else 1
 
+    color_map = {}
+    for val in vals:
+        norm = (val - min_val) / range_val  # normalize between 0 and 1
+        r = int(255 * norm)
+        g = int(255 * (1 - norm))
+        b = 128
+        color_map[val] = f"\033[38;2;{r};{g};{b}m{val:>2}\033[0m"
+    return color_map
+
+
+def print_grid(grid: dict):
+    color_map = make_color_map(grid)
     rows = [
-        [grid[r, c] if grid[r, c] != -1 else '•' for c in range(COLS)]
-        for r in range(ROWS)
+        [
+            color_map[grid[r, c]] if grid[r, c] != -1 else '•'
+            for c in range(COLS)
+        ] for r in range(ROWS)
     ]
-    print(tabulate(rows, tablefmt='plain'))
+    for row in rows:
+        print(*(f' {v:>2}' for v in row))
+
+
+# Example usage:
+grid = {(r, c): r * COLS + c for r in range(ROWS) for c in range(COLS)}
+print_grid(grid)
 
 
 def simulate_solution():
@@ -246,9 +268,10 @@ def solve_new():
                 cost += sum(abs(a - b) for a, b in zip(src, tar))
         return cost
 
+    all_moves = []
+
     grid = INIT
     for n in range(ROWS * COLS):
-        print_grid(grid)
 
         def solved(grid, n=n):
             return solved_up_to(grid, n)
@@ -256,13 +279,23 @@ def solve_new():
         def heuristic(grid, n=n):
             return heuristic_up_to(grid, n)
 
-        print('\nSolving for tile', n, '\n')
-        grid, path = solve_custom(grid, solved, heuristic)
-        print('Steps:', path)
-        print()
+        print('\n>>> Solving for tile', n, '\n')
+        grid, moves = solve_custom(grid, solved, heuristic)
         print_grid(grid)
+        print()
+        print('Steps:', moves)
 
-        input()
+        all_moves.append(moves)
+
+        # input()
+
+    print()
+    for i, m in enumerate(all_moves):
+        print(f'Tile {i:>2} -', *m)
+
+    print(f'\nTotal solution ({sum(map(len, all_moves))} total moves)\n')
+
+    print(tuple(m for moves in all_moves for m in moves))
 
 
 def main():
