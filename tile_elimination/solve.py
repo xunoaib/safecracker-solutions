@@ -40,7 +40,7 @@ def solve(tiles, start):
             heappush(q, (g + d, n, tiles - {n}, path + (n, )))
 
 
-def format_solution(solution):
+def format_actions(solution):
     actions = []
     for p, n in pairwise(solution):
         roff, coff = (n[0] - p[0], n[1] - p[1])
@@ -59,7 +59,7 @@ def format_solution(solution):
 
         actions.append(s)
 
-    return ' '.join(actions)
+    return actions
 
 
 def main():
@@ -75,7 +75,12 @@ def main():
     )
 
     solution = solve(tiles, start)
-    print(format_solution(solution))
+    actions = format_actions(solution)
+    for i, action in enumerate(actions):
+        print(action.replace('1', ' '), end='  ')
+        if not (i + 1) % 4:
+            print()
+    print()
 
 
 if __name__ == '__main__':
