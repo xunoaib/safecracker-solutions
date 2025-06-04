@@ -228,9 +228,8 @@ def solve_new():
     def solved_up_to(grid, n):
         '''Returns whether tiles from 0 through n are solved'''
         for j in range(n + 1):
-            src = find_num_pos(grid, j)
-            tar = find_num_pos(GOAL, j)
-            if None not in (src, tar) and src != tar:
+            tar = divmod(j, COLS)
+            if grid[tar] != GOAL[tar]:
                 return False
         return True
 
@@ -239,14 +238,13 @@ def solve_new():
         cost = 0
         for j in range(n + 1):
             src = find_num_pos(grid, j)
-            tar = find_num_pos(GOAL, j)
+            tar = divmod(j, COLS)
             if None not in (src, tar):
                 cost += sum(abs(a - b) for a, b in zip(src, tar))
         return cost
 
     grid = INIT
-    for idx in range(ROWS * COLS):
-        n = GOAL[divmod(idx, COLS)]
+    for n in range(ROWS * COLS):
         print_grid(grid)
 
         def solved(grid, n=n):
@@ -260,7 +258,8 @@ def solve_new():
         print('Steps:', path)
         print()
         print_grid(grid)
-        break
+
+        input()
 
 
 def main():
