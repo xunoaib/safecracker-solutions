@@ -7,17 +7,7 @@ from itertools import product
 
 from z3 import If, Int, Or, Solver, Sum, sat
 
-TEMPLATE = '''
-  00  
- 6  1 
- 6  1 
-  55  
- 4  2 
- 4  2 
-  33  
-'''.strip('\n')
-
-TOP, TOP_RIGHT, BOT_RIGHT, BOT, BOT_LEFT, MID, TOP_LEFT = range(7)
+NUM_DIGITS = 4
 
 
 def feedback(guess):
@@ -26,84 +16,6 @@ def feedback(guess):
     if isinstance(guess, int):
         guess = tuple(map(int, str(guess)))
     return sum(g == d for g, d in zip(guess, (8, 7, 9, 6)))
-
-
-def str_to_segment(s):
-    return {
-        't': TOP,
-        'tr': TOP_RIGHT,
-        'br': BOT_RIGHT,
-        'b': BOT,
-        'bl': BOT_LEFT,
-        'm': MID,
-        'tl': TOP_LEFT,
-    }[s]
-
-
-def decode_segments(segment_strs):
-    segments = []
-    for g in segment_strs:
-        segment = 0
-        for s in g.split():
-            segment |= 1 << int(str_to_segment(s))
-        segments.append(segment)
-    return segments
-
-
-def display_segment(segment):
-    out = TEMPLATE
-    for i, v in enumerate(f'{segment:07b}'[::-1]):
-        out = out.replace(str(i), 'X' if v == '1' else '.')
-    return out
-
-
-def display(segment_or_segments):
-    if isinstance(segment_or_segments, int):
-        return display_segment(segment_or_segments)
-
-    outs = [display_segment(s).split('\n') for s in segment_or_segments]
-    print(*(''.join(g) for g in zip(*outs)), sep='\n')
-    print()
-
-
-def merge(segments):
-    out = []
-    for g in zip(*segments):
-        r = 0
-        for v in g:
-            r |= v
-        out.append(r)
-    return out
-
-
-def subtract(orig_segments, segments_to_sub):
-    segments = []
-    for o, s in zip(orig_segments, segments_to_sub):
-        segments.append(o & (0b1111111 - s))
-    return segments
-
-
-def invert(segments):
-    return [0b1111111 - s for s in segments]
-
-
-KNOWN_DIGITS = {
-    k: decode_segments([v])[0]
-    for k, v in {
-        0: 't b tr tl br bl',
-        1: 'tr br',
-        2: 't m b tr bl',
-        3: 't m b tr br',
-        4: 'tl m tr br',
-        5: 't m b tl br',
-        6: 't m b tl bl br',
-        7: 't tr br',
-        8: 't m b tl tr bl br',
-        9: 't m tl tr br b'
-    }.items()
-}
-
-NUM_DIGITS = 4
 
 
 def add_guess_knowledge(solver: Solver, zdigits: list, guess, ncorrect):
@@ -150,6 +62,7 @@ def automatic_z3(candidates):
     narrow down possible codes'''
 
     solver, zdigits = init_solver(candidates)
+    print(zdigits)
     while True:
         slns = find_all_solutions(solver, zdigits)
 
@@ -227,15 +140,7 @@ def find_all_solutions(solver: Solver, zdigits):
 
 def main():
 
-    # Identify initial candidates based on revealed segments
-    partial = decode_segments(['tr m b', 't br', 'tl tr br', 'tl bl m'])
-    candidates = []
-    for v in partial:
-        row = []
-        for d, u in KNOWN_DIGITS.items():
-            if (v | u) ^ u == 0:  # finds all possible digits
-                row.append(d)
-        candidates.append(row)
+    candidates = [list(range(1, 10)) for _ in range(10)]
 
     if '-i' in sys.argv:
         print('Candidates:', candidates, end='\n\n')
