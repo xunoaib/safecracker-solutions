@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from heapq import heappop, heappush
 from itertools import count, pairwise
 from typing import Callable
@@ -49,15 +50,6 @@ for r in range(ROWS):
             nr, nc = ipos
             oval = nr * COLS + nc
             INIT[r, c] = oval
-
-g = []
-for r in range(ROWS):
-    row = []
-    for c in range(ROWS):
-        row.append(INIT[r, c])
-    g.append(row)
-
-__import__('pprint').pprint(g)
 
 
 def dist(src, tar):
@@ -198,38 +190,42 @@ def print_grid(grid: dict):
     print(tabulate(rows, tablefmt='plain'))
 
 
-def main():
+def simulate_solution():
+    print('Simulating solution')
+    solution = (
+        9, 1, 2, 4, 1, 0, 7, 2, 9, 14, 15, 4, 0, 1, 6, 6, 2, 6, 6, 11, 15, 11,
+        6, 6, 9, 13, 9, 13, 9, 5, 0, 0, 6, 13, 13, 14, 12, 12, 13, 13, 13, 15,
+        11, 11, 14, 13, 12, 15, 15, 15, 12, 13, 14, 14, 14, 15, 10, 2, 1, 6, 2,
+        2, 2, 3, 3, 3, 1, 2, 3, 7, 7, 7, 11, 15, 11, 11, 7, 15, 15, 4, 4, 4, 8,
+        4, 0, 12, 12, 13, 14, 14, 12, 13, 14, 14, 12, 12, 12, 13, 13, 13, 12,
+        3, 3, 3, 2, 3, 2, 3, 3, 3, 2, 2, 2, 3, 3, 0, 1, 3, 2, 0, 0, 0, 12, 12,
+        12, 13, 14, 15, 14, 13, 12, 15, 15, 15, 14, 15, 15, 14, 14, 14, 15, 14,
+        12, 13, 14, 14, 14, 12, 12, 13, 12, 12, 14, 14, 12, 13, 14, 14, 13, 13,
+        13, 14, 13, 12, 13, 12, 12, 12, 13, 13, 13, 12, 12, 12, 13, 12, 12
+    )
+    grid = INIT
+    print_grid(grid)
+    for m in solution:
+        grid = rotate(grid, m)
+        print()
+        print('move', m, divmod(m, COLS + 1))
+        print()
+        print_grid(grid)
+        # input()
 
-    # solution = (
-    #     9, 1, 2, 4, 1, 0, 7, 2, 9, 14, 15, 4, 0, 1, 6, 6, 2, 6, 6, 11, 15, 11,
-    #     6, 6, 9, 13, 9, 13, 9, 5, 0, 0, 6, 13, 13, 14, 12, 12, 13, 13, 13, 15,
-    #     11, 11, 14, 13, 12, 15, 15, 15, 12, 13, 14, 14, 14, 15, 10, 2, 1, 6, 2,
-    #     2, 2, 3, 3, 3, 1, 2, 3, 7, 7, 7, 11, 15, 11, 11, 7, 15, 15, 4, 4, 4, 8,
-    #     4, 0, 12, 12, 13, 14, 14, 12, 13, 14, 14, 12, 12, 12, 13, 13, 13, 12,
-    #     3, 3, 3, 2, 3, 2, 3, 3, 3, 2, 2, 2, 3, 3, 0, 1, 3, 2, 0, 0, 0, 12, 12,
-    #     12, 13, 14, 15, 14, 13, 12, 15, 15, 15, 14, 15, 15, 14, 14, 14, 15, 14,
-    #     12, 13, 14, 14, 14, 12, 12, 13, 12, 12, 14, 14, 12, 13, 14, 14, 13, 13,
-    #     13, 14, 13, 12, 13, 12, 12, 12, 13, 13, 13, 12, 12, 12, 13, 12, 12
-    # )
-    # grid = INIT
-    # print_grid(grid)
-    # for m in solution:
-    #     grid = rotate(grid, m)
-    #     print()
-    #     print('move', m, divmod(m, COLS + 1))
-    #     print()
-    #     print_grid(grid)
-    #     # input()
-    # return
 
+def solve_traditional():
+    print('Solving traditionally')
     if solution := solve(INIT):
         print(f'Found solution of length {len(solution)}')
         print(solution)
     else:
         print('No solution')
-    exit()
+    return
 
-    grid = INIT
+
+def solve_new():
+    print('Solving new')
 
     def solved_up_to(grid, n):
         '''Returns whether tiles from 0 through n are solved'''
@@ -250,9 +246,10 @@ def main():
                 cost += sum(abs(a - b) for a, b in zip(src, tar))
         return cost
 
+    grid = INIT
     for idx in range(ROWS * COLS):
         n = GOAL[divmod(idx, COLS)]
-        print_grid(GOAL)
+        print_grid(grid)
 
         def solved(grid, n=n):
             return solved_up_to(grid, n)
@@ -267,7 +264,15 @@ def main():
         break
 
 
-exit(0)
+def main():
+
+    if '-t' in sys.argv:
+        solve_traditional()
+    elif '-s' in sys.argv:
+        simulate_solution()
+    elif '-n' in sys.argv:
+        solve_new()
+
 
 if __name__ == '__main__':
     main()
