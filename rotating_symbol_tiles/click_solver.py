@@ -60,7 +60,7 @@ def on_press(key):
             print('Moving mouse to', (xoff, yoff))
             mouse.position = (xoff, yoff)
             click()
-            time.sleep(0.08)
+            time.sleep(0.05)
 
 
 def on_release(key):
