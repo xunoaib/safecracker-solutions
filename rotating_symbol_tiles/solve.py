@@ -292,15 +292,21 @@ def solve_new():
 
         all_moves.append(moves)
 
+        if solved(grid, ROWS * COLS - 1):
+            break
+
         # input()
 
     print()
     for i, m in enumerate(all_moves):
         print(f'Tile {i:>2} -', *m)
 
-    print(f'\nTotal solution ({sum(map(len, all_moves))} total moves)\n')
+    solution = tuple(m for moves in all_moves for m in moves)
+    print(f'\nTotal solution ({len(solution)} total)\n')
+    print(solution)
 
-    print(tuple(m for moves in all_moves for m in moves))
+    print()
+    print_grid(grid)
 
 
 def main():
