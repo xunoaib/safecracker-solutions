@@ -60,6 +60,7 @@ class Tile:
         for (roff, coff), move in offsets:
             # try moving each piece every possible distance
             pos = self.pos
+            dist = 1
             while True:
                 newpos = (pos[0] + roff, pos[1] + coff)
                 newtile = Tile(self.id, newpos, self.orientation, self.length)
@@ -74,8 +75,9 @@ class Tile:
                 if newtile.spots & other_spots:
                     break
 
-                yield newtile, self.id + ' ' + move
+                yield newtile, f'{self.id} {move} x {dist}'
                 pos = newpos
+                dist += 1
 
 
 def display(all_tiles: list[Tile] | frozenset[Tile]):
