@@ -1,18 +1,9 @@
 #!/usr/bin/env python3
-from functools import cache
 from heapq import heappop, heappush
 from itertools import count, pairwise
 from typing import Callable
 
 from tabulate import tabulate
-
-ROWS = COLS = 5
-
-MOVES = tuple(range(16))
-
-
-def dist(src, tar):
-    return abs(tar[0] - src[0]) + abs(tar[1] - src[1])
 
 
 def list_to_dict(grid):
@@ -21,6 +12,28 @@ def list_to_dict(grid):
         for r, line in enumerate(grid)
         for c, v in enumerate(line)
     }
+
+
+ROWS = COLS = 5
+MOVES = tuple(range(16))
+
+GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
+for i in (3, 4, 9, 15, 20, 21):
+    GOAL[divmod(i, COLS)] = -1
+
+INIT = list_to_dict(
+    [
+        [23, 4, 14, -1, -1],
+        [8, 13, 24, 3, -1],
+        [0, 21, 2, 18, 11],
+        [-1, 12, 22, 1, 7],
+        [-1, -1, 5, 15, 20],
+    ]
+)
+
+
+def dist(src, tar):
+    return abs(tar[0] - src[0]) + abs(tar[1] - src[1])
 
 
 def find_num_pos(grid, num):
@@ -210,6 +223,7 @@ def main():
 
     for idx in range(ROWS * COLS):
         n = GOAL[divmod(idx, COLS)]
+        print_grid(GOAL)
 
         def solved(grid, n=n):
             return solved_up_to(grid, n)
@@ -223,47 +237,6 @@ def main():
         print_grid(grid)
         break
 
-
-INIT = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
-GOAL = list_to_dict(
-    [
-        [23, 4, 14, -1, -1],
-        [8, 13, 24, 3, -1],
-        [0, 21, 2, 18, 11],
-        [-1, 12, 22, 1, 7],
-        [-1, -1, 5, 15, 20],
-    ]
-)
-
-# INIT = list_to_dict(
-#     [
-#         [23, 4, 14, -1, -1],
-#         [8, 13, 24, 3, -1],
-#         [0, 21, 2, 18, 11],
-#         [-1, 12, 22, 1, 7],
-#         [-1, -1, 5, 15, 20],
-#     ]
-# )
-# GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
-
-# NEW = {find_num_pos(INIT, v): v for p, v in GOAL.items()}
-
-NEW = {(r, c): -1 for r in range(ROWS) for c in range(COLS)}
-for p, v in GOAL.items():
-    if v != -1:
-        np = next((n for n, u in INIT.items() if u == v))
-        NEW[np] = v
-
-print(NEW)
-print(len(NEW))
-print_grid(NEW)
-exit(0)
-
-# [23, 4, 14, 10, 17]
-# [8, 13, 24, 3, 9]
-# [0, 21, 2, 18, 11]
-# [19, 12, 22, 1, 7]
-# [6, 16, 5, 15, 20]
 
 if __name__ == '__main__':
     main()
