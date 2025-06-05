@@ -64,6 +64,7 @@ class State:
                 self.mode = self.FLASH2
             elif self.mode == self.FLASH2 and self.history[-1] == '':
                 print('Resetting')
+                self.mode = 'Resetting'
 
 
 def boxes_iou(boxA, boxB):
@@ -223,9 +224,15 @@ def main():
         total_pixels = (diff_gray.shape[0] * diff_gray.shape[1])
         percent_black = np.sum(diff_gray < MATCH_THRESHOLD) / total_pixels
 
+        # draw status text
         color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
-        cv2.putText(frame, f'% match: {
-                    percent_black:.4f}', (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+        text1 = f'% match: {percent_black:.4f}'
+        text2 = f'code: {state.history[-1]}'
+        text3 = f'mode: {state.mode}'
+        for y, text in zip([30, 55, 80], [text1, text2, text3]):
+            cv2.putText(
+                frame, text, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2
+            )
 
         cv2.imshow('Live Screen Difference', frame)
 
