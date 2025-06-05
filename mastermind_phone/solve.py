@@ -19,7 +19,7 @@ ALL_POSSIBLE_CODES = list(product(range(1, 10), repeat=4))
 class Guesser:
     '''Accepts guesses and responses and generates possible candidates'''
 
-    def __init__(self, first_response=(1, 2, 3, 4)):
+    def __init__(self, first_response: tuple[int, ...] = (1, 2, 3, 4)):
         self.responses = []
         self.filters = []
         self.first_response = first_response
@@ -39,7 +39,7 @@ class Guesser:
                 candidates.append(candidate)
         return candidates
 
-    def best_guess(self):
+    def best_guess(self) -> tuple:
         if not self.responses and self.first_response:
             return self.first_response
         return _best_guess(self.candidates())
@@ -160,7 +160,9 @@ def _best_guess(candidates):
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
         best = min(best, (score, guess))
-    return best[1]
+    if guess := best[1]:
+        return best[1]
+    raise Exception('No best guess!')
 
 
 def create_guesser():
