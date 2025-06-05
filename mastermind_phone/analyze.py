@@ -34,11 +34,11 @@ class State:
         self.last_frame_num = frame_num
         self.history.append(state)
 
-        enter_seq = ['', '0', '00', '000', '0000']
+        enter_seq = ['xxxx', '0xxx', '00xx', '000x', '0000']
 
         for i in range(1, len(enter_seq)):
             if self.history[-1 - i:] == enter_seq[:i + 1]:
-                print('Entered', i)
+                print('Entered key', i)
                 self.mode = f'entering {i}'
                 break
         else:
@@ -170,7 +170,6 @@ def main():
 
         # decode the currently displayed lights
         result = decode_matches(matches, light_regions)
-        print(result)
 
         # update state machine
         frame_num = cap.get(cv2.CAP_PROP_POS_FRAMES)
