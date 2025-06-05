@@ -62,83 +62,84 @@ def classify_frame(matches):
     return result
 
 
-VIDEO_PATH = 'video.mkv'
-REF_FRAME_INDEX = 30
+def main():
+    VIDEO_PATH = 'video.mkv'
+    REF_FRAME_INDEX = 30
 
-cap = cv2.VideoCapture(VIDEO_PATH)
-assert cap.isOpened(), 'Failed to open video'
+    cap = cv2.VideoCapture(VIDEO_PATH)
+    assert cap.isOpened(), 'Failed to open video'
 
-cap.set(cv2.CAP_PROP_POS_FRAMES, REF_FRAME_INDEX)
-ret, ref_frame = cap.read()
-assert ret, 'Failed to read reference frame'
-ref_frame = ref_frame.copy()
+    cap.set(cv2.CAP_PROP_POS_FRAMES, REF_FRAME_INDEX)
+    ret, ref_frame = cap.read()
+    assert ret, 'Failed to read reference frame'
+    ref_frame = ref_frame.copy()
 
-cap.set(cv2.CAP_PROP_POS_FRAMES, 30)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 30)
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    frame = cv2.resize(frame, (ref_frame.shape[1], ref_frame.shape[0]))
+        frame = cv2.resize(frame, (ref_frame.shape[1], ref_frame.shape[0]))
 
-    diff = cv2.absdiff(frame, ref_frame)
-    diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+        diff = cv2.absdiff(frame, ref_frame)
+        diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
-    count = (diff_gray < 15).sum()
+        count = (diff_gray < 15).sum()
 
-    cropped = diff_gray[307:307 + 158, 1393:1393 + 544]
+        cropped = diff_gray[307:307 + 158, 1393:1393 + 544]
 
-    correct_matches = non_overlapping_template_match(
-        cropped, 'template_correct.png'
-    )
-    incorrect_matches = non_overlapping_template_match(
-        cropped, 'template_incorrect.png'
-    )
-
-    matches = [(m, 'correct') for m in correct_matches]
-    matches += [(m, 'incorrect') for m in incorrect_matches]
-    matches.sort()
-
-    result = classify_frame(matches)
-    print(result)
-
-    for (x, y, w, h) in correct_matches:
-        cv2.rectangle(
-            frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-            (0, 255, 0), 2
+        correct_matches = non_overlapping_template_match(
+            cropped, 'template_correct.png'
         )
-    for (x, y, w, h) in incorrect_matches:
-        cv2.rectangle(
-            frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-            (0, 0, 255), 2
+        incorrect_matches = non_overlapping_template_match(
+            cropped, 'template_incorrect.png'
         )
 
-    # if count < 3600000:
-    #     diff_gray[:] = 0
+        matches = [(m, 'correct') for m in correct_matches]
+        matches += [(m, 'incorrect') for m in incorrect_matches]
+        matches.sort()
 
-    cv2.imshow('Frame Difference (Grayscale)', frame)
-    # cv2.imshow('Frame Difference (Grayscale)', frame)
+        result = classify_frame(matches)
+        print(result)
 
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord('q'):
-        break
-    elif key == ord('p'):
-        frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES)) - 1
-        print(f'Current frame index: {frame_idx}')
-    elif key == ord('s'):
-        filename = f'diff_frame_{int(time.time())}.png'
-        cv2.imwrite(filename, diff_gray)
-        print(f'Saved: {filename}')
-    elif key == ord('r'):
-        # Pause to let me select a region on the current frame
-        roi = cv2.selectROI(
-            'Select Region', frame, fromCenter=False, showCrosshair=True
-        )
-        cv2.destroyWindow('Select Region')
+        for (x, y, w, h) in correct_matches:
+            cv2.rectangle(
+                frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+                (0, 255, 0), 2
+            )
+        for (x, y, w, h) in incorrect_matches:
+            cv2.rectangle(
+                frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+                (0, 0, 255), 2
+            )
 
-        x, y, w, h = roi
-        print(f"Selected region: x={x}, y={y}, w={w}, h={h}")
+        cv2.imshow('Frame Difference (Grayscale)', frame)
 
-cap.release()
-cv2.destroyAllWindows()
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            break
+        elif key == ord('p'):
+            frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES)) - 1
+            print(f'Current frame index: {frame_idx}')
+        elif key == ord('s'):
+            filename = f'diff_frame_{int(time.time())}.png'
+            cv2.imwrite(filename, diff_gray)
+            print(f'Saved: {filename}')
+        elif key == ord('r'):
+            # Pause to let me select a region on the current frame
+            roi = cv2.selectROI(
+                'Select Region', frame, fromCenter=False, showCrosshair=True
+            )
+            cv2.destroyWindow('Select Region')
+
+            x, y, w, h = roi
+            print(f"Selected region: x={x}, y={y}, w={w}, h={h}")
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
