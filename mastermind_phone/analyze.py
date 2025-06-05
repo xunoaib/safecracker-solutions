@@ -8,6 +8,7 @@ class State:
 
     def __init__(self):
         self.history = []
+        self.mode = ''
 
     def update(self, state: str):
 
@@ -19,17 +20,25 @@ class State:
 
         enter_seq = ['', '0', '00', '000', '0000']
 
-        for i in range(len(enter_seq)):
+        for i in range(1, len(enter_seq)):
             if self.history[-1 - i:] == enter_seq[:i + 1]:
-                print('Entered', i, state)
+                print('Entered', i)
+                self.mode = f'entering {i}'
                 break
         else:
-            print('idk', state)
+            if self.mode.startswith('entering 4'):
+                print('1st response:', state)
+                self.mode = 'resp 0'
+            elif self.mode == 'resp 0':
+                print('2nd response:', state)
+                self.mode = 'resp 1'
+            elif self.mode == 'resp 1' and self.history[-1] == '':
+                print('Resetting')
 
         return
 
         # identify when numbers are being entered
-        change = (self.last_state, self.state)
+        change = (self.last_state, self.mode)
         if change == ('', '0') and self.entering == 0:
             self.entering = 1
             print('Entering', self.entering, change)
@@ -44,7 +53,7 @@ class State:
             print('Entering', self.entering, change)
         elif self.last_state == '0000' and self.entering == 4:
             self.entering = 5  # start reading response
-            print('Response:', self.state)
+            print('Response:', self.mode)
         elif self.entering == 5:
             print(change)
         # else:
