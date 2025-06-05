@@ -1,7 +1,9 @@
+import time
+
 import cv2
 
 VIDEO_PATH = 'video.mkv'
-REF_FRAME_INDEX = 648
+REF_FRAME_INDEX = 30
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 assert cap.isOpened(), 'Failed to open video'
@@ -23,7 +25,13 @@ while True:
     diff = cv2.absdiff(frame, ref_frame)
     diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
+    count = (diff_gray < 15).sum()
+
+    # if count < 3600000:
+    #     diff_gray[:] = 0
+
     cv2.imshow('Frame Difference (Grayscale)', diff_gray)
+    # cv2.imshow('Frame Difference (Grayscale)', frame)
 
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
@@ -31,6 +39,10 @@ while True:
     elif key == ord('p'):
         frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES)) - 1
         print(f'Current frame index: {frame_idx}')
+    elif key == ord('s'):
+        filename = f'diff_frame_{int(time.time())}.png'
+        cv2.imwrite(filename, diff_gray)
+        print(f'Saved: {filename}')
 
 cap.release()
 cv2.destroyAllWindows()
