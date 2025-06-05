@@ -7,20 +7,26 @@ import numpy as np
 class State:
 
     def __init__(self):
-        self.state = None
-        self.last_update = time.time()
-        self.last_state = None
-
-        self.entering = 0
+        self.history = []
 
     def update(self, state: str):
 
-        self.last_state = self.state
-        self.state = state
-
         # ignore duplicate frames
-        if self.state == self.last_state:
+        if self.history and self.history[-1] == state:
             return
+
+        self.history.append(state)
+
+        enter_seq = ['', '0', '00', '000', '0000']
+
+        for i in range(len(enter_seq)):
+            if self.history[-1 - i:] == enter_seq[:i + 1]:
+                print('Entered', i, state)
+                break
+        else:
+            print('idk', state)
+
+        return
 
         # identify when numbers are being entered
         change = (self.last_state, self.state)
