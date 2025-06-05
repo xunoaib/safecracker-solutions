@@ -265,13 +265,14 @@ def solve_new():
 
     all_moves = []
 
-    grid = INIT
-    for n in range(ROWS * COLS):
+    # Incrementally solve a subset of tiles to improve runtime
+    ns = list(range(11)) + [ROWS * COLS - 1]
+    # ns = list(range(ROWS * COLS))
+    # ns = [3, 4, 5, 6, 7, 8, 9, 10, 11, 24]
+    # ns = [0, 1, 2, 4, 5, 6, 7, 9, 10, 11, ROWS * COLS - 1]
 
-        # Individually solve the first 11 tiles, then perform a full search on
-        # the rest.
-        if n > 10:
-            n = ROWS * COLS - 1
+    grid = INIT
+    for n in ns:
 
         def solved(grid, n=n):
             return solved_up_to(grid, n)
@@ -279,13 +280,12 @@ def solve_new():
         def heuristic(grid, n=n):
             return heuristic_up_to(grid, n)
 
-        print(f'\n>>> Solving tiles 0 through {n}', '\n')
+        print(f'\n>>> Solving tiles through {n}', '\n')
         grid, moves = solve_custom(grid, solved, heuristic)
         print_grid(grid)
-        print()
-        print('Steps:', moves)
-
         all_moves.append(moves)
+        print()
+        print('Steps:', moves, f'({sum(map(len, all_moves))} total)')
 
         if solved(grid, ROWS * COLS - 1):
             break
@@ -310,7 +310,7 @@ def main():
         solve_traditional()
     elif '-s' in sys.argv:
         simulate_solution()
-    elif '-n' in sys.argv:
+    else:
         solve_new()
 
 
