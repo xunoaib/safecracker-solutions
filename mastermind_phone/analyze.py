@@ -4,6 +4,47 @@ import cv2
 import numpy as np
 
 
+class State:
+
+    def __init__(self):
+        self.state = None
+        self.last_update = time.time()
+        self.last_state = None
+
+        self.entering = 0
+
+    def update(self, state: str):
+
+        self.last_state = self.state
+        self.state = state
+
+        # ignore duplicate frames
+        if self.state == self.last_state:
+            return
+
+        # identify when numbers are being entered
+        change = (self.last_state, self.state)
+        if change == ('', '0') and self.entering == 0:
+            self.entering = 1
+            print('Entering', self.entering, change)
+        elif change == ('0', '00') and self.entering == 1:
+            self.entering = 2
+            print('Entering', self.entering, change)
+        elif change == ('00', '000') and self.entering == 2:
+            self.entering = 3
+            print('Entering', self.entering, change)
+        elif change == ('000', '0000') and self.entering == 3:
+            self.entering = 4  # last key entered
+            print('Entering', self.entering, change)
+        elif self.last_state == '0000' and self.entering == 4:
+            self.entering = 5  # start reading response
+            print('Response:', self.state)
+        elif self.entering == 5:
+            print(change)
+        # else:
+        #     self.entering = 0
+
+
 def boxes_iou(boxA, boxB):
     """Compute Intersection over Union (IoU) of two boxes."""
     xA = max(boxA[0], boxB[0])
@@ -53,6 +94,19 @@ def non_overlapping_template_match(
     return matches
 
 
+def find_response_matches(image):
+    correct_matches = non_overlapping_template_match(
+        image, 'template_correct.png'
+    )
+    incorrect_matches = non_overlapping_template_match(
+        image, 'template_incorrect.png'
+    )
+
+    matches = [(m, 'correct') for m in correct_matches]
+    matches += [(m, 'incorrect') for m in incorrect_matches]
+    return sorted(matches)
+
+
 def classify_frame(matches):
     '''Classifies the current frame based on matched templates'''
 
@@ -74,7 +128,9 @@ def main():
     assert ret, 'Failed to read reference frame'
     ref_frame = ref_frame.copy()
 
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 30)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 100)
+
+    state = State()
 
     while True:
         ret, frame = cap.read()
@@ -86,36 +142,26 @@ def main():
         diff = cv2.absdiff(frame, ref_frame)
         diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
 
-        count = (diff_gray < 15).sum()
-
         cropped = diff_gray[307:307 + 158, 1393:1393 + 544]
 
-        correct_matches = non_overlapping_template_match(
-            cropped, 'template_correct.png'
-        )
-        incorrect_matches = non_overlapping_template_match(
-            cropped, 'template_incorrect.png'
-        )
-
-        matches = [(m, 'correct') for m in correct_matches]
-        matches += [(m, 'incorrect') for m in incorrect_matches]
-        matches.sort()
+        matches = find_response_matches(cropped)
 
         result = classify_frame(matches)
-        print(result)
+        state.update(result)
 
-        for (x, y, w, h) in correct_matches:
-            cv2.rectangle(
-                frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-                (0, 255, 0), 2
-            )
-        for (x, y, w, h) in incorrect_matches:
-            cv2.rectangle(
-                frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-                (0, 0, 255), 2
-            )
+        for (x, y, w, h), status in matches:
+            if status == 'correct':
+                cv2.rectangle(
+                    frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+                    (0, 255, 0), 2
+                )
+            else:
+                cv2.rectangle(
+                    frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+                    (0, 0, 255), 2
+                )
 
-        cv2.imshow('Frame Difference (Grayscale)', frame)
+        # cv2.imshow('Frame Difference (Grayscale)', frame)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
