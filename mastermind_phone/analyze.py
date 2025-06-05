@@ -16,12 +16,16 @@ class State:
         # ignore duplicate frames
         if self.history and self.history[-1] == state:
 
+            # force an update after a period of inactivity (fixes flash detection).
+            # during testing, 2nd flash generally occurs after 15-18 frames.
             if self.mode == 'resp 0':
-                print('Time since 1st resp:', frame_num - self.last_frame_num)
-
-            # force an update after a period of inactivity (fixes flash detection)
-            # if frame_num - last_frame_num > 30:
-            return
+                nframes = frame_num - self.last_frame_num
+                print('Time since 1st resp:', nframes)
+                # exit early if the delay is still low
+                if nframes < 30:
+                    return
+            else:
+                return
 
         self.last_frame_num = frame_num
         self.history.append(state)
