@@ -14,6 +14,12 @@ MONITOR_ID = 1
 # FRAME_TIMEOUT = 30  # recorded video file
 FRAME_TIMEOUT = 400  # live screen capture
 
+# % of pixels which must match reference
+PERCENT_MATCH = 0.90
+
+# brightness diff from 0-255 (0 = exact match, 255 = include all)
+MATCH_THRESHOLD = 40
+
 
 class State:
     '''A state machine to extract meaning from flashing lights'''
@@ -213,6 +219,13 @@ def main():
         for (x, y, w, h), status in matches:
             color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+
+        total_pixels = (diff_gray.shape[0] * diff_gray.shape[1])
+        percent_black = np.sum(diff_gray < MATCH_THRESHOLD) / total_pixels
+
+        color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
+        cv2.putText(frame, f'% match: {
+                    percent_black:.4f}', (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
 
         cv2.imshow('Live Screen Difference', frame)
 
