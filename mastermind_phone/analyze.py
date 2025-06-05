@@ -84,6 +84,15 @@ while True:
         filename = f'diff_frame_{int(time.time())}.png'
         cv2.imwrite(filename, diff_gray)
         print(f'Saved: {filename}')
+    elif key == ord('r'):
+        # Pause to let me select a region on the current frame
+        roi = cv2.selectROI(
+            'Select Region', frame, fromCenter=False, showCrosshair=True
+        )
+        cv2.destroyWindow('Select Region')
+
+        x, y, w, h = roi
+        print(f"Selected region: x={x}, y={y}, w={w}, h={h}")
 
 cap.release()
 cv2.destroyAllWindows()
