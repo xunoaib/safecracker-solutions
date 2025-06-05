@@ -150,7 +150,8 @@ def best_guess(candidates):
     return best[1]
 
 
-def main():
+def create_guesser():
+    '''Creates and a configures a most informed guesser'''
 
     g = Guesser()
 
@@ -159,6 +160,16 @@ def main():
 
     # assume that digits are distinct
     g.add_filter(lambda c: len(set(c)) == len(c))
+
+    return g
+
+
+def main():
+
+    hardcode_first = (1, 2, 3, 4)
+    # hardcode_first = None
+
+    g = create_guesser()
 
     if '-i' in sys.argv:
         interactive(g)
