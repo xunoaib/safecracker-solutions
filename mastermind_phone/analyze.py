@@ -184,7 +184,7 @@ def select_screen_region():
 def main():
 
     print(
-        'Press "f" when all lights are off to save a reference frame (sub.jpg)'
+        'Press "f" when all lights are off to save a reference frame (ss.jpg)'
     )
     print('Press "r" to select the region containing lights')
 
@@ -194,8 +194,8 @@ def main():
     state = State()
     light_regions = []
 
-    if os.path.exists('sub.jpg'):
-        subtractive_frame = cv2.imread('sub.jpg')
+    if os.path.exists('ss.jpg'):
+        subtractive_frame = cv2.imread('ss.jpg')
         print(subtractive_frame.shape)
     else:
         print('Subtractive frame not found')
@@ -252,7 +252,7 @@ def main():
                 screenshot = sct.grab(sct.monitors[MONITOR_ID])
                 img = np.array(screenshot)
                 img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-                cv2.imwrite('sub.jpg', img)
+                cv2.imwrite('ss.jpg', img)
 
     cv2.destroyAllWindows()
 
