@@ -30,6 +30,9 @@ class State:
                 print('1st response:', state)
                 self.mode = 'resp 0'
             elif self.mode == 'resp 0':
+                # if the first response is solid (no flashing),
+                # the 2nd response will not be interpreted correctly.
+                # consider using a time check?
                 print('2nd response:', state)
                 self.mode = 'resp 1'
             elif self.mode == 'resp 1' and self.history[-1] == '':
