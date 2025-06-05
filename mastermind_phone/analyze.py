@@ -33,6 +33,7 @@ class State:
         self.mode = ''
         self.last_frame_num = 0
         self.flash_states = []
+        self._last_response = None
 
     @property
     def response(self):
@@ -84,6 +85,12 @@ class State:
                 print('Resetting')
                 self.mode = self.RESETTING
                 self.flash_states = []
+
+        new_response = self.response
+        if new_response and new_response != self._last_response:
+            self._last_response = new_response
+            print('New response:', new_response)
+            return new_response
 
 
 def boxes_iou(boxA, boxB):
@@ -234,7 +241,9 @@ def main():
 
         # decode lights from regions (if available)
         result = decode_matches(matches, light_regions)
-        state.update(result, int(time.time() * 1000))
+        if response := state.update(result, int(time.time() * 1000)):
+            # TODO: do something with response
+            pass
 
         for (x, y, w, h), status in matches:
             color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
