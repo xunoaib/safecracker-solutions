@@ -64,7 +64,7 @@ class ManualDataSource(DataSource):
         ).lower()
 
         guess = tuple(map(int, guess_str))
-        response = tuple(map('wpc'.index, response_str))
+        response = string_to_response(response_str)
         return guess, response
 
 
@@ -79,8 +79,12 @@ class AutomaticDataSource(DataSource):
         response_str = input(
             '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
         ).lower()
-        response = tuple(map('wpc'.index, response_str))
+        response = string_to_response(response_str)
         return guess, response
+
+
+def string_to_response(response_str: str):
+    return tuple(map('wpc'.index, response_str))
 
 
 @cache
