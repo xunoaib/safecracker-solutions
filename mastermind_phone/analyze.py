@@ -9,13 +9,21 @@ class State:
     def __init__(self):
         self.history = []
         self.mode = ''
+        self.last_frame_num = 0
 
-    def update(self, state: str):
+    def update(self, state: str, frame_num):
 
         # ignore duplicate frames
         if self.history and self.history[-1] == state:
+
+            if self.mode == 'resp 0':
+                print('Time since 1st resp:', frame_num - self.last_frame_num)
+
+            # force an update after a period of inactivity (fixes flash detection)
+            # if frame_num - last_frame_num > 30:
             return
 
+        self.last_frame_num = frame_num
         self.history.append(state)
 
         enter_seq = ['', '0', '00', '000', '0000']
@@ -164,8 +172,9 @@ def main():
 
         matches = find_response_matches(cropped)
 
+        frame_num = cap.get(cv2.CAP_PROP_POS_FRAMES)
         result = classify_frame(matches)
-        state.update(result)
+        state.update(result, frame_num)
 
         for (x, y, w, h), status in matches:
             if status == 'correct':
