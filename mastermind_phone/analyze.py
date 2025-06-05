@@ -1,6 +1,34 @@
 import time
 
 import cv2
+import numpy as np
+
+
+def non_overlapping_template_match(image, template_path, threshold=0.8):
+    '''Return a non-overlapping list of match bounding boxes'''
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+    assert template is not None, f'Failed to load {template_path}'
+
+    h, w = template.shape[:2]
+    result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
+    matches = []
+
+    while True:
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        if max_val < threshold:
+            break
+        top_left = max_loc
+        matches.append((top_left[0], top_left[1], w, h))
+        # Mask out the matched region to prevent overlap
+        cv2.rectangle(
+            result,
+            top_left, (top_left[0] + w, top_left[1] + h),
+            -1,
+            thickness=cv2.FILLED
+        )
+
+    return matches
+
 
 VIDEO_PATH = 'video.mkv'
 REF_FRAME_INDEX = 30
@@ -27,10 +55,23 @@ while True:
 
     count = (diff_gray < 15).sum()
 
+    correct_matches = non_overlapping_template_match(
+        diff_gray, 'template_correct.png'
+    )
+    incorrect_matches = non_overlapping_template_match(
+        diff_gray, 'template_incorrect.png'
+    )
+
+    # Optional: draw rectangles
+    for (x, y, w, h) in correct_matches:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    for (x, y, w, h) in incorrect_matches:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
     # if count < 3600000:
     #     diff_gray[:] = 0
 
-    cv2.imshow('Frame Difference (Grayscale)', diff_gray)
+    cv2.imshow('Frame Difference (Grayscale)', frame)
     # cv2.imshow('Frame Difference (Grayscale)', frame)
 
     key = cv2.waitKey(1) & 0xFF
