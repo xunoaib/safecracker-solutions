@@ -208,11 +208,6 @@ def print_grid(grid: dict):
         print(*(f' {v:>2}' for v in row))
 
 
-# Example usage:
-grid = {(r, c): r * COLS + c for r in range(ROWS) for c in range(COLS)}
-print_grid(grid)
-
-
 def simulate_solution():
     print('Simulating solution')
     solution = (
