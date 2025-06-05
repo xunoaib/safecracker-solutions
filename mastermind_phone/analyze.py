@@ -40,11 +40,8 @@ class State:
             # flash, which may not come. during testing, 2nd flash generally
             # occurs after 15-18 frames (from captured video) or 308 frames
             # during live capture (on my machine).
-            if self.mode == self.FLASH1:
-                nframes = frame_num - self.last_frame_num
-                if nframes < timeout:
-                    return
-            else:
+            nframes = frame_num - self.last_frame_num
+            if self.mode != self.FLASH1 or nframes < timeout:
                 return
 
         self.last_frame_num = frame_num
