@@ -88,7 +88,7 @@ def interactive(guesser: Guesser):
         print()
 
 
-def automatic(guesser: Guesser):
+def automatic(guesser: Guesser, hardcode_first=None):
     '''Allows the user to manually enter their own guesses and feedback to
     narrow down possible codes'''
 
@@ -108,12 +108,11 @@ def automatic(guesser: Guesser):
 
         print()
 
-        if not guesser.responses:
-            # hardcode what the guesser would return as a best first guess
-            guess = (1, 2, 3, 4)
+        if not guesser.responses and hardcode_first:
+            guess = hardcode_first
         else:
             guess = best_guess(candidates)
-            assert guess is not None
+        assert guess is not None
 
         print('Guess ', *guess, sep='')
 
@@ -164,7 +163,7 @@ def main():
     if '-i' in sys.argv:
         interactive(g)
     else:
-        automatic(g)
+        automatic(g, hardcode_first)
 
 
 if __name__ == '__main__':
