@@ -1,7 +1,11 @@
 import time
+from itertools import pairwise
 
 import cv2
 import numpy as np
+
+INCORRECT = '0'
+CORRECT = '1'
 
 
 class State:
@@ -108,18 +112,25 @@ def find_response_matches(image):
         image, 'template_incorrect.png'
     )
 
-    matches = [(m, 'correct') for m in correct_matches]
-    matches += [(m, 'incorrect') for m in incorrect_matches]
+    matches = [(m, CORRECT) for m in correct_matches]
+    matches += [(m, INCORRECT) for m in incorrect_matches]
     return sorted(matches)
 
 
-def classify_frame(matches):
-    '''Classifies the current frame based on matched templates'''
+def decode_matches(matches, light_regions: list):
+    '''Classifies the currently displayed lights based on matched templates'''
 
-    result = ''
-    for region, status in matches:
-        result += '1' if status == 'correct' else '0'
-    return result
+    if light_regions:
+        result = list('xxxx')
+        for (x, y, w, h), status in matches:
+            idx = next(
+                i for i, (rx, ry, rw, rh) in enumerate(light_regions)
+                if rx <= x + w / 2 < rx + rw
+            )
+            result[idx] = status
+        return ''.join(result)
+
+    return ''.join(status for _, status in matches).ljust(4, 'x')
 
 
 def main():
@@ -137,6 +148,7 @@ def main():
     cap.set(cv2.CAP_PROP_POS_FRAMES, 100)
 
     state = State()
+    light_regions = []
 
     while True:
         ret, frame = cap.read()
@@ -152,12 +164,20 @@ def main():
 
         matches = find_response_matches(cropped)
 
+        # remember the locations of lights (so we can detect when they're off)
+        if len(matches) == 4:
+            light_regions = [region for region, status in matches]
+
+        # decode the currently displayed lights
+        result = decode_matches(matches, light_regions)
+        print(result)
+
+        # update state machine
         frame_num = cap.get(cv2.CAP_PROP_POS_FRAMES)
-        result = classify_frame(matches)
         state.update(result, frame_num)
 
         for (x, y, w, h), status in matches:
-            if status == 'correct':
+            if status == CORRECT:
                 cv2.rectangle(
                     frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
                     (0, 255, 0), 2
