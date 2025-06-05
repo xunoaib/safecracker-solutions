@@ -56,7 +56,10 @@ def non_overlapping_template_match(
 def classify_frame(matches):
     '''Classifies the current frame based on matched templates'''
 
-    print(len(matches))
+    result = ''
+    for region, status in matches:
+        result += '1' if status == 'correct' else '0'
+    return result
 
 
 VIDEO_PATH = 'video.mkv'
@@ -70,7 +73,7 @@ ret, ref_frame = cap.read()
 assert ret, 'Failed to read reference frame'
 ref_frame = ref_frame.copy()
 
-cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+cap.set(cv2.CAP_PROP_POS_FRAMES, 30)
 
 while True:
     ret, frame = cap.read()
@@ -97,7 +100,8 @@ while True:
     matches += [(m, 'incorrect') for m in incorrect_matches]
     matches.sort()
 
-    classify_frame(matches)
+    result = classify_frame(matches)
+    print(result)
 
     for (x, y, w, h) in correct_matches:
         cv2.rectangle(
