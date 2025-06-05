@@ -1,5 +1,14 @@
 from z3 import Distinct, Int, Solver, sat
 
+
+def format_clicks(grid):
+    grid = grid.copy()
+    for r, c in [(0, 3), (1, 2), (2, 1), (3, 0)]:
+        grid[r][c] = '.'
+    for row in grid:
+        print(*(f'{".sely".index(v):>2}' for v in row))
+
+
 # ys[0] is at row 0, ys[1] is at row 1, etc
 # ys[i] specifies the column of the y in row i
 ys = [Int(f'y{i}') for i in range(4)]
@@ -34,3 +43,6 @@ if solver.check() == sat:
 
     for row in grid:
         print(''.join(row).upper())
+
+print()
+format_clicks(grid)
