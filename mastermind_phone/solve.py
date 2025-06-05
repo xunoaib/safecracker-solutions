@@ -7,6 +7,7 @@
 
 import sys
 from collections import defaultdict
+from functools import cache
 from itertools import product
 from typing import Callable
 
@@ -18,9 +19,10 @@ ALL_POSSIBLE_CODES = list(product(range(1, 10), repeat=4))
 class Guesser:
     '''Accepts guesses and responses and generates possible candidates'''
 
-    def __init__(self):
+    def __init__(self, first_response=(1, 2, 3, 4)):
         self.responses = []
         self.filters = []
+        self.first_response = first_response
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
         self.responses.append((guess, response))
@@ -29,18 +31,68 @@ class Guesser:
         self.filters.append(func)
 
     def candidates(self):
-        for candidate in find_candidates(self.responses):
+        candidates = []
+        for candidate in find_candidates(tuple(self.responses)):
             if all(validator(candidate) for validator in self.filters):
-                yield candidate
+                candidates.append(candidate)
+        return candidates
+
+    def best_guess(self):
+        if not self.responses and self.first_response:
+            return self.first_response
+        return _best_guess(self.candidates())
+
+    def clear_responses(self):
+        self.responses.clear()
 
 
-def find_candidates(responses):
+class DataSource:
+
+    def get(self, guesser: Guesser) -> tuple[tuple, tuple]:
+        raise NotImplementedError(
+            "Base class doesn't provide an implementation for get()"
+        )
+
+
+class ManualDataSource(DataSource):
+    '''Allows user to enter guesses/responses'''
+
+    def get(self, guesser: Guesser):
+        guess_str = input('\033[93mGuess? [xxxx] > \033[0m')
+        response_str = input(
+            '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
+        ).lower()
+
+        guess = tuple(map(int, guess_str))
+        response = tuple(map('wpc'.index, response_str))
+        return guess, response
+
+
+class AutomaticDataSource(DataSource):
+    '''Provides a guess and accepts feedback from the user'''
+
+    def get(self, guesser: Guesser):
+        guess = guesser.best_guess()
+        assert guess is not None
+
+        print('Guess: ', *guess, sep='')
+        response_str = input(
+            '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
+        ).lower()
+        response = tuple(map('wpc'.index, response_str))
+        return guess, response
+
+
+@cache
+def find_candidates(responses: tuple):
+    candidates = []
     for candidate in ALL_POSSIBLE_CODES:
         if all(
             feedback(guess, candidate) == response
             for guess, response in responses
         ):
-            yield candidate
+            candidates.append(candidate)
+    return candidates.copy()
 
 
 def feedback(guess, solution):
@@ -57,9 +109,8 @@ def feedback(guess, solution):
     return result
 
 
-def interactive(guesser: Guesser):
-    '''Allows the user to manually enter their own guesses and feedback to
-    narrow down possible codes'''
+def solve_loop(guesser: Guesser, data_source: DataSource):
+    '''DataSource generates guesses/responses'''
 
     while True:
         candidates = list(guesser.candidates())
@@ -74,53 +125,9 @@ def interactive(guesser: Guesser):
         elif len(candidates) < 100:
             print('Current candidates:\n')
             print(*map(format, candidates))
-
-        print()
-        guess_str = input('\033[93mGuess? [xxxx] > \033[0m')
-        response_str = input(
-            '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
-        ).lower()
-
-        guess = tuple(map(int, guess_str))
-        response = tuple(map('wpc'.index, response_str))
-
-        guesser.add(guess, response)
         print()
 
-
-def automatic(guesser: Guesser, hardcode_first=None):
-    '''Allows the user to manually enter their own guesses and feedback to
-    narrow down possible codes'''
-
-    while True:
-        candidates = list(guesser.candidates())
-
-        print('Found', len(candidates), 'candidates')
-        if len(candidates) == 1:
-            print('Found solution: ', *candidates[0], sep='')
-            break
-        elif len(candidates) == 0:
-            print('No solution')
-            break
-        elif len(candidates) < 100:
-            print('Current candidates:\n')
-            print(*map(format, candidates))
-
-        print()
-
-        if not guesser.responses and hardcode_first:
-            guess = hardcode_first
-        else:
-            guess = best_guess(candidates)
-        assert guess is not None
-
-        print('Guess ', *guess, sep='')
-
-        response_str = input(
-            '\033[93mResponse? [wcp] (w)rong/(c)orrect/(p)artial > \033[0m'
-        ).lower()
-        response = tuple(map('wpc'.index, response_str))
-
+        guess, response = data_source.get(guesser)
         guesser.add(guess, response)
         print()
 
@@ -142,7 +149,7 @@ def score_guess(guess, candidates):
     return max(len(b) for b in buckets.values())
 
 
-def best_guess(candidates):
+def _best_guess(candidates):
     best = (float('inf'), None)
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
@@ -166,15 +173,17 @@ def create_guesser():
 
 def main():
 
-    hardcode_first = (1, 2, 3, 4)
     # hardcode_first = None
-
-    g = create_guesser()
+    hardcode_first = (1, 2, 3, 4)
 
     if '-i' in sys.argv:
-        interactive(g)
+        data_source = ManualDataSource()
     else:
-        automatic(g, hardcode_first)
+        data_source = AutomaticDataSource()
+
+    guesser = create_guesser()
+
+    solve_loop(guesser, data_source)
 
 
 if __name__ == '__main__':
