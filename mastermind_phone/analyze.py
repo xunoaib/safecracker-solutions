@@ -26,11 +26,27 @@ class State:
 
     FLASH1 = '1st flash'
     FLASH2 = '2nd flash'
+    RESETTING = 'Resetting'
 
     def __init__(self):
         self.history = []
         self.mode = ''
         self.last_frame_num = 0
+        self.flash_states = []
+
+    @property
+    def response(self):
+        if len(self.flash_states
+               ) == 2 and self.mode in (self.FLASH2, self.RESETTING):
+            response = ''
+            for a, b in zip(*self.flash_states):
+                if a == b == '1':
+                    response += 'c'  # correct
+                elif a == b == '0':
+                    response += 'w'  # wrong
+                elif {a, b} == {'1', 'x'}:
+                    response += 'p'  # partial
+            return response
 
     def update(self, state: str, frame_num, timeout=FRAME_TIMEOUT):
 
@@ -59,12 +75,15 @@ class State:
             if self.mode.startswith('Entered 4'):
                 print('1st response:', state)
                 self.mode = self.FLASH1
+                self.flash_states = [state]
             elif self.mode == self.FLASH1:
                 print('2nd response:', state)
                 self.mode = self.FLASH2
+                self.flash_states.append(state)
             elif self.mode == self.FLASH2 and self.history[-1] == '':
                 print('Resetting')
-                self.mode = 'Resetting'
+                self.mode = self.RESETTING
+                self.flash_states = []
 
 
 def boxes_iou(boxA, boxB):
@@ -225,11 +244,13 @@ def main():
         percent_black = np.sum(diff_gray < MATCH_THRESHOLD) / total_pixels
 
         # draw status text
-        color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
+        # color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
+        color = (0, 0, 255)
         text1 = f'% match: {percent_black:.4f}'
         text2 = f'code: {state.history[-1]}'
         text3 = f'mode: {state.mode}'
-        for y, text in zip([30, 55, 80], [text1, text2, text3]):
+        text4 = f'resp: {state.response or ""}'
+        for y, text in zip([30, 55, 80, 105], [text1, text2, text3, text4]):
             cv2.putText(
                 frame, text, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2
             )
