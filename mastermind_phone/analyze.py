@@ -55,18 +55,25 @@ while True:
 
     count = (diff_gray < 15).sum()
 
+    cropped = diff_gray[307:307 + 158, 1393:1393 + 544]
+
     correct_matches = non_overlapping_template_match(
-        diff_gray, 'template_correct.png'
+        cropped, 'template_correct.png'
     )
     incorrect_matches = non_overlapping_template_match(
-        diff_gray, 'template_incorrect.png'
+        cropped, 'template_incorrect.png'
     )
 
-    # Optional: draw rectangles
     for (x, y, w, h) in correct_matches:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(
+            frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+            (0, 255, 0), 2
+        )
     for (x, y, w, h) in incorrect_matches:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        cv2.rectangle(
+            frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
+            (0, 0, 255), 2
+        )
 
     # if count < 3600000:
     #     diff_gray[:] = 0
