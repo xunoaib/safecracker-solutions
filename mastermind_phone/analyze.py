@@ -13,21 +13,26 @@ def non_overlapping_template_match(image, template_path, threshold=0.8):
     result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
     matches = []
 
+    result_copy = result.copy()
+
     while True:
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result_copy)
         if max_val < threshold:
             break
-        top_left = max_loc
-        matches.append((top_left[0], top_left[1], w, h))
-        # Mask out the matched region to prevent overlap
-        cv2.rectangle(
-            result,
-            top_left, (top_left[0] + w, top_left[1] + h),
-            -1,
-            thickness=cv2.FILLED
-        )
+
+        x, y = max_loc
+        matches.append((x, y, w, h))
+
+        # Suppress this region by zeroing it out
+        result_copy[y:y + h, x:x + w] = 0
 
     return matches
+
+
+def classify_frame(matches):
+    '''Classifies the current frame based on matched templates'''
+
+    print(len(matches))
 
 
 VIDEO_PATH = 'video.mkv'
@@ -63,6 +68,12 @@ while True:
     incorrect_matches = non_overlapping_template_match(
         cropped, 'template_incorrect.png'
     )
+
+    matches = [(m, 'correct') for m in correct_matches]
+    matches += [(m, 'incorrect') for m in incorrect_matches]
+    matches.sort()
+
+    classify_frame(matches)
 
     for (x, y, w, h) in correct_matches:
         cv2.rectangle(
