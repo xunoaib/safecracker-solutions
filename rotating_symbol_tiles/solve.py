@@ -261,7 +261,7 @@ def solve_new():
             tar = divmod(j, COLS)
             if None not in (src, tar):
                 cost += sum(abs(a - b) for a, b in zip(src, tar))
-        return cost
+        return .7 * cost
 
     all_moves = []
 
