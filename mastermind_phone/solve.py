@@ -24,7 +24,9 @@ class Guesser:
         self.filters = []
         self.first_response = first_response
 
-    def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
+    def add(self, guess: tuple[int, ...], response: tuple[int, ...] | str):
+        if isinstance(response, str):
+            response = string_to_response(response)
         self.responses.append((guess, response))
 
     def add_filter(self, func: Callable):
