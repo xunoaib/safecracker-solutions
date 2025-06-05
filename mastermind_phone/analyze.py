@@ -3,8 +3,8 @@ import time
 
 import cv2
 import mss
-import mss.tools
 import numpy as np
+from solve import create_guesser
 
 INCORRECT = '0'
 CORRECT = '1'
@@ -36,20 +36,31 @@ class State:
         self._last_response = None
 
     @property
-    def response(self):
-        if len(self.flash_states
-               ) == 2 and self.mode in (self.FLASH2, self.RESETTING):
-            response = ''
-            for a, b in zip(*self.flash_states):
-                if a == b == '1':
-                    response += 'c'  # correct
-                elif a == b == '0':
-                    response += 'w'  # wrong
-                elif {a, b} == {'1', 'x'}:
-                    response += 'p'  # partial
-            return response
+    def response(self) -> str | None:
+        if len(self.flash_states) != 2 or self.mode not in (
+            self.FLASH2,
+            self.RESETTING,
+        ):
+            return None
 
-    def update(self, state: str, frame_num, timeout=FRAME_TIMEOUT):
+        response = ''
+        for a, b in zip(*self.flash_states):
+            if a == b == '1':
+                response += 'c'  # correct
+            elif a == b == '0':
+                response += 'w'  # wrong
+            elif {a, b} == {'1', 'x'}:
+                response += 'p'  # partial
+        return response
+
+    def update(
+        self,
+        state: str,
+        frame_num,
+        timeout=FRAME_TIMEOUT,
+    ) -> str | None:
+        '''Updates the state machine with new information. When a new response
+        is detected, it will be be returned once (but never again).'''
 
         # ignore duplicate frames (except when waiting on 2nd flash)
         if self.history and self.history[-1] == state:
@@ -59,7 +70,7 @@ class State:
             # during live capture (on my machine).
             nframes = frame_num - self.last_frame_num
             if self.mode != self.FLASH1 or nframes < timeout:
-                return
+                return None
 
         self.last_frame_num = frame_num
         self.history.append(state)
@@ -91,6 +102,8 @@ class State:
             self._last_response = new_response
             print('New response:', new_response)
             return new_response
+        else:
+            return None
 
 
 def boxes_iou(boxA, boxB):
@@ -222,10 +235,16 @@ def main():
 
     if os.path.exists('ss.jpg'):
         subtractive_frame = cv2.imread('ss.jpg')
-        print(subtractive_frame.shape)
     else:
         print('Subtractive frame not found')
         subtractive_frame = np.zeros([0, 0])
+
+    # create solver objects to generate guesses and deductions
+    guesser = create_guesser()
+
+    # suggest a first guess
+    guess = guesser.best_guess()
+    print('Guess:', guess)
 
     while True:
         frame = grab_screen_region(region)
@@ -241,9 +260,12 @@ def main():
 
         # decode lights from regions (if available)
         result = decode_matches(matches, light_regions)
+
+        # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
-            # TODO: do something with response
-            pass
+            guess = guesser.best_guess()
+            guesser.add(guess, response)
+            print('Guess:', guesser.best_guess())
 
         for (x, y, w, h), status in matches:
             color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
