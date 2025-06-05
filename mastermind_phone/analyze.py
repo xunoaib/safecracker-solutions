@@ -1,10 +1,18 @@
+import os
 import time
 
 import cv2
+import mss
+import mss.tools
 import numpy as np
 
 INCORRECT = '0'
 CORRECT = '1'
+
+MONITOR_ID = 1
+
+# FRAME_TIMEOUT = 30  # recorded video file
+FRAME_TIMEOUT = 400  # live screen capture
 
 
 class State:
@@ -15,23 +23,24 @@ class State:
         self.mode = ''
         self.last_frame_num = 0
 
-    def update(self, state: str, frame_num):
+    def update(self, state: str, frame_num, timeout=FRAME_TIMEOUT):
+
         # ignore duplicate frames (except when waiting on 2nd flash)
         if self.history and self.history[-1] == state:
-
-            # force an update after a period of inactivity (fixes flash detection).
-            # during testing, 2nd flash generally occurs after 15-18 frames.
+            # force an update after a period of inactivity waiting for the 2nd
+            # flash, which may not come. during testing, 2nd flash generally
+            # occurs after 15-18 frames (from captured video) or 308 frames
+            # during live capture (on my machine).
             if self.mode == 'resp 0':
                 nframes = frame_num - self.last_frame_num
-                # print('Time since 1st resp:', nframes)
-                # exit early if the delay is still low
-                if nframes < 30:
+                if nframes < timeout:
                     return
             else:
                 return
 
         self.last_frame_num = frame_num
         self.history.append(state)
+        self.history = self.history[-500:]
 
         enter_seq = ['xxxx', '0xxx', '00xx', '000x', '0000']
 
@@ -45,9 +54,6 @@ class State:
                 print('1st response:', state)
                 self.mode = 'resp 0'
             elif self.mode == 'resp 0':
-                # if the first response is solid (no flashing),
-                # the 2nd response will not be interpreted correctly.
-                # consider using a time check?
                 print('2nd response:', state)
                 self.mode = 'resp 1'
             elif self.mode == 'resp 1' and self.history[-1] == '':
@@ -132,83 +138,102 @@ def decode_matches(matches, light_regions: list):
     return ''.join(status for _, status in matches).ljust(4, 'x')
 
 
+def grab_screen_region(region):
+    '''
+    Capture a specific region (x, y, width, height) of the primary monitor.
+    region: (x, y, width, height) relative to the primary monitor.
+    '''
+    with mss.mss() as sct:
+        # index 1 is always the primary monitor
+        monitor = sct.monitors[MONITOR_ID]
+        region_abs = {
+            "top": monitor["top"] + region['top'],
+            "left": monitor["left"] + region['left'],
+            "width": region['width'],
+            "height": region['height']
+        }
+        screenshot = sct.grab(region_abs)
+        img = np.array(screenshot)
+        return cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+
+
+def select_screen_region():
+    '''Use mss to capture the full screen, then let user select a region'''
+    with mss.mss() as sct:
+        monitor = sct.monitors[MONITOR_ID]  # full primary screen
+        screenshot = sct.grab(monitor)
+        full_image = np.array(screenshot)
+        full_image_bgr = cv2.cvtColor(full_image, cv2.COLOR_BGRA2BGR)
+
+    roi = cv2.selectROI(
+        "Select Region", full_image_bgr, fromCenter=False, showCrosshair=True
+    )
+    cv2.destroyWindow("Select Region")
+
+    x, y, w, h = roi
+    return {'left': x, 'top': y, 'width': w, 'height': h}
+
+
 def main():
-    VIDEO_PATH = 'video.mkv'
-    REF_FRAME_INDEX = 30
 
-    cap = cv2.VideoCapture(VIDEO_PATH)
-    assert cap.isOpened(), 'Failed to open video'
+    print(
+        'Press "f" when all lights are off to save a reference frame (sub.jpg)'
+    )
+    print('Press "r" to select the region containing lights')
 
-    cap.set(cv2.CAP_PROP_POS_FRAMES, REF_FRAME_INDEX)
-    ret, ref_frame = cap.read()
-    assert ret, 'Failed to read reference frame'
-    ref_frame = ref_frame.copy()
-
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 100)
+    # relative coords (to primary monitor)
+    region = {'left': 1296, 'top': 216, 'width': 636, 'height': 252}
 
     state = State()
     light_regions = []
 
+    if os.path.exists('sub.jpg'):
+        subtractive_frame = cv2.imread('sub.jpg')
+        print(subtractive_frame.shape)
+    else:
+        print('Subtractive frame not found')
+        subtractive_frame = np.zeros([0, 0])
+
     while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        frame = cv2.resize(frame, (ref_frame.shape[1], ref_frame.shape[0]))
-
-        diff = cv2.absdiff(frame, ref_frame)
+        frame = grab_screen_region(region)
+        x, y, w, h = [region[v] for v in ['left', 'top', 'width', 'height']]
+        cropped_subtractive_frame = subtractive_frame[y:y + h, x:x + w]
+        diff = cv2.absdiff(frame, cropped_subtractive_frame)
         diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+        matches = find_response_matches(diff_gray)
 
-        cropped = diff_gray[307:307 + 158, 1393:1393 + 544]
-
-        matches = find_response_matches(cropped)
-
-        # remember the locations of lights (so we can detect when they're off)
+        # when 4 lights are visible, save their regions
         if len(matches) == 4:
-            light_regions = [region for region, status in matches]
+            light_regions = [region for region, _ in matches]
 
-        # decode the currently displayed lights
+        # decode lights from regions (if available)
         result = decode_matches(matches, light_regions)
-
-        # update state machine
-        frame_num = cap.get(cv2.CAP_PROP_POS_FRAMES)
-        state.update(result, frame_num)
+        state.update(result, int(time.time() * 1000))
 
         for (x, y, w, h), status in matches:
-            if status == CORRECT:
-                cv2.rectangle(
-                    frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-                    (0, 255, 0), 2
-                )
-            else:
-                cv2.rectangle(
-                    frame, (x + 1393, y + 307), (x + 1393 + w, y + 307 + h),
-                    (0, 0, 255), 2
-                )
+            color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
 
-        # cv2.imshow('Frame Difference (Grayscale)', frame)
+        cv2.imshow('Live Screen Difference', frame)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
-        elif key == ord('p'):
-            frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES)) - 1
-            print(f'Current frame index: {frame_idx}')
         elif key == ord('s'):
             filename = f'diff_frame_{int(time.time())}.png'
             cv2.imwrite(filename, diff_gray)
             print(f'Saved: {filename}')
         elif key == ord('r'):
-            # Pause to let me select a region on the current frame
-            roi = cv2.selectROI(
-                'Select Region', frame, fromCenter=False, showCrosshair=True
-            )
-            cv2.destroyWindow('Select Region')
+            region = select_screen_region()
+            print(f"Selected new region: {region}")
+        elif key == ord('f'):
+            print('Saving fullscreen subtractive frame')
+            with mss.mss() as sct:
+                screenshot = sct.grab(sct.monitors[MONITOR_ID])
+                img = np.array(screenshot)
+                img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                cv2.imwrite('sub.jpg', img)
 
-            x, y, w, h = roi
-            print(f"Selected region: x={x}, y={y}, w={w}, h={h}")
-
-    cap.release()
     cv2.destroyAllWindows()
 
 
