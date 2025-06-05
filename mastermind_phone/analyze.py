@@ -1,5 +1,4 @@
 import time
-from itertools import pairwise
 
 import cv2
 import numpy as np
