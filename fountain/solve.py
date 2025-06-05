@@ -35,13 +35,26 @@ def solve(state):
                 q.append((nstate, path + (dir, )))
 
 
-state = INIT_STATE
-solution = solve(state)
-solution_str = ''.join('L' if v == 1 else 'R' for v in solution)
+def solve_all(state):
+    solutions = []
+    q = [(state, tuple())]
+    visited = {state}
+    while q:
+        state, path = q.pop(0)
+        if solutions and len(path) > len(solutions[0][0]):
+            continue
+        if solved(state):
+            solutions.append((path, state))
+        for dir in (-1, 1):
+            nstate = move(state, dir)
+            if nstate not in visited:
+                visited.add(nstate)
+                q.append((nstate, path + (dir, )))
+    return solutions
 
-print('Solution:', solution_str)
 
-print(
-    'Total:', solution_str.count('R'), 'right,', solution_str.count('L'),
-    'left'
-)
+solutions = solve_all(INIT_STATE)
+print(f'Found {len(solutions)} solutions:')
+for solution, state in solutions:
+    solution_str = ''.join('L' if v == 1 else 'R' for v in solution)
+    print(state, solution_str)
