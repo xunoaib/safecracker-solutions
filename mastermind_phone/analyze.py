@@ -21,7 +21,9 @@ while True:
     frame = cv2.resize(frame, (ref_frame.shape[1], ref_frame.shape[0]))
 
     diff = cv2.absdiff(frame, ref_frame)
-    cv2.imshow('Frame Difference', diff)
+    diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+
+    cv2.imshow('Frame Difference (Grayscale)', diff_gray)
 
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
