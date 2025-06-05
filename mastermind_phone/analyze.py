@@ -24,6 +24,9 @@ MATCH_THRESHOLD = 40
 class State:
     '''A state machine to extract meaning from flashing lights'''
 
+    FLASH1 = '1st flash'
+    FLASH2 = '2nd flash'
+
     def __init__(self):
         self.history = []
         self.mode = ''
@@ -37,7 +40,7 @@ class State:
             # flash, which may not come. during testing, 2nd flash generally
             # occurs after 15-18 frames (from captured video) or 308 frames
             # during live capture (on my machine).
-            if self.mode == 'resp 0':
+            if self.mode == self.FLASH1:
                 nframes = frame_num - self.last_frame_num
                 if nframes < timeout:
                     return
@@ -53,16 +56,16 @@ class State:
         for i in range(1, len(enter_seq)):
             if self.history[-1 - i:] == enter_seq[:i + 1]:
                 print('Entered key', i)
-                self.mode = f'entering {i}'
+                self.mode = f'Entered {i}'
                 break
         else:
-            if self.mode.startswith('entering 4'):
+            if self.mode.startswith('Entered 4'):
                 print('1st response:', state)
-                self.mode = 'resp 0'
-            elif self.mode == 'resp 0':
+                self.mode = self.FLASH1
+            elif self.mode == self.FLASH1:
                 print('2nd response:', state)
-                self.mode = 'resp 1'
-            elif self.mode == 'resp 1' and self.history[-1] == '':
+                self.mode = self.FLASH2
+            elif self.mode == self.FLASH2 and self.history[-1] == '':
                 print('Resetting')
 
 
