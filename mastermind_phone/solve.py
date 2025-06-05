@@ -158,6 +158,9 @@ def main():
     # add prior knowledge that the last digit is always 9
     g.add_filter(lambda c: c[-1] == 9)
 
+    # assume that digits are distinct
+    g.add_filter(lambda c: len(set(c)) == len(c))
+
     if '-i' in sys.argv:
         interactive(g)
     else:
