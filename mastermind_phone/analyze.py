@@ -4,8 +4,30 @@ import cv2
 import numpy as np
 
 
-def non_overlapping_template_match(image, template_path, threshold=0.8):
-    '''Return a non-overlapping list of match bounding boxes'''
+def boxes_iou(boxA, boxB):
+    """Compute Intersection over Union (IoU) of two boxes."""
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
+    yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
+
+    interW = max(0, xB - xA)
+    interH = max(0, yB - yA)
+    interArea = interW * interH
+
+    areaA = boxA[2] * boxA[3]
+    areaB = boxB[2] * boxB[3]
+    unionArea = areaA + areaB - interArea
+
+    if unionArea == 0:
+        return 0
+    return interArea / unionArea
+
+
+def non_overlapping_template_match(
+    image, template_path, threshold=0.8, iou_threshold=0.1
+):
+    """Return a non-overlapping list of match bounding boxes."""
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
     assert template is not None, f'Failed to load {template_path}'
 
@@ -13,18 +35,20 @@ def non_overlapping_template_match(image, template_path, threshold=0.8):
     result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
     matches = []
 
-    result_copy = result.copy()
+    # Get all potential matches above threshold
+    locations = np.where(result >= threshold)
+    candidates = list(zip(locations[1], locations[0]))  # (x, y)
 
-    while True:
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result_copy)
-        if max_val < threshold:
-            break
+    # Sort candidates by match score (descending)
+    scores = result[locations]
+    sorted_candidates = sorted(zip(candidates, scores), key=lambda x: -x[1])
 
-        x, y = max_loc
-        matches.append((x, y, w, h))
-
-        # Suppress this region by zeroing it out
-        result_copy[y:y + h, x:x + w] = 0
+    for (x, y), score in sorted_candidates:
+        box = (x, y, w, h)
+        if all(
+            boxes_iou(box, existing) < iou_threshold for existing in matches
+        ):
+            matches.append(box)
 
     return matches
 
