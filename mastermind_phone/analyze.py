@@ -5,6 +5,7 @@ import numpy as np
 
 
 class State:
+    '''A state machine to extract meaning from flashing lights'''
 
     def __init__(self):
         self.history = []
@@ -12,15 +13,14 @@ class State:
         self.last_frame_num = 0
 
     def update(self, state: str, frame_num):
-
-        # ignore duplicate frames
+        # ignore duplicate frames (except when waiting on 2nd flash)
         if self.history and self.history[-1] == state:
 
             # force an update after a period of inactivity (fixes flash detection).
             # during testing, 2nd flash generally occurs after 15-18 frames.
             if self.mode == 'resp 0':
                 nframes = frame_num - self.last_frame_num
-                print('Time since 1st resp:', nframes)
+                # print('Time since 1st resp:', nframes)
                 # exit early if the delay is still low
                 if nframes < 30:
                     return
@@ -49,30 +49,6 @@ class State:
                 self.mode = 'resp 1'
             elif self.mode == 'resp 1' and self.history[-1] == '':
                 print('Resetting')
-
-        return
-
-        # identify when numbers are being entered
-        change = (self.last_state, self.mode)
-        if change == ('', '0') and self.entering == 0:
-            self.entering = 1
-            print('Entering', self.entering, change)
-        elif change == ('0', '00') and self.entering == 1:
-            self.entering = 2
-            print('Entering', self.entering, change)
-        elif change == ('00', '000') and self.entering == 2:
-            self.entering = 3
-            print('Entering', self.entering, change)
-        elif change == ('000', '0000') and self.entering == 3:
-            self.entering = 4  # last key entered
-            print('Entering', self.entering, change)
-        elif self.last_state == '0000' and self.entering == 4:
-            self.entering = 5  # start reading response
-            print('Response:', self.mode)
-        elif self.entering == 5:
-            print(change)
-        # else:
-        #     self.entering = 0
 
 
 def boxes_iou(boxA, boxB):
