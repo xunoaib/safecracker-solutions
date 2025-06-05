@@ -8,6 +8,7 @@
 import sys
 from collections import defaultdict
 from itertools import product
+from typing import Callable
 
 WRONG, PARTIAL, CORRECT = range(3)
 
@@ -19,20 +20,17 @@ class Guesser:
 
     def __init__(self):
         self.responses = []
+        self.filters = []
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
         self.responses.append((guess, response))
 
-    def candidates(self):
-        return find_candidates(self.responses)
-
-
-class InformedGuesser(Guesser):
-    '''A Guesser with prior knowledge that the last digit is always 9'''
+    def add_filter(self, func: Callable):
+        self.filters.append(func)
 
     def candidates(self):
-        for candidate in super().candidates():
-            if candidate[-1] == 9:
+        for candidate in find_candidates(self.responses):
+            if all(validator(candidate) for validator in self.filters):
                 yield candidate
 
 
@@ -155,8 +153,10 @@ def best_guess(candidates):
 
 def main():
 
-    # g = Guesser()
-    g = InformedGuesser()
+    g = Guesser()
+
+    # add prior knowledge that the last digit is always 9
+    g.add_filter(lambda c: c[-1] == 9)
 
     if '-i' in sys.argv:
         interactive(g)
