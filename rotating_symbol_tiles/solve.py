@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+from collections import Counter
 from functools import cache
 from heapq import heappop, heappush
 from itertools import count, pairwise
@@ -67,7 +68,7 @@ Solution = tuple[Grid, Path]
 
 
 @cache
-def find_all_solutions_up_to(grid: Grid, n: int) -> list:
+def find_all_solutions_up_to(grid: Grid, n: int, extra_moves_allowed) -> list:
 
     def solved(grid, n=n):
         return solved_up_to(grid, n)
@@ -75,7 +76,8 @@ def find_all_solutions_up_to(grid: Grid, n: int) -> list:
     def heuristic(grid, n=n):
         return heuristic_up_to(grid, n)
 
-    solutions = _solve_up_to(grid, solved, heuristic, find_all_solutions=True)
+    solutions = _solve_up_to(
+        grid, solved, heuristic, find_all_solutions=True, extra_moves_allowed=extra_moves_allowed)
     assert isinstance(solutions, list)
     return solutions
 
@@ -96,9 +98,9 @@ def _solve_up_to(
     grid: Grid,
     solved: Callable[[Grid], bool],
     heuristic: Callable[[Grid], int | float],
-    # prune: Callable,
     find_all_solutions: bool = False,
     max_moves=MAX_MOVES,
+    extra_moves_allowed: int = 0,  # allow this many moves above the optimal solution
 ):
     solutions: list[tuple[Grid, Path]] = []
     counter = count()
@@ -117,7 +119,7 @@ def _solve_up_to(
             elapsed = time() - start_time
             # print(f'{elapsed:>4.1f}s  New max length', max_len)
 
-        if solutions and g + heuristic(grid) > len(solutions[0][1]):
+        if solutions and g + heuristic(grid) > len(solutions[0][1]) + extra_moves_allowed:
             continue
 
         if solved(grid):
@@ -222,6 +224,7 @@ def solved_up_to(grid: Grid, n):
 def heuristic_up_to(grid: Grid, n):
     '''Heuristic cost function only considering tiles from 0 through n'''
     cost = 0
+    # TODO: iterate over each cell instead of searching for each number
     for j in range(n + 1):
         src = tile_pos(grid, j)
         tar = divmod(j, COLS)
@@ -237,13 +240,17 @@ def recursive_solve(grid: Grid, n=0):
         print('solved!')
         return tuple()
 
-    solutions = find_all_solutions_up_to(grid, n)
+    extra_moves_allowed = 0
+
+    solutions = find_all_solutions_up_to(
+        grid, n, extra_moves_allowed=extra_moves_allowed)
     if not solutions:
         print(f'Level {n} => no solutions!')
         return False
 
-    print(f'Level {n} => {len(solutions)} solutions of length {
-          len(solutions[0][1])}')
+    len_freq = Counter([len(path) for grid, path in solutions]).keys()
+    print(f'Level {n} => {len(solutions)} solutions between lengths {
+          min(len_freq)} and {max(len_freq)}')
 
     if n == ROWS*COLS-1 or n < 10:
         next_n = n+1
