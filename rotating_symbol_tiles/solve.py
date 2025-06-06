@@ -3,13 +3,14 @@ import sys
 from heapq import heappop, heappush
 from itertools import count, pairwise
 from time import time
-from typing import Callable, Tuple
+from typing import Any, Callable
 
-Grid = Tuple[Tuple[int, ...], ...]
+Grid = tuple[tuple[int, ...], ...]
 
 ROWS = COLS = 5
 ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
 
+MAX_MOVES = 62
 MOVES = tuple(range(16))
 
 GOAL = (
@@ -59,19 +60,24 @@ def rotate(grid: Grid, move: int):
     return tuple(map(tuple, ngrid))
 
 
+HeapItem = tuple[int | float, int, int, Grid, tuple[int, ...]]
+
+
 def solve_up_to(
     grid: Grid,
     solved: Callable,
-    heuristic: Callable,
+    heuristic: Callable[[Grid], int | float],
     # prune: Callable,
+    find_all_solutions: bool = False,
+    max_moves=MAX_MOVES,
 ):
-    visited = {grid}
-
+    solutions = []
     counter = count()
-    q = [(heuristic(grid), 0, next(counter), grid, tuple())]
-
     max_len = 0
     start_time = time()
+
+    visited = {grid}
+    q: list[HeapItem] = [(heuristic(grid), 0, next(counter), grid, tuple())]
 
     while q:
         h, g, i, grid, path = heappop(q)
@@ -79,11 +85,14 @@ def solve_up_to(
         if len(path) > max_len:
             max_len = len(path)
             elapsed = time() - start_time
-            print(f'{elapsed:>4.1f}s  New max length', max_len)
+            # print(f'{elapsed:>4.1f}s  New max length', max_len)
 
         if solved(grid):
-            return grid, path
-        elif len(path) > 61:
+            print('Found solution')
+            if not find_all_solutions:
+                return grid, path
+            solutions.append((grid, path))
+        elif max_moves is not None and len(path) > max_moves:
             continue
 
         for move in MOVES:
