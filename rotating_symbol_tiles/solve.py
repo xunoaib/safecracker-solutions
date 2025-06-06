@@ -80,6 +80,8 @@ def solve_up_to(
 
         if solved(grid):
             return grid, path
+        elif len(path) > 61:
+            continue
 
         for move in MOVES:
             new_grid = rotate(grid, move)
