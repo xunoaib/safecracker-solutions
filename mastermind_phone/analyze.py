@@ -1,10 +1,13 @@
 import os
+import subprocess
 import time
 
 import cv2
 import mss
 import numpy as np
 from solve import create_guesser, string_to_response
+
+ENABLE_POPUP_NOTIFICATIONS = True
 
 INCORRECT = '0'
 CORRECT = '1'
@@ -233,6 +236,11 @@ def select_screen_region():
     return {'left': x, 'top': y, 'width': w, 'height': h}
 
 
+def notify(message: str):
+    if ENABLE_POPUP_NOTIFICATIONS:
+        subprocess.run(['notify-send', message])
+
+
 def main():
 
     print(
@@ -254,9 +262,7 @@ def main():
 
     # create solver objects to generate guesses and deductions
     guesser = create_guesser()
-
-    # suggest a first guess
-    print('Guess: ', *guesser.best_guess(), sep='')
+    notifications = 0
 
     while True:
         frame = grab_screen_region(region)
@@ -265,6 +271,9 @@ def main():
         diff = cv2.absdiff(frame, cropped_subtractive_frame)
         diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
         matches = find_response_matches(diff_gray)
+
+        total_pixels = (diff_gray.shape[0] * diff_gray.shape[1])
+        percent_black = np.sum(diff_gray < MATCH_THRESHOLD) / total_pixels
 
         # when 4 lights are visible, save their regions
         if len(matches) == 4:
@@ -275,22 +284,46 @@ def main():
 
         # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
-            guess = guesser.best_guess()
-            guesser.add(guess, string_to_response(response))
-            print(
-                '\033[92;1mGuess: ', *guesser.best_guess(), '\033[0m', sep=''
-            )
 
             if response == 'cccc':
                 print('Solved, congrats!')
+                notify('Solved, congrats! 🥳')
+                # reset guesser
                 guesser = create_guesser()
+                time.sleep(10)
+                notifications = 0
+            else:
+                guess = guesser.best_guess()
+                guesser.add(guess, string_to_response(response))
+                print(
+                    '\033[92;1mGuess: ',
+                    *guesser.best_guess(),
+                    '\033[0m',
+                    sep=''
+                )
+
+                guess_str = ''.join(map(str, guesser.best_guess()))
+                prefix = 'Guess: ' if len(
+                    guesser.candidates()
+                ) > 1 else 'Solution: '
+                notify(prefix + guess_str)
+                notifications += 1
+
+        elif all(
+            [
+                notifications == 0,
+                len(guesser.responses) == 0, state.history[-1] == 'xxxx',
+                percent_black > PERCENT_MATCH
+            ]
+        ):
+            # suggest a first guess
+            print('Guess: ', *guesser.best_guess(), sep='')
+            notify('Guess: ' + ''.join(map(str, guesser.best_guess())))
+            notifications += 1
 
         for (x, y, w, h), status in matches:
             color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-
-        total_pixels = (diff_gray.shape[0] * diff_gray.shape[1])
-        percent_black = np.sum(diff_gray < MATCH_THRESHOLD) / total_pixels
 
         # draw status text
         # color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
