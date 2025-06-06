@@ -214,9 +214,9 @@ def solve_all_at_once():
 
 def solved_up_to(grid: Grid, n):
     '''Returns whether tiles from 0 through n are solved'''
-    for num in range(n + 1):
-        r, c = GOAL_POSITIONS[num]
-        if grid[r][c] != num:
+    for idx in range(n + 1):
+        r, c = divmod(idx, COLS)
+        if grid[r][c] != GOAL[r][c]:
             return False
     return True
 
