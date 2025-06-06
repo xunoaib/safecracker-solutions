@@ -53,6 +53,11 @@ class State:
                 response += 'w'  # wrong
             elif {a, b} == {'1', 'x'}:
                 response += 'p'  # partial
+            elif {a, b} == {'0', 'x'}:
+                print("WARNING: detected 0/x response (shouldn't happen)")
+                response += 'w'
+            else:
+                raise Exception('Unknown flash states:', self.flash_states)
         return response
 
     def print(self, *args, **kwargs):
