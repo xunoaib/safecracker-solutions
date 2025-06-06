@@ -78,7 +78,17 @@ def merge_nodes(graph, n, m):
 
 def main():
     graph = load_complete_graph()
-    merge_nodes(graph, 's15', 'g10')
+
+    to_merge = [
+        ('b5', 'g4'),
+        ('g5', 's35'),
+        ('g10', 's15'),
+        ('s20', 'l3'),
+    ]
+
+    for a, b in to_merge:
+        merge_nodes(graph, a, b)
+
     print(graph)
 
 
