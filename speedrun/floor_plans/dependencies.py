@@ -58,8 +58,23 @@ def load_complete_graph():
     return graphs
 
 
+def merge_nodes(graph, n, m):
+    '''Collapses identical nodes n and m which are expected to link floors.
+    The new node id will be named: <n>_<m>
+    '''
+
+    for node in (n, m):
+        for other in graph[node]:
+            graph[other].remove(node)
+            graph[other].add(f'{n}_{m}')
+
+    del graph[n]
+    del graph[m]
+
+
 def main():
     graph = load_complete_graph()
+    merge_nodes(graph, 's15', 'g10')
     print(graph)
 
 
