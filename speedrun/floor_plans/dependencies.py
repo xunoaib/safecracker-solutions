@@ -2,7 +2,7 @@
 import json
 from collections import defaultdict
 
-FLOORS = ['basement', 'ground', 'loft', 'second']
+FLOORS = ['basement', 'ground', 'second', 'loft']
 
 ITEMS = [
     't-shaped key',
@@ -37,42 +37,30 @@ ITEMS = [
 ]
 
 
-def load_graph(fname):
+def load_floor_graph(fname, prefix):
     with open(fname) as f:
         data = json.load(f)
 
     graph = defaultdict(set)
     for a, b in data['links']:
+        a = f'{prefix}{a}'
+        b = f'{prefix}{b}'
         graph[a].add(b)
         graph[b].add(a)
 
     return dict(graph)
 
 
-def shift_node_ids(graph: dict[int, set[int]], amount: int):
-    '''Shifts all nodes IDS up by a given amount'''
-
-    new_graph = {}
-    for src, tars in graph.items():
-        new_graph[src] = {tar + amount for tar in tars}
-    return new_graph
-
-
-def load_graphs():
+def load_complete_graph():
     graphs = {}
-    node_count = 0
     for floor in FLOORS:
-        graph = load_graph(f'floor_{floor}_nodes.json')
-        graph = shift_node_ids(graph, node_count)
-        graphs[floor] = graph
-        node_count += len(graph)
-
+        graphs |= load_floor_graph(f'floor_{floor}_nodes.json', floor[0])
     return graphs
 
 
 def main():
-    graphs = load_graphs()
-    print(graphs)
+    graph = load_complete_graph()
+    print(graph)
 
 
 if __name__ == '__main__':
