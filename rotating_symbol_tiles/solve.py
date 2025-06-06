@@ -58,7 +58,12 @@ def rotate(grid: Grid, move: int):
     return tuple(map(tuple, ngrid))
 
 
-def solve_up_to(grid: Grid, solved: Callable, heuristic: Callable):
+def solve_up_to(
+    grid: Grid,
+    solved: Callable,
+    heuristic: Callable,
+    # prune: Callable,
+):
     visited = {grid}
 
     counter = count()
@@ -71,6 +76,7 @@ def solve_up_to(grid: Grid, solved: Callable, heuristic: Callable):
 
         if len(path) > max_len:
             max_len = len(path)
+            print('New max length', max_len)
 
         if solved(grid):
             return grid, path
