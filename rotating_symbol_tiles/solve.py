@@ -172,7 +172,7 @@ def simulate_solution():
         # input()
 
 
-def solve_traditional():
+def solve_all_at_once():
 
     def heuristic(grid: Grid):
         return heuristic_up_to(grid, ROWS * COLS - 1)
@@ -209,7 +209,7 @@ def heuristic_up_to(grid: Grid, n):
     return .7 * cost
 
 
-def solve_new():
+def solve_incremental():
     print('Solving new')
 
     all_moves = []
@@ -256,11 +256,11 @@ def solve_new():
 def main():
 
     if '-t' in sys.argv:
-        solve_traditional()
+        solve_all_at_once()
     elif '-s' in sys.argv:
         simulate_solution()
     else:
-        solve_new()
+        solve_incremental()
 
 
 if __name__ == '__main__':
