@@ -2,6 +2,7 @@
 import sys
 from heapq import heappop, heappush
 from itertools import count, pairwise
+from time import time
 from typing import Callable, Tuple
 
 Grid = Tuple[Tuple[int, ...], ...]
@@ -70,13 +71,15 @@ def solve_up_to(
     q = [(heuristic(grid), 0, next(counter), grid, tuple())]
 
     max_len = 0
+    start_time = time()
 
     while q:
         h, g, i, grid, path = heappop(q)
 
         if len(path) > max_len:
             max_len = len(path)
-            print('New max length', max_len)
+            elapsed = time() - start_time
+            print(f'{elapsed:>4.1f}s  New max length', max_len)
 
         if solved(grid):
             return grid, path
