@@ -49,27 +49,6 @@ def tile_pos(grid: Grid, num: int):
             return r, c
 
 
-def dist_to_solve(grid: Grid):
-    '''Sum of distances of tiles from their correct positions (NOT
-    admissible)'''
-    cost = 0
-    for pos, num in grid.items():
-        goal_pos = tile_pos(GOAL, num)
-        if goal_pos is not None:
-            cost += dist(pos, goal_pos)
-    return cost
-
-
-def dist_to_solve_numbers(grid: Grid, numbers):
-    cost = 0
-    num_to_pos = {v: k for k, v in grid.items()}
-    for num in numbers:
-        goal_pos = tile_pos(GOAL, num)
-        if goal_pos is not None:
-            cost += dist(pos, goal_pos)
-    return cost
-
-
 def rotate(grid: Grid, move: int):
     '''Applies the given move to a copy of the grid'''
     r, c = divmod(move, COLS - 1)  # upper left tile
@@ -79,7 +58,7 @@ def rotate(grid: Grid, move: int):
     return tuple(map(tuple, ngrid))
 
 
-def solve_custom(grid: Grid, solved: Callable, heuristic: Callable):
+def solve_up_to(grid: Grid, solved: Callable, heuristic: Callable):
     visited = {grid}
 
     counter = count()
@@ -114,7 +93,7 @@ def solve_custom(grid: Grid, solved: Callable, heuristic: Callable):
 
 
 def solve(grid: Grid):
-    visited = {serialize(grid)}
+    visited = {grid}
 
     i = 0
     q = [(dist_to_solve(grid), 0, i, grid, tuple())]
@@ -137,9 +116,8 @@ def solve(grid: Grid):
 
         for move in MOVES:
             new_grid = rotate(grid, move)
-            new_serial = serialize(new_grid)
-            if new_serial not in visited:
-                visited.add(new_serial)
+            if new_grid not in visited:
+                visited.add(new_grid)
                 heappush(
                     q, (
                         dist_to_solve(new_grid), g + 1, i + 1, new_grid, path +
@@ -195,35 +173,44 @@ def simulate_solution():
 
 
 def solve_traditional():
-    print('Solving traditionally')
-    if solution := solve(INIT):
+
+    def heuristic(grid: Grid):
+        return heuristic_up_to(grid, ROWS * COLS - 1)
+
+    def solved(grid: Grid):
+        return solved_up_to(grid, ROWS * COLS - 1)
+
+    if solution := solve_up_to(INIT, solved, heuristic):
         print(f'Found solution of length {len(solution)}')
         print(solution)
     else:
         print('No solution')
-    return
+
+    return solution
+
+
+def solved_up_to(grid: Grid, n):
+    '''Returns whether tiles from 0 through n are solved'''
+    for j in range(n + 1):
+        r, c = divmod(j, COLS)
+        if grid[r][c] != GOAL[r][c]:
+            return False
+    return True
+
+
+def heuristic_up_to(grid: Grid, n):
+    '''Heuristic cost function only considering tiles from 0 through n'''
+    cost = 0
+    for j in range(n + 1):
+        src = tile_pos(grid, j)
+        tar = divmod(j, COLS)
+        if None not in (src, tar):
+            cost += sum(abs(a - b) for a, b in zip(src, tar))
+    return .7 * cost
 
 
 def solve_new():
     print('Solving new')
-
-    def solved_up_to(grid, n):
-        '''Returns whether tiles from 0 through n are solved'''
-        for j in range(n + 1):
-            r, c = divmod(j, COLS)
-            if grid[r][c] != GOAL[r][c]:
-                return False
-        return True
-
-    def heuristic_up_to(grid, n):
-        '''Heuristic cost function only considering tiles from 0 through n'''
-        cost = 0
-        for j in range(n + 1):
-            src = tile_pos(grid, j)
-            tar = divmod(j, COLS)
-            if None not in (src, tar):
-                cost += sum(abs(a - b) for a, b in zip(src, tar))
-        return .7 * cost
 
     all_moves = []
 
@@ -243,7 +230,7 @@ def solve_new():
             return heuristic_up_to(grid, n)
 
         print(f'\n>>> Solving tiles through {n}', '\n')
-        grid, moves = solve_custom(grid, solved, heuristic)
+        grid, moves = solve_up_to(grid, solved, heuristic)
         print_grid(grid)
         all_moves.append(moves)
         print()
