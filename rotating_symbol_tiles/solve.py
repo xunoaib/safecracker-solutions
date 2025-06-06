@@ -60,7 +60,8 @@ def rotate(grid: Grid, move: int):
     return tuple(map(tuple, ngrid))
 
 
-HeapItem = tuple[int | float, int, int, Grid, tuple[int, ...]]
+Path = tuple[int, ...]
+HeapItem = tuple[int | float, int, int, Grid]
 
 
 def solve_up_to(
@@ -71,17 +72,18 @@ def solve_up_to(
     find_all_solutions: bool = False,
     max_moves=MAX_MOVES,
 ):
-    solutions = []
+    solutions: list[tuple[Grid, Path]] = []
     counter = count()
     max_len = 0
     start_time = time()
 
-    visited = {grid}
-    q: list[HeapItem] = [(heuristic(grid), 0, next(counter), grid, tuple())]
+    visited: dict[Grid, Path] = {grid: tuple()}
+    q: list[HeapItem] = [(heuristic(grid), 0, next(counter), grid)]
 
     while q:
-        h, g, i, grid, path = heappop(q)
+        h, g, i, grid = heappop(q)
 
+        path = visited[grid]
         if len(path) > max_len:
             max_len = len(path)
             elapsed = time() - start_time
@@ -101,14 +103,13 @@ def solve_up_to(
         for move in MOVES:
             new_grid = rotate(grid, move)
             if new_grid not in visited:
-                visited.add(new_grid)
+                visited[new_grid] = path + (move, )
                 heappush(
                     q, (
                         heuristic(new_grid) + g + 1,
                         g + 1,
                         next(counter),
                         new_grid,
-                        path + (move, ),
                     )
                 )
 
