@@ -4,7 +4,7 @@ import time
 import cv2
 import mss
 import numpy as np
-from solve import create_guesser
+from solve import create_guesser, string_to_response
 
 INCORRECT = '0'
 CORRECT = '1'
@@ -246,8 +246,7 @@ def main():
     guesser = create_guesser()
 
     # suggest a first guess
-    guess = guesser.best_guess()
-    print('Guess:', guess)
+    print('Guess: ', *guesser.best_guess(), sep='')
 
     while True:
         frame = grab_screen_region(region)
@@ -267,8 +266,13 @@ def main():
         # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
             guess = guesser.best_guess()
-            guesser.add(guess, response)
-            print('Guess:', guesser.best_guess())
+            print('Adding:', (guess, response))
+            guesser.add(guess, string_to_response(response))
+            print('Guess: ', *guesser.best_guess(), sep='')
+
+            if response == 'cccc':
+                print('Solved, congrats!')
+                guesser = create_guesser()
 
         for (x, y, w, h), status in matches:
             color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
