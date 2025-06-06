@@ -28,12 +28,13 @@ class State:
     FLASH2 = '2nd flash'
     RESETTING = 'Resetting'
 
-    def __init__(self):
+    def __init__(self, verbose=True):
         self.history = []
         self.mode = ''
         self.last_frame_num = 0
         self.flash_states = []
         self._last_response = None
+        self.verbose = verbose
 
     @property
     def response(self) -> str | None:
@@ -52,6 +53,9 @@ class State:
             elif {a, b} == {'1', 'x'}:
                 response += 'p'  # partial
         return response
+
+    def print(self, *args, **kwargs):
+        print(*args, **kwargs)
 
     def update(
         self,
@@ -82,28 +86,28 @@ class State:
 
         for i in range(1, len(enter_seq)):
             if self.history[-1 - i:] == enter_seq[:i + 1]:
-                print('Entered key', i)
+                self.print('Entered key', i)
                 self.mode = f'Entered {i}'
                 break
         else:
             if self.mode.startswith('Entered 4'):
-                print('1st response:', state)
+                self.print('1st response:', state)
                 self.mode = self.FLASH1
                 self.flash_states = [state]
             elif self.mode == self.FLASH1:
-                print('2nd response:', state)
+                self.print('2nd response:', state)
                 self.mode = self.FLASH2
                 self.flash_states.append(state)
                 self._last_response = None
             elif self.mode == self.FLASH2 and self.history[-1] == '':
-                print('Resetting')
+                self.print('Resetting')
                 self.mode = self.RESETTING
                 self.flash_states = []
 
         new_response = self.response
         if new_response and new_response != self._last_response:
             self._last_response = new_response
-            print('New response:', new_response)
+            self.print('New response:', new_response)
             return new_response
         else:
             return None
@@ -233,7 +237,7 @@ def main():
     # relative coords (to primary monitor)
     region = {'left': 1296, 'top': 216, 'width': 636, 'height': 252}
 
-    state = State()
+    state = State(verbose=False)
     light_regions = []
 
     if os.path.exists('ss.jpg'):
@@ -266,9 +270,10 @@ def main():
         # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
             guess = guesser.best_guess()
-            print('Adding:', (guess, response))
             guesser.add(guess, string_to_response(response))
-            print('Guess: ', *guesser.best_guess(), sep='')
+            print(
+                '\033[92;1mGuess: ', *guesser.best_guess(), '\033[0m', sep=''
+            )
 
             if response == 'cccc':
                 print('Solved, congrats!')
