@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import sys
+from functools import cache
 from heapq import heappop, heappush
 from itertools import count, pairwise
 from time import time
-from typing import Any, Callable
+from typing import Callable
 
 Grid = tuple[tuple[int, ...], ...]
 
@@ -62,11 +63,38 @@ def rotate(grid: Grid, move: int):
 
 Path = tuple[int, ...]
 HeapItem = tuple[int | float, int, int, Grid]
+Solution = tuple[Grid, Path]
 
 
-def solve_up_to(
+@cache
+def find_all_solutions_up_to(grid: Grid, n: int) -> list:
+
+    def solved(grid, n=n):
+        return solved_up_to(grid, n)
+
+    def heuristic(grid, n=n):
+        return heuristic_up_to(grid, n)
+
+    solutions = _solve_up_to(grid, solved, heuristic, find_all_solutions=True)
+    assert isinstance(solutions, list)
+    return solutions
+
+
+# def find_solution_up_to(grid: Grid, n: int) -> tuple[Grid, Path]:
+#
+#     def solved(grid, n=n):
+#         return solved_up_to(grid, n)
+#
+#     def heuristic(grid, n=n):
+#         return heuristic_up_to(grid, n)
+#
+#     solutions = _solve_up_to(grid, solved, heuristic, find_all_solutions=False)
+#     return solutions[0]
+
+
+def _solve_up_to(
     grid: Grid,
-    solved: Callable,
+    solved: Callable[[Grid], bool],
     heuristic: Callable[[Grid], int | float],
     # prune: Callable,
     find_all_solutions: bool = False,
@@ -93,7 +121,7 @@ def solve_up_to(
             continue
 
         if solved(grid):
-            print('Found solution', len(path), path)
+            # print('Found solution', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
@@ -202,54 +230,38 @@ def heuristic_up_to(grid: Grid, n):
     return .7 * cost
 
 
+@cache
+def recursive_solve(grid: Grid, n=0):
+    if n > ROWS * COLS - 1:
+        assert solved_up_to(grid, ROWS * COLS - 1)
+        print('solved!')
+        return tuple()
+
+    solutions = find_all_solutions_up_to(grid, n)
+    if not solutions:
+        print(f'Level {n} => no solutions!')
+        return False
+
+    print(f'Level {n} => {len(solutions)} solutions of length {
+          len(solutions[0][1])}')
+
+    if n == ROWS*COLS-1 or n < 10:
+        next_n = n+1
+    else:
+        next_n = ROWS*COLS-1
+
+    for ngrid, path in solutions:
+        result = recursive_solve(ngrid, next_n)
+        if result is not False:
+            return path + result
+
+
 def solve_incremental_multi():
-    all_moves = []
-
-    # Incrementally solve a subset of tiles to improve runtime
-    ns = list(range(11)) + [ROWS * COLS - 1]
-    # ns = list(range(ROWS * COLS))
-    # ns = [3, 4, 5, 6, 7, 8, 9, 10, 11, 24]
-    # ns = [0, 1, 2, 4, 5, 6, 7, 9, 10, 11, ROWS * COLS - 1]
-
-    grid = INIT
-    for n in ns:
-
-        def solved(grid, n=n):
-            return solved_up_to(grid, n)
-
-        def heuristic(grid, n=n):
-            return heuristic_up_to(grid, n)
-
-        print(f'\n>>> Solving tiles through {n}', '\n')
-
-        # grid, moves = solve_up_to(grid, solved, heuristic)
-        solutions = solve_up_to(
-            grid, solved, heuristic, find_all_solutions=True
-        )
-        for grid, path in solutions:
-            print(path)
-        exit(0)
-
-        print_grid(grid)
-        all_moves.append(moves)
-        print()
-        print('Steps:', moves, f'({sum(map(len, all_moves))} total)')
-
-        if solved(grid, ROWS * COLS - 1):
-            break
-
-        # input()
-
-    print()
-    for i, m in enumerate(all_moves):
-        print(f'Tile {i:>2} -', *m)
-
-    solution = tuple(m for moves in all_moves for m in moves)
-    print(f'\nTotal solution ({len(solution)} total)\n')
-    print(solution)
-
-    print()
-    print_grid(grid)
+    if result := recursive_solve(INIT):
+        print('Path:', result)
+        print(len(result), 'moves')
+    else:
+        print('No solution')
 
 
 def solve_incremental():
