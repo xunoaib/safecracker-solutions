@@ -13,7 +13,7 @@ ITEMS = [
     'l_eq_e_paper',
     'fountain_plug',
     '8_pin_circuit',
-    'photo_of_sarah',
+    'photo',
     '4_pin_circuit',
     'laser_letter',
     'transistor',
@@ -28,42 +28,71 @@ ITEMS = [
     'special_pipe_key',
     'carved_stone_block',
     'snooker_rules',
-    'chip_card',
+    'chip_card',  # gold
     'lever',
     '6821_paper',
-    'wheel',
+    'steering_wheel',
     'small_iron_key',
     'screen_key_card_reader',
 ]
 
+DEPS = '''
+rotating safe => three museum puzzles
+components => workshop
+three museum puzzles => library
+magnetic_card => service corridor
+steering_wheel => laundry room
+carved_stone_block => polybius
+lever => loft_queens
+t-shaped key => piston
+'''
+
+DOORS = '''
+museum => small corridor
+dining room + brass_key => main landing
+main landing => hall
+west corridor => kitchen
+colored_wires + pipe key => yellow room
+piston + basement_water => double key
+double key => violet room
+small gold key + violet room => small iron key + screen_key_card_reader
+small iron key => mastermind_phone
+chip_card => boudoir
+triple keys x4 => door_digits
+'''
+
 REWARDS = {
-    'basement_wires': [],
-    'basement_knobs': [],
-    'basement_water': [],
-    'boudoir_slides': [],
-    'caesar_wheel': [],
-    'mastermind_phone': [],
-    'colored_wires': [],
-    'concentric_circles': [],
+    'double_doors': ['access_fountain'],
+    'basement_wires': ['gps_keycard', 'brass_key'],
+    'basement_knobs': ['access_rest_of_basement'],
+    'basement_water': ['piston'],
+    'boudoir_slides': ['triple_key_3'],
+    'caesar_wheel': ['8_pin_circuit', 'photo'],
+    'mastermind_phone': ['chip_card', 'letter_from_margaret'],
+    'colored_wires': ['access_yellow_room'],
+    'call_sarah': ['steering_wheel'],
+    'off_button': ['magnetic_card', 'snooker_rules'],
+    'concentric_circles': ['resistor', '4298_paper'],
     'currency_sudoku': [],
-    'directional_keypad': [],
-    'fountain': [],
-    'kitchen_dumbwaiter': [],
-    'laser': [],
-    'library_keypad': [],
-    'loft_loop_pipes': [],
-    'loft_queens': [],
-    'magnet_ball': [],
+    'directional_keypad': ['access_workshop'],
+    'fountain': ['double_key'],
+    'kitchen_dumbwaiter': ['special_pipe_key'],
+    'laser': ['small_gold_key', 't_shaped_key'],
+    'library_keypad': ['triple_key_4'],
+    'loft_loop_pipes': ['carved_stone_block'],
+    'loft_queens': ['triple_key_1'],
+    'magnet_ball': ['4_pin_circuit'],
     'museum_square_numbers': [],
-    'picture_swapping': [],
-    'polybius': [],
-    'rotating_symbol_tiles': [],
-    'snooker': [],
+    'picture_swapping': ['laser_letter'],
+    'polybius': ['triple_key_2'],
+    'rotating_symbol_tiles': ['l_eq_e_paper', 'access_triple_museum'],
+    'snooker': ['fountain_plug', 'lever'],
     'study_keypad': [],
     'tile_elimination': [],
     'upstairs_wheels': [],
     'workshop_dials': [],
     'workshop_keypad': [],
+    'driving': ['6821_paper']
 }
 
 
