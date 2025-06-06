@@ -223,14 +223,14 @@ def solved_up_to(grid: Grid, n):
 
 def heuristic_up_to(grid: Grid, n):
     '''Heuristic cost function only considering tiles from 0 through n'''
+
     cost = 0
-    # TODO: iterate over each cell instead of searching for each number
-    for j in range(n + 1):
-        src = tile_pos(grid, j)
-        tar = divmod(j, COLS)
-        if src is not None and tar is not None:
-            cost += sum(abs(a - b) for a, b in zip(src, tar))
-    return .7 * cost
+    for r, c in ALL_COORDS:
+        val = grid[r][c]
+        if 0 <= val <= n:
+            tarr, tarc = GOAL_POSITIONS[val]
+            cost += abs(tarr-r) + abs(tarc-c)
+    return .5 * cost
 
 
 @cache
