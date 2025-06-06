@@ -15,7 +15,7 @@ ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
 MAX_MOVES = 62
 MOVES = tuple(range(16))
 
-GOAL = (
+GOAL: Grid = (
     (0, 1, 2, -1, -1),
     (5, 6, 7, 8, -1),
     (10, 11, 12, 13, 14),
@@ -23,7 +23,7 @@ GOAL = (
     (-1, -1, 22, 23, 24),
 )
 
-INIT = (
+INIT: Grid = (
     (10, 18, 12, 8, 1),
     (22, -1, 19, 5, -1),
     (-1, 14, 16, 6, 2),
@@ -31,7 +31,39 @@ INIT = (
     (24, 11, 17, 0, 7),
 )
 
+
+def rotate_grid(grid: Grid, times=1) -> Grid:
+    for _ in range(times):
+        grid = tuple(zip(*grid))[::-1]
+    return grid
+
+# def rotate_solution(path: tuple[int, ...], times=1):
+#     MOVE_MATRIX = tuple(tuple(r*COLS+c for c in range(COLS))
+#                         for r in range(ROWS))
+#     ROTATED_MOVE_MATRIX = rotate_grid(MOVE_MATRIX, times)
+#
+#     # new_path = tuple()
+#     # for m in path:
+#     #     new_path += (next(),)
+#     print(*ROTATED_MOVE_MATRIX, sep='\n')
+#
+#
+# rotate_solution((0, 1, 2, 3, 4, 5, 6))
+# exit(0)
+
+
+INIT = rotate_grid(INIT, 2)
+GOAL = rotate_grid(GOAL, 2)
+
+# print(*INIT, sep='\n')
+
 GOAL_POSITIONS = {GOAL[r][c]: (r, c) for r, c in ALL_COORDS}
+# for r, c in ALL_COORDS:
+#     num = r*COLS+c
+#     if num not in GOAL_POSITIONS:
+#         # if GOAL_POSITIONS[num] == -1:
+#         GOAL_POSITIONS[num] = r, c
+
 
 ROTATION_SEQUENCE = [
     (0, 0),
@@ -76,6 +108,8 @@ def find_all_solutions_up_to(grid: Grid, n: int, extra_moves_allowed) -> list:
     def heuristic(grid, n=n):
         return heuristic_up_to(grid, n)
 
+    print(f'Finding solutions up to {n} with up to {
+          extra_moves_allowed} extra moves')
     solutions = _solve_up_to(
         grid, solved, heuristic, find_all_solutions=True, extra_moves_allowed=extra_moves_allowed)
     assert isinstance(solutions, list)
@@ -117,13 +151,13 @@ def _solve_up_to(
         if len(path) > max_len:
             max_len = len(path)
             elapsed = time() - start_time
-            # print(f'{elapsed:>4.1f}s  New max length', max_len)
+            print(f'{elapsed:>4.1f}s  New max length', max_len)
 
         if solutions and g + heuristic(grid) > len(solutions[0][1]) + extra_moves_allowed:
             continue
 
         if solved(grid):
-            # print('Found solution', len(path), path)
+            print('Found solution', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
@@ -184,6 +218,12 @@ def simulate_solution():
         9, 8, 8, 12, 9, 12, 9, 10, 11, 14, 10, 15, 10, 15, 15, 12, 13, 14, 14
     )
 
+    solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
+                7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
+
+    solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
+                7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
+
     grid = INIT
     print_grid(grid)
     for m in solution:
@@ -225,20 +265,37 @@ def heuristic_up_to(grid: Grid, n):
     '''Heuristic cost function only considering tiles from 0 through n'''
 
     cost = 0
-    for r, c in ALL_COORDS:
-        val = grid[r][c]
-        if 0 <= val <= n:
-            tarr, tarc = GOAL_POSITIONS[val]
-            cost += abs(tarr-r) + abs(tarc-c)
-    return .5 * cost
+    for i in range(n+1):
+        r, c = divmod(i, COLS)
+        if grid[r][c] != GOAL[r][c]:
+            val = GOAL[r][c]
+            if val == -1:
+                cost += 0  # NOTE: this ignores -1 cost!
+                cost += min(abs(tarr-r) + abs(tarc-c)
+                            for tarr, tarc in ALL_COORDS if grid[tarr][tarc] == -1)
+            else:
+                tarr, tarc = GOAL_POSITIONS[val]
+                cost += abs(tarr-r) + abs(tarc-c)
+    return .7 * cost
 
 
 @cache
 def recursive_solve(grid: Grid, n=0):
+    print_grid(grid)
+    print_grid(GOAL)
     if n > ROWS * COLS - 1:
         assert solved_up_to(grid, ROWS * COLS - 1)
         print('solved!')
+        print_grid(rotate_grid(grid, 3))
         return tuple()
+
+    # hardcode extra moves allowed (more early on)
+    if n < 3:
+        extra_moves_allowed = 3
+    elif n < 10:
+        extra_moves_allowed = 1
+    else:
+        extra_moves_allowed = 0
 
     extra_moves_allowed = 0
 
@@ -249,9 +306,11 @@ def recursive_solve(grid: Grid, n=0):
         return False
 
     len_freq = Counter([len(path) for grid, path in solutions]).keys()
+    print_grid(solutions[0][0])
     print(f'Level {n} => {len(solutions)} solutions between lengths {
           min(len_freq)} and {max(len_freq)}')
 
+    # hardcode next number to solve up to
     if n == ROWS*COLS-1 or n < 10:
         next_n = n+1
     else:
@@ -325,6 +384,10 @@ def main():
         solve_incremental()
     else:
         solve_incremental_multi()
+
+
+# print_grid(GOAL)
+# exit(0)
 
 
 if __name__ == '__main__':
