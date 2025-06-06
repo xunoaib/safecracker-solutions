@@ -38,6 +38,7 @@ class State:
 
     @property
     def response(self) -> str | None:
+        '''Convert "flash" states into a string response (w/c/p)x4'''
         if len(self.flash_states) != 2 or self.mode not in (
             self.FLASH2,
             self.RESETTING,
