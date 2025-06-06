@@ -168,14 +168,11 @@ def make_color_map(grid: dict):
 
 def print_grid(grid: dict):
     color_map = make_color_map(grid)
-    rows = [
-        [
-            color_map[grid[r][c]] if grid[r][c] != -1 else '•'
-            for c in range(COLS)
-        ] for r in range(ROWS)
-    ]
-    for row in rows:
-        print(*(f' {v:>2}' for v in row))
+    for row in grid:
+        for v in row:
+            s = color_map[v] if v != -1 else '•'
+            print(f' {s:>2}', end='')
+        print()
 
 
 def simulate_solution():
