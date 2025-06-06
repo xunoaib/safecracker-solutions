@@ -5,6 +5,7 @@
 # NOTE: the game doesn't register pynput mouse events, so evdev is used.
 # permissions may need to be changed on /dev/uinput for this to work
 
+import sys
 import time
 
 from evdev import UInput
@@ -13,6 +14,7 @@ from pynput.keyboard import Key, Listener
 from pynput.mouse import Controller as MouseController
 
 PIXEL_DIST = 84  # might require tweaking on other displays
+PAUSE_FOR_DIALOGUE = '-p' in sys.argv
 
 
 def sub(a, b):
@@ -59,7 +61,11 @@ def on_press(key):
             print('Moving mouse to', (xoff, yoff))
             mouse.position = (xoff, yoff)
             click()
-            time.sleep(0.05)
+            time.sleep(0.09)
+
+            if PAUSE_FOR_DIALOGUE and i + 1 == 18:
+                print('Pausing for dialogue...')
+                time.sleep(4.5)
 
 
 def on_release(key):
@@ -81,6 +87,11 @@ capabilities = {
 
 ui = UInput(capabilities)
 ui.syn()
+
+if PAUSE_FOR_DIALOGUE:
+    print('Script WILL pause after 18 moves for dialogue')
+else:
+    print('Script will NOT pause after 18 moves for dialogue')
 
 print("Press Shift + E to start clicking...")
 with Listener(on_press=on_press, on_release=on_release) as listener:
