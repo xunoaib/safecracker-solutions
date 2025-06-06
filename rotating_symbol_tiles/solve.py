@@ -2,7 +2,9 @@
 import sys
 from heapq import heappop, heappush
 from itertools import count, pairwise
-from typing import Callable
+from typing import Callable, Tuple
+
+Grid = Tuple[Tuple[int, ...], ...]
 
 ROWS = COLS = 5
 ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
@@ -40,14 +42,14 @@ def dist(src, tar):
     return abs(tar[0] - src[0]) + abs(tar[1] - src[1])
 
 
-def tile_pos(grid: tuple[tuple, ...], num: int):
+def tile_pos(grid: Grid, num: int):
     '''Finds the (r,c) position of a given tile in the grid'''
     for r, c in ALL_COORDS:
         if grid[r][c] == num:
             return r, c
 
 
-def dist_to_solve(grid):
+def dist_to_solve(grid: Grid):
     '''Sum of distances of tiles from their correct positions (NOT
     admissible)'''
     cost = 0
@@ -58,7 +60,7 @@ def dist_to_solve(grid):
     return cost
 
 
-def dist_to_solve_numbers(grid, numbers):
+def dist_to_solve_numbers(grid: Grid, numbers):
     cost = 0
     num_to_pos = {v: k for k, v in grid.items()}
     for num in numbers:
@@ -68,7 +70,7 @@ def dist_to_solve_numbers(grid, numbers):
     return cost
 
 
-def rotate(grid: tuple[tuple, ...], move: int):
+def rotate(grid: Grid, move: int):
     '''Applies the given move to a copy of the grid'''
     r, c = divmod(move, COLS - 1)  # upper left tile
     ngrid = list(map(list, grid))
@@ -77,9 +79,7 @@ def rotate(grid: tuple[tuple, ...], move: int):
     return tuple(map(tuple, ngrid))
 
 
-def solve_custom(
-    grid: tuple[tuple, ...], solved: Callable, heuristic: Callable
-):
+def solve_custom(grid: Grid, solved: Callable, heuristic: Callable):
     visited = {grid}
 
     counter = count()
@@ -113,7 +113,7 @@ def solve_custom(
     exit()
 
 
-def solve(grid):
+def solve(grid: Grid):
     visited = {serialize(grid)}
 
     i = 0
@@ -149,7 +149,7 @@ def solve(grid):
                 i += 1
 
 
-def make_color_map(grid: dict):
+def make_color_map(grid: Grid):
     '''Generates a color map (value -> ANSI color code)'''
     # vals = sorted(v for v in grid.values() if v != -1)
     vals = tuple(v for row in grid for v in row)
@@ -166,7 +166,7 @@ def make_color_map(grid: dict):
     return color_map
 
 
-def print_grid(grid: dict):
+def print_grid(grid: Grid):
     color_map = make_color_map(grid)
     for row in grid:
         for v in row:
