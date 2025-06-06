@@ -24,9 +24,9 @@ class Guesser:
         self.filters = []
         self.first_response = first_response
 
-    def add(self, guess: tuple[int, ...], response: tuple[int, ...] | str):
-        if isinstance(response, str):
-            response = string_to_response(response)
+    def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
+        # if isinstance(response, str):
+        #     response = string_to_response(response)
         self.responses.append((guess, response))
 
     def add_filter(self, func: Callable):
@@ -183,9 +183,6 @@ def create_guesser():
 
 
 def main():
-
-    # hardcode_first = None
-    hardcode_first = (1, 2, 3, 4)
 
     if '-i' in sys.argv:
         data_source = ManualDataSource()
