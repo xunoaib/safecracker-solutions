@@ -69,7 +69,9 @@ class State:
             # occurs after 15-18 frames (from captured video) or 308 frames
             # during live capture (on my machine).
             nframes = frame_num - self.last_frame_num
-            if self.mode != self.FLASH1 or nframes < timeout:
+            if self.mode not in (
+                self.FLASH1, 'Entered 4'
+            ) or nframes < timeout:
                 return None
 
         self.last_frame_num = frame_num
@@ -92,6 +94,7 @@ class State:
                 print('2nd response:', state)
                 self.mode = self.FLASH2
                 self.flash_states.append(state)
+                self._last_response = None
             elif self.mode == self.FLASH2 and self.history[-1] == '':
                 print('Resetting')
                 self.mode = self.RESETTING
