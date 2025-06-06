@@ -201,6 +201,56 @@ def heuristic_up_to(grid: Grid, n):
     return .7 * cost
 
 
+def solve_incremental_multi():
+    all_moves = []
+
+    # Incrementally solve a subset of tiles to improve runtime
+    ns = list(range(11)) + [ROWS * COLS - 1]
+    # ns = list(range(ROWS * COLS))
+    # ns = [3, 4, 5, 6, 7, 8, 9, 10, 11, 24]
+    # ns = [0, 1, 2, 4, 5, 6, 7, 9, 10, 11, ROWS * COLS - 1]
+
+    grid = INIT
+    for n in ns:
+
+        def solved(grid, n=n):
+            return solved_up_to(grid, n)
+
+        def heuristic(grid, n=n):
+            return heuristic_up_to(grid, n)
+
+        print(f'\n>>> Solving tiles through {n}', '\n')
+
+        # grid, moves = solve_up_to(grid, solved, heuristic)
+        solutions = solve_up_to(
+            grid, solved, heuristic, find_all_solutions=True
+        )
+        for grid, path in solutions:
+            print(path)
+        exit(0)
+
+        print_grid(grid)
+        all_moves.append(moves)
+        print()
+        print('Steps:', moves, f'({sum(map(len, all_moves))} total)')
+
+        if solved(grid, ROWS * COLS - 1):
+            break
+
+        # input()
+
+    print()
+    for i, m in enumerate(all_moves):
+        print(f'Tile {i:>2} -', *m)
+
+    solution = tuple(m for moves in all_moves for m in moves)
+    print(f'\nTotal solution ({len(solution)} total)\n')
+    print(solution)
+
+    print()
+    print_grid(grid)
+
+
 def solve_incremental():
     print('Solving new')
 
@@ -251,8 +301,10 @@ def main():
         solve_all_at_once()
     elif '-s' in sys.argv:
         simulate_solution()
-    else:
+    elif '-m' in sys.argv:
         solve_incremental()
+    else:
+        solve_incremental_multi()
 
 
 if __name__ == '__main__':
