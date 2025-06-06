@@ -215,7 +215,7 @@ def heuristic_up_to(grid: Grid, n):
     for j in range(n + 1):
         src = tile_pos(grid, j)
         tar = divmod(j, COLS)
-        if None not in (src, tar):
+        if src is not None and tar is not None:
             cost += sum(abs(a - b) for a, b in zip(src, tar))
     return .7 * cost
 
