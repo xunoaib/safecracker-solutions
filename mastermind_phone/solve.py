@@ -156,6 +156,9 @@ def score_guess(guess, candidates):
 
 
 def _best_guess(candidates):
+    if len(candidates) == 1:
+        return candidates[0]
+
     best = (float('inf'), None)
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
