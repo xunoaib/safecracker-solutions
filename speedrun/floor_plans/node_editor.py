@@ -105,10 +105,14 @@ while running:
                     nodes.append({"x": pos[0], "y": pos[1]})
 
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_s:
+            if event.key == pygame.K_w:
                 save_config()
             elif event.key == pygame.K_q:
                 pygame.quit()
                 exit()
+            elif event.key == pygame.K_s:
+                fname = os.path.splitext(IMAGE_PATH)[0] + '_output.jpg'
+                pygame.image.save(screen, fname)
+                print("Screenshot saved as " + fname)
 
 pygame.quit()
