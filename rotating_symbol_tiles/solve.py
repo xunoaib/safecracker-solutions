@@ -103,41 +103,6 @@ def solve_up_to(
     exit()
 
 
-def solve(grid: Grid):
-    visited = {grid}
-
-    i = 0
-    q = [(dist_to_solve(grid), 0, i, grid, tuple())]
-
-    max_len = 0
-
-    while q:
-        _, g, _, grid, path = heappop(q)
-
-        if len(path) > max_len:
-            max_len = len(path)
-            print(f'Expanding search to {max_len} moves')
-
-        if len(path) > 150:
-            continue
-
-        if dist_to_solve(grid) == 0:
-            __import__('pprint').pprint(grid)
-            return path
-
-        for move in MOVES:
-            new_grid = rotate(grid, move)
-            if new_grid not in visited:
-                visited.add(new_grid)
-                heappush(
-                    q, (
-                        dist_to_solve(new_grid), g + 1, i + 1, new_grid, path +
-                        (move, )
-                    )
-                )
-                i += 1
-
-
 def make_color_map(grid: Grid):
     '''Generates a color map (value -> ANSI color code)'''
     # vals = sorted(v for v in grid.values() if v != -1)
