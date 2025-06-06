@@ -4,72 +4,55 @@ from heapq import heappop, heappush
 from itertools import count, pairwise
 from typing import Callable
 
-from tabulate import tabulate
-
-
-def list_to_dict(grid):
-    return {
-        (r, c): v
-        for r, line in enumerate(grid)
-        for c, v in enumerate(line)
-    }
-
-
 ROWS = COLS = 5
+ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
+
 MOVES = tuple(range(16))
 
-GOAL = list_to_dict([[r * COLS + c for c in range(COLS)] for r in range(ROWS)])
-for i in (3, 4, 9, 15, 20, 21):
-    GOAL[divmod(i, COLS)] = -1
-
-# Correct arrangement of INITIAL (scrambled) tiles, numbered
-# incrementally according to the INITIAL (scrambled) ordering.
-# TLDR: This is direct output from interactive.py
-NUM_BY_INIT_FIXED = list_to_dict(
-    [
-        [23, 4, 14, -1, -1],
-        [8, 13, 24, 3, -1],
-        [0, 21, 2, 18, 11],
-        [-1, 12, 22, 1, 7],
-        [-1, -1, 5, 15, 20],
-    ]
+GOAL = (
+    (0, 1, 2, -1, -1),
+    (5, 6, 7, 8, -1),
+    (10, 11, 12, 13, 14),
+    (-1, 16, 17, 18, 19),
+    (-1, -1, 22, 23, 24),
 )
 
-# We must convert from "scramble-relative" numbering to "goal-ordered"
-# numbering. TLDR: We want to number tiles based on their GOAL positions, not
-# their scrambled positions.
-INIT = {p: -1 for p in GOAL}
-for r in range(ROWS):
-    for c in range(COLS):
-        srch = r * COLS + c
-        ipos = next(
-            (p for p, v in NUM_BY_INIT_FIXED.items() if v == srch), None
-        )
-        opos = divmod(srch, COLS)
-        if ipos:
-            nr, nc = ipos
-            oval = nr * COLS + nc
-            INIT[r, c] = oval
+INIT = (
+    (10, 18, 12, 8, 1),
+    (22, -1, 19, 5, -1),
+    (-1, 14, 16, 6, 2),
+    (23, -1, -1, 13, -1),
+    (24, 11, 17, 0, 7),
+)
+
+GOAL_POSITIONS = {GOAL[r][c]: (r, c) for r, c in ALL_COORDS}
+
+ROTATION_SEQUENCE = [
+    (0, 0),
+    (0, 1),
+    (1, 1),
+    (1, 0),
+    (0, 0),
+]
 
 
 def dist(src, tar):
     return abs(tar[0] - src[0]) + abs(tar[1] - src[1])
 
 
-def find_num_pos(grid, num):
-    return next(
-        (
-            (r, c) for r in range(ROWS)
-            for c in range(COLS) if grid[r, c] == num
-        ), None
-    )
+def tile_pos(grid: tuple[tuple, ...], num: int):
+    '''Finds the (r,c) position of a given tile in the grid'''
+    for r, c in ALL_COORDS:
+        if grid[r][c] == num:
+            return r, c
 
 
 def dist_to_solve(grid):
-    '''Sum of distances of tiles from their correct positions (NOT admissible)'''
+    '''Sum of distances of tiles from their correct positions (NOT
+    admissible)'''
     cost = 0
     for pos, num in grid.items():
-        goal_pos = find_num_pos(GOAL, num)
+        goal_pos = tile_pos(GOAL, num)
         if goal_pos is not None:
             cost += dist(pos, goal_pos)
     return cost
@@ -78,39 +61,26 @@ def dist_to_solve(grid):
 def dist_to_solve_numbers(grid, numbers):
     cost = 0
     num_to_pos = {v: k for k, v in grid.items()}
-
     for num in numbers:
-        goal_pos = find_num_pos(GOAL, num)
+        goal_pos = tile_pos(GOAL, num)
         if goal_pos is not None:
             cost += dist(pos, goal_pos)
     return cost
 
 
-def serialize(grid: dict):
-    return tuple(sorted(grid.items()))
-
-
-def rotate(grid: dict, move: int):
+def rotate(grid: tuple[tuple, ...], move: int):
     '''Applies the given move to a copy of the grid'''
     r, c = divmod(move, COLS - 1)  # upper left tile
-
-    seq = [
-        (r, c),
-        (r, c + 1),
-        (r + 1, c + 1),
-        (r + 1, c),
-        (r, c),
-    ]
-
-    ngrid = grid.copy()
-    for a, b in pairwise(seq):
-        ngrid[b] = grid[a]
-
-    return ngrid
+    ngrid = list(map(list, grid))
+    for (src_r, src_c), (tar_r, tar_c) in pairwise(ROTATION_SEQUENCE):
+        ngrid[r + tar_r][c + tar_c] = grid[r + src_r][c + src_c]
+    return tuple(map(tuple, ngrid))
 
 
-def solve_custom(grid, solved: Callable, heuristic: Callable):
-    visited = {serialize(grid)}
+def solve_custom(
+    grid: tuple[tuple, ...], solved: Callable, heuristic: Callable
+):
+    visited = {grid}
 
     counter = count()
     q = [(heuristic(grid), 0, next(counter), grid, tuple())]
@@ -128,9 +98,8 @@ def solve_custom(grid, solved: Callable, heuristic: Callable):
 
         for move in MOVES:
             new_grid = rotate(grid, move)
-            new_serial = serialize(new_grid)
-            if new_serial not in visited:
-                visited.add(new_serial)
+            if new_grid not in visited:
+                visited.add(new_grid)
                 heappush(
                     q, (
                         heuristic(new_grid) + g + 1,
@@ -182,7 +151,8 @@ def solve(grid):
 
 def make_color_map(grid: dict):
     '''Generates a color map (value -> ANSI color code)'''
-    vals = sorted(v for v in grid.values() if v != -1)
+    # vals = sorted(v for v in grid.values() if v != -1)
+    vals = tuple(v for row in grid for v in row)
     min_val, max_val = min(vals), max(vals)
     range_val = max_val - min_val if max_val != min_val else 1
 
@@ -200,7 +170,7 @@ def print_grid(grid: dict):
     color_map = make_color_map(grid)
     rows = [
         [
-            color_map[grid[r, c]] if grid[r, c] != -1 else '•'
+            color_map[grid[r][c]] if grid[r][c] != -1 else '•'
             for c in range(COLS)
         ] for r in range(ROWS)
     ]
@@ -248,8 +218,8 @@ def solve_new():
     def solved_up_to(grid, n):
         '''Returns whether tiles from 0 through n are solved'''
         for j in range(n + 1):
-            tar = divmod(j, COLS)
-            if grid[tar] != GOAL[tar]:
+            r, c = divmod(j, COLS)
+            if grid[r][c] != GOAL[r][c]:
                 return False
         return True
 
@@ -257,7 +227,7 @@ def solve_new():
         '''Heuristic cost function only considering tiles from 0 through n'''
         cost = 0
         for j in range(n + 1):
-            src = find_num_pos(grid, j)
+            src = tile_pos(grid, j)
             tar = divmod(j, COLS)
             if None not in (src, tar):
                 cost += sum(abs(a - b) for a, b in zip(src, tar))
