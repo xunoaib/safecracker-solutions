@@ -87,8 +87,11 @@ def solve_up_to(
             elapsed = time() - start_time
             # print(f'{elapsed:>4.1f}s  New max length', max_len)
 
+        if solutions and g + heuristic(grid) > len(solutions[0][1]):
+            continue
+
         if solved(grid):
-            print('Found solution')
+            print('Found solution', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
@@ -108,6 +111,10 @@ def solve_up_to(
                         path + (move, ),
                     )
                 )
+
+    if find_all_solutions:
+        return solutions
+
     print('No solution')
     exit()
 
