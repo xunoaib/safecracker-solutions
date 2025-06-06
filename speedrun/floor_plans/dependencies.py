@@ -63,10 +63,14 @@ def merge_nodes(graph, n, m):
     The new node id will be named: <n>_<m>
     '''
 
+    new_id = f'{n}_{m}'
+    graph[new_id] = set()
+
     for node in (n, m):
         for other in graph[node]:
             graph[other].remove(node)
-            graph[other].add(f'{n}_{m}')
+            graph[other].add(new_id)
+            graph[new_id].add(other)
 
     del graph[n]
     del graph[m]
