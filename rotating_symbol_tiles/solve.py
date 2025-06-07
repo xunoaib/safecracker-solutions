@@ -159,11 +159,12 @@ def _solve_up_to(
             continue
 
         if solved(grid):
-            print('Found a solution of length', len(path), path)
+            # print('Found a solution of length', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
-        elif max_moves is not None and len(path) > max_moves:
+        # NOTE: max_moves has little to no effect when used incrementally
+        if max_moves is not None and len(path) > max_moves:
             continue
 
         # if len(path) > max_len:
