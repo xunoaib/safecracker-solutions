@@ -241,57 +241,59 @@ def heuristic_up_to(grid: Grid, n):
         if 0 <= val <= n:
             tarr, tarc = GOAL_POSITIONS[val]
             cost += abs(tarr-r) + abs(tarc-c)
-    return .5 * cost
+    return .8 * cost
 
 
-@cache
 def recursive_solve(grid: Grid, n=0):
+    print('Recursing', n)
+    print_grid(grid)
+    print()
     if n > ROWS * COLS - 1:
         assert solved_up_to(grid, ROWS * COLS - 1)
-        print('solved!')
-        # print_grid(rotate_grid(grid, 3))
+        print('Solved path:')
         print_grid(grid)
-        return tuple()
+        yield []  # base case: end of path
+        return
 
-    # hardcode extra moves allowed (more early on)
-    if n < 3:
-        extra_moves_allowed = 3
-    elif n < 10:
-        extra_moves_allowed = 1
-    else:
-        extra_moves_allowed = 0
+    # # Customize extra moves allowed based on current level
+    # if n < 3:
+    #     extra_moves_allowed = 3
+    # elif n < 10:
+    #     extra_moves_allowed = 1
+    # else:
+    #     extra_moves_allowed = 0
 
     extra_moves_allowed = 0
 
     solutions = find_all_solutions_up_to(
         grid, n, extra_moves_allowed=extra_moves_allowed)
+
     if not solutions:
         print(f'Level {n} => no solutions!')
-        return False
+        return
 
     len_freq = Counter([len(path) for grid, path in solutions]).keys()
-    print_grid(solutions[0][0])
     print(f'Level {n} => {len(solutions)} solutions between lengths {
           min(len_freq)} and {max(len_freq)}')
 
-    # hardcode next number to solve up to
-    if n == ROWS*COLS-1 or n < 10:
-        next_n = n+1
-    else:
-        next_n = ROWS*COLS-1
+    # Decide next target number to solve for
+    next_n = n+1 if 0 <= n <= 10 or n == ROWS * COLS - 1 else ROWS * COLS - 1
 
     for ngrid, path in solutions:
-        result = recursive_solve(ngrid, next_n)
-        # if isinstance(result, tuple):
-        #     yield path + result
+        for subpath in recursive_solve(ngrid, next_n):
+            print('fullpath')
+            full_path = path + tuple(subpath)
+            yield full_path
 
 
 def solve_incremental_multi():
-    if result := recursive_solve(INIT):
-        print('Path:', result)
-        print(len(result), 'moves')
-    else:
-        print('No solution')
+
+    for final_path in recursive_solve(INIT):
+        print('\033[92mFinal path length:', len(final_path), '\033[0m')
+        print('\033[92mMoves:', final_path, '\033[0m')
+
+        with open('data.log', 'a') as f:
+            print(len(final_path), repr(final_path), file=f)
 
 
 def solve_incremental():
