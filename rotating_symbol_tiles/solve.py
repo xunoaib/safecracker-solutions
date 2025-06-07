@@ -222,13 +222,19 @@ def simulate_solution(solution):
     print('Simulating solution')
     grid = INIT
     print_grid(grid)
+
+    if '-p' in sys.argv:
+        input()
+
     for m in solution:
         grid = rotate(grid, m)
         print()
         print('move', m, divmod(m, COLS + 1))
         print()
         print_grid(grid)
-        # input()
+
+        if '-p' in sys.argv:
+            input()
 
 
 def solve_all_at_once():
