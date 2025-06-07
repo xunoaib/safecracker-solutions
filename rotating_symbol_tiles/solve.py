@@ -230,19 +230,40 @@ def solved_up_to(grid: Grid, n):
 
 
 def heuristic_up_to(grid: Grid, n):
-    '''Heuristic cost function only considering tiles from 0 through n'''
+    '''Heuristic cost function considering tiles 0 through n and matching -1 tiles greedily.'''
 
     cost = 0
-    for idx in range(n+1):
+    unmatched_neg1_goal = []
+
+    for idx in range(n + 1):
         expected_r, expected_c = num_to_coord(idx)
         expected_val = GOAL[expected_r][expected_c]
 
         if expected_val == -1:
-            cost += 0  # TODO: find closest -1? or ignore -1 and add -1 costs at end
+            unmatched_neg1_goal.append((expected_r, expected_c))
         else:
             actual_r, actual_c = tile_pos(grid, expected_val)
-            cost += abs(expected_r-actual_r) + abs(expected_c-actual_c)
-    return .7 * cost
+            cost += abs(expected_r - actual_r) + abs(expected_c - actual_c)
+
+    # Match unmatched -1s greedily
+    neg1_tiles = [(r, c) for r, c in ALL_COORDS if grid[r][c] == -1]
+    used = set()
+
+    for r_goal, c_goal in unmatched_neg1_goal:
+        best = float('inf')
+        best_idx = -1
+        for i, (r_tile, c_tile) in enumerate(neg1_tiles):
+            if i in used:
+                continue
+            dist = abs(r_goal - r_tile) + abs(c_goal - c_tile)
+            if dist < best:
+                best = dist
+                best_idx = i
+        if best_idx != -1:
+            used.add(best_idx)
+            cost += best
+
+    return 0.7 * cost
 
 
 def recursive_solve(grid: Grid, n=0):
