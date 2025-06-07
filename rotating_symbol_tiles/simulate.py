@@ -65,10 +65,14 @@ def render():
             grid_img[r * tile_h:(r + 1) * tile_h,
                      c * tile_w:(c + 1) * tile_w] = tile
 
-    for r, c in knobs:
+    for i, (r, c) in enumerate(knobs):
         cx = (c + 1) * tile_w
         cy = (r + 1) * tile_h
         cv2.circle(grid_img, (cx, cy), knob_radius, (128, 128, 128), -1)
+        cv2.putText(
+            grid_img, str(i), (cx - knob_radius // 2, cy + knob_radius // 2),
+            cv2.FONT_HERSHEY_SIMPLEX, .8, (255, 0, 0), 2, cv2.LINE_AA
+        )
 
     return grid_img
 
