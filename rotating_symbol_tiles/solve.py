@@ -9,10 +9,14 @@ from typing import Callable
 
 Grid = tuple[tuple[int, ...], ...]
 
+BEST_KNOWN_SOLUION = (14, 13, 12, 12, 8, 4, 0, 3, 3, 2, 1, 1, 7, 6, 6, 2, 3, 3, 11, 7, 3, 6, 6, 5, 4, 4, 6, 6, 5, 5,
+                      15, 15, 11, 6, 6, 15, 11, 7, 9, 9, 8, 8, 12, 12, 9, 10, 10, 14, 15, 15, 11, 15, 15, 12, 13, 14, 14, 10)
+
+
 ROWS = COLS = 5
 ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
 
-MAX_MOVES = 62
+MAX_MOVES = len(BEST_KNOWN_SOLUION)
 MOVES = tuple(range(16))
 
 GOAL: Grid = (
@@ -181,20 +185,8 @@ def print_grid(grid: Grid):
         print()
 
 
-def simulate_solution():
+def simulate_solution(solution):
     print('Simulating solution')
-    solution = (
-        14, 13, 12, 12, 8, 4, 0, 3, 3, 2, 1, 1, 7, 6, 6, 2, 3, 3, 11, 7, 3, 6,
-        6, 5, 4, 4, 6, 6, 5, 5, 15, 14, 14, 10, 6, 15, 15, 11, 7, 10, 7, 3, 10,
-        9, 8, 8, 12, 9, 12, 9, 10, 11, 14, 10, 15, 10, 15, 15, 12, 13, 14, 14
-    )
-
-    solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
-                7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
-
-    solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
-                7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
-
     grid = INIT
     print_grid(grid)
     for m in solution:
@@ -345,7 +337,13 @@ def main():
     if '-t' in sys.argv:
         solve_all_at_once()
     elif '-s' in sys.argv:
-        simulate_solution()
+        # # solutions for potentially incorrect rotated states
+        # solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
+        #             7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
+        # solution = (11, 10, 9, 8, 8, 4, 0, 12, 9, 5, 1, 3, 6, 3, 8, 4, 8, 8, 5, 6, 6, 9, 10, 7,
+        #             7, 3, 13, 12, 12, 8, 11, 10, 10, 15, 10, 12, 12, 9, 14, 12, 15, 14, 9, 9, 10, 11, 12)
+        solution = BEST_KNOWN_SOLUION
+        simulate_solution(solution)
     elif '-m' in sys.argv:
         solve_incremental()
     else:
