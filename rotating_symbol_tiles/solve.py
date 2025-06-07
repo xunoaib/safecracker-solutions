@@ -35,10 +35,8 @@ INIT: Grid = (
     (24, 11, 17, 0, 7),
 )
 
-
 GOAL_POSITIONS = {GOAL[r][c]: (r, c)
                   for r, c in ALL_COORDS if GOAL[r][c] != -1}
-
 
 ROTATION_SEQUENCE = [
     (0, 0),
@@ -60,10 +58,11 @@ def dist(src, tar):
 
 
 def tile_pos(grid: Grid, num: int):
-    '''Finds the (r,c) position of a given tile in the grid'''
+    '''Finds the (r,c) position of the given tile number in the grid'''
     for r, c in ALL_COORDS:
         if grid[r][c] == num:
             return r, c
+    raise Exception(f'Number {num} not found')
 
 
 def rotate(grid: Grid, move: int):
