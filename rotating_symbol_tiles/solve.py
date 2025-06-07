@@ -32,38 +32,8 @@ INIT: Grid = (
 )
 
 
-def rotate_grid(grid: Grid, times=1) -> Grid:
-    for _ in range(times):
-        grid = tuple(zip(*grid))[::-1]
-    return grid
-
-# def rotate_solution(path: tuple[int, ...], times=1):
-#     MOVE_MATRIX = tuple(tuple(r*COLS+c for c in range(COLS))
-#                         for r in range(ROWS))
-#     ROTATED_MOVE_MATRIX = rotate_grid(MOVE_MATRIX, times)
-#
-#     # new_path = tuple()
-#     # for m in path:
-#     #     new_path += (next(),)
-#     print(*ROTATED_MOVE_MATRIX, sep='\n')
-#
-#
-# rotate_solution((0, 1, 2, 3, 4, 5, 6))
-# exit(0)
-
-
-INIT = rotate_grid(INIT, 2)
-GOAL = rotate_grid(GOAL, 2)
-
-# print(*INIT, sep='\n')
-
 GOAL_POSITIONS = {GOAL[r][c]: (r, c)
                   for r, c in ALL_COORDS if GOAL[r][c] != -1}
-# for r, c in ALL_COORDS:
-#     num = r*COLS+c
-#     if num not in GOAL_POSITIONS:
-#         # if GOAL_POSITIONS[num] == -1:
-#         GOAL_POSITIONS[num] = r, c
 
 
 ROTATION_SEQUENCE = [
