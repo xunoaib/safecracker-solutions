@@ -276,12 +276,11 @@ def heuristic_up_to(grid: Grid, n):
 
 @cache
 def recursive_solve(grid: Grid, n=0):
-    print_grid(grid)
-    print_grid(GOAL)
     if n > ROWS * COLS - 1:
         assert solved_up_to(grid, ROWS * COLS - 1)
         print('solved!')
-        print_grid(rotate_grid(grid, 3))
+        # print_grid(rotate_grid(grid, 3))
+        print_grid(grid)
         return tuple()
 
     # hardcode extra moves allowed (more early on)
