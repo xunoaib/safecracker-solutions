@@ -417,10 +417,6 @@ def main():
         solve_incremental_multi()
 
 
-# print_grid(GOAL)
-# exit(0)
-
-
 if __name__ == '__main__':
     try:
         main()
