@@ -340,7 +340,6 @@ def recursive_solve(grid: Grid, n=0):
 
     for ngrid, path in solutions:
         for subpath in recursive_solve(ngrid, next_n):
-            print('fullpath')
             full_path = path + tuple(subpath)
             yield full_path
 
@@ -348,6 +347,7 @@ def recursive_solve(grid: Grid, n=0):
 def solve_incremental_multi():
 
     for final_path in recursive_solve(INIT):
+
         print('\033[92mFinal path length:', len(final_path), '\033[0m')
         print('\033[92mMoves:', final_path, '\033[0m')
 
