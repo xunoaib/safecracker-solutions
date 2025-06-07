@@ -123,11 +123,6 @@ def _solve_up_to(
         h, g, i, grid = heappop(q)
 
         path = visited[grid]
-        if len(path) > max_len:
-            max_len = len(path)
-            elapsed = time() - start_time
-            print(f'{elapsed:>4.1f}s  New max length', max_len)
-
         if solutions and g + heuristic(grid) > len(solutions[0][1]) + extra_moves_allowed:
             continue
 
@@ -138,6 +133,11 @@ def _solve_up_to(
             solutions.append((grid, path))
         elif max_moves is not None and len(path) > max_moves:
             continue
+
+        # if len(path) > max_len:
+        #     max_len = len(path)
+        #     elapsed = time() - start_time
+        #     print(f'{elapsed:>4.1f}s  New max length', max_len)
 
         for move in MOVES:
             new_grid = rotate(grid, move)
@@ -233,7 +233,7 @@ def heuristic_up_to(grid: Grid, n):
         if 0 <= val <= n:
             tarr, tarc = GOAL_POSITIONS[val]
             cost += abs(tarr-r) + abs(tarc-c)
-    return .8 * cost
+    return .7 * cost
 
 
 def recursive_solve(grid: Grid, n=0):
@@ -254,7 +254,6 @@ def recursive_solve(grid: Grid, n=0):
     #     extra_moves_allowed = 1
     # else:
     #     extra_moves_allowed = 0
-
     extra_moves_allowed = 0
 
     solutions = find_all_solutions_up_to(
