@@ -344,9 +344,12 @@ def solve_incremental_multi():
         print('\033[92mFinal path length:', len(final_path), '\033[0m')
         print('\033[92mMoves:', final_path, '\033[0m')
 
-        if len(final_path) <= len(BEST_KNOWN_SOLUION):
-            with open('data.log', 'a') as f:
-                print(len(final_path), repr(final_path) + '\n', file=f)
+        # if len(final_path) <= len(BEST_KNOWN_SOLUION):
+        #     with open('data.log', 'a') as f:
+        #         print(len(final_path), repr(final_path) + '\n', file=f)
+
+        with open('data.log', 'a') as f:
+            print(len(final_path), repr(final_path) + '\n', file=f)
 
 
 def solve_incremental():
