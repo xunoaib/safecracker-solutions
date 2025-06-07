@@ -57,7 +57,8 @@ GOAL = rotate_grid(GOAL, 2)
 
 # print(*INIT, sep='\n')
 
-GOAL_POSITIONS = {GOAL[r][c]: (r, c) for r, c in ALL_COORDS}
+GOAL_POSITIONS = {GOAL[r][c]: (r, c)
+                  for r, c in ALL_COORDS if GOAL[r][c] != -1}
 # for r, c in ALL_COORDS:
 #     num = r*COLS+c
 #     if num not in GOAL_POSITIONS:
