@@ -7,12 +7,18 @@ assert img is not None, 'Failed to load cropped.jpg'
 ROWS, COLS = 5, 5
 tile_h, tile_w = img.shape[0] // ROWS, img.shape[1] // COLS
 
-tiles = [
-    [
-        img[r * tile_h:(r + 1) * tile_h, c * tile_w:(c + 1) * tile_w].copy()
-        for c in range(COLS)
-    ] for r in range(ROWS)
-]
+
+def slice_tiles():
+    return [
+        [
+            img[r * tile_h:(r + 1) * tile_h,
+                c * tile_w:(c + 1) * tile_w].copy() for c in range(COLS)
+        ] for r in range(ROWS)
+    ]
+
+
+tiles = slice_tiles()  # current tile state
+original_tiles = slice_tiles()  # saved initial state
 
 WINDOW_NAME = 'Tile Grid'
 knob_radius = 13
@@ -50,7 +56,6 @@ def rotate_clockwise(r, c):
 
 def click_event(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
-        # Map click to knob
         for r, c in knobs:
             cx = (c + 1) * tile_w
             cy = (r + 1) * tile_h
@@ -62,6 +67,13 @@ def click_event(event, x, y, flags, param):
 
 cv2.imshow(WINDOW_NAME, render())
 cv2.setMouseCallback(WINDOW_NAME, click_event)
-while cv2.waitKey(0) != ord('q'):
-    pass
+
+while True:
+    key = cv2.waitKey(0)
+    if key == ord('q'):
+        break
+    elif key == ord('r'):
+        tiles = slice_tiles()  # reset to original
+        cv2.imshow(WINDOW_NAME, render())
+
 cv2.destroyAllWindows()
