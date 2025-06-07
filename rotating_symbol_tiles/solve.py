@@ -307,14 +307,15 @@ def recursive_solve(grid: Grid, n=0):
         yield []  # base case: end of path
         return
 
-    # # Customize extra moves allowed based on current level
-    # if n < 3:
-    #     extra_moves_allowed = 3
-    # elif n < 10:
-    #     extra_moves_allowed = 1
-    # else:
-    #     extra_moves_allowed = 0
-    extra_moves_allowed = 0
+    # Customize extra moves allowed based on current level
+    if n < 3:
+        extra_moves_allowed = 2
+    elif n < 6:
+        extra_moves_allowed = 0
+    elif n < 10:
+        extra_moves_allowed = 0
+    elif n >= 10:
+        extra_moves_allowed = 0
 
     solutions = find_all_solutions_up_to(
         grid, n, extra_moves_allowed=extra_moves_allowed)
