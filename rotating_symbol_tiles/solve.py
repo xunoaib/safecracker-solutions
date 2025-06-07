@@ -9,8 +9,11 @@ from typing import Callable
 
 Grid = tuple[tuple[int, ...], ...]
 
-BEST_KNOWN_SOLUION = (12, 12, 13, 13, 4, 4, 9, 9, 14, 14, 14, 9, 10, 10, 15, 15, 15, 10, 9, 8, 9, 9, 10, 0,
-                      5, 6, 6, 11, 6, 11, 11, 0, 4, 4, 5, 5, 5, 1, 0, 0, 7, 2, 1, 6, 7, 7, 3, 3, 2, 1, 1, 7, 6, 3)
+# # 54 moves
+# BEST_KNOWN_SOLUION = (12, 12, 13, 13, 4, 4, 9, 9, 14, 14, 14, 9, 10, 10, 15, 15, 15, 10, 9, 8, 9, 9, 10, 0,
+#                       5, 6, 6, 11, 6, 11, 11, 0, 4, 4, 5, 5, 5, 1, 0, 0, 7, 2, 1, 6, 7, 7, 3, 3, 2, 1, 1, 7, 6, 3)
+
+BEST_KNOWN_SOLUION = (0,)*59
 
 ROWS = COLS = 5
 ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
