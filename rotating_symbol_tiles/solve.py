@@ -313,8 +313,8 @@ def recursive_solve(grid: Grid, n=0):
 
     for ngrid, path in solutions:
         result = recursive_solve(ngrid, next_n)
-        if result is not False:
-            return path + result
+        # if isinstance(result, tuple):
+        #     yield path + result
 
 
 def solve_incremental_multi():
