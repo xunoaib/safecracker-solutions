@@ -17,6 +17,8 @@ IDS = [row.copy() for row in original_IDS]
 ROWS, COLS = 5, 5
 tile_h, tile_w = img.shape[0] // ROWS, img.shape[1] // COLS
 
+show_lines = False  # Toggle state
+
 
 def slice_tiles():
     return [
@@ -37,7 +39,7 @@ knobs = [(r, c) for r in range(ROWS - 1) for c in range(COLS - 1)]
 
 
 def render():
-    '''Reconstruct and display the full grid image with knobs and gradient-colored text'''
+    '''Reconstruct and display the full grid image with knobs, gradient text, and optional goal lines'''
     grid_img = np.zeros_like(img)
     for r in range(ROWS):
         for c in range(COLS):
@@ -45,7 +47,7 @@ def render():
             id_val = IDS[r][c]
 
             # Normalize ID to 0.0–1.0
-            norm = id_val / 24.0
+            norm = 0 if id_val == -1 else id_val / 24.0
 
             # Use HSV to RGB mapping for gradient (blue to red)
             hsv = np.uint8([[[int(240 * (1 - norm)), 255, 255]]])  # Hue: 240→0
@@ -74,12 +76,25 @@ def render():
             cv2.FONT_HERSHEY_SIMPLEX, .8, (255, 0, 0), 2, cv2.LINE_AA
         )
 
+    if show_lines:
+        for r in range(ROWS):
+            for c in range(COLS):
+                val = IDS[r][c]
+                if val == -1:
+                    continue
+                goal_r, goal_c = divmod(val, COLS)
+                start = (c * tile_w + tile_w // 2, r * tile_h + tile_h // 2)
+                end = (
+                    goal_c * tile_w + tile_w // 2,
+                    goal_r * tile_h + tile_h // 2
+                )
+                cv2.line(grid_img, start, end, (0, 255, 255), 2)
+
     return grid_img
 
 
 def rotate_clockwise(r, c):
     '''Rotate 4 tiles and their labels clockwise around the knob at (r, c)'''
-    # Rotate image tiles
     A = tiles[r][c]
     B = tiles[r][c + 1]
     C = tiles[r + 1][c + 1]
@@ -89,7 +104,6 @@ def rotate_clockwise(r, c):
     tiles[r + 1][c + 1] = B
     tiles[r + 1][c] = C
 
-    # Rotate associated text IDs
     A = IDS[r][c]
     B = IDS[r][c + 1]
     C = IDS[r + 1][c + 1]
@@ -119,8 +133,10 @@ while True:
     if key == ord('q'):
         break
     elif key == ord('r'):
-        tiles = slice_tiles()  # reset to original
+        tiles = slice_tiles()
         IDS = [row.copy() for row in original_IDS]
-        cv2.imshow(WINDOW_NAME, render())
+    elif key == ord('s'):
+        show_lines = not show_lines
+    cv2.imshow(WINDOW_NAME, render())
 
 cv2.destroyAllWindows()
