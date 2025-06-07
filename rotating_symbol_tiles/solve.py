@@ -49,6 +49,12 @@ ROTATION_SEQUENCE = [
 ]
 
 
+def num_to_coord(idx: int) -> tuple[int, int]:
+    '''Returns the goal position of a coordinate given its number'''
+    assert idx != -1, 'Num should be a positive index (not -1)'
+    return divmod(idx, COLS)
+
+
 def dist(src, tar):
     return abs(tar[0] - src[0]) + abs(tar[1] - src[1])
 
@@ -218,7 +224,7 @@ def solve_all_at_once():
 def solved_up_to(grid: Grid, n):
     '''Returns whether tiles from 0 through n are solved'''
     for idx in range(n + 1):
-        r, c = divmod(idx, COLS)
+        r, c = num_to_coord(idx)
         if grid[r][c] != GOAL[r][c]:
             return False
     return True
@@ -228,11 +234,15 @@ def heuristic_up_to(grid: Grid, n):
     '''Heuristic cost function only considering tiles from 0 through n'''
 
     cost = 0
-    for r, c in ALL_COORDS:
-        val = grid[r][c]
-        if 0 <= val <= n:
-            tarr, tarc = GOAL_POSITIONS[val]
-            cost += abs(tarr-r) + abs(tarc-c)
+    for idx in range(n+1):
+        expected_r, expected_c = num_to_coord(idx)
+        expected_val = GOAL[expected_r][expected_c]
+
+        if expected_val == -1:
+            cost += 0  # TODO: find closest -1? or ignore -1 and add -1 costs at end
+        else:
+            actual_r, actual_c = tile_pos(grid, expected_val)
+            cost += abs(expected_r-actual_r) + abs(expected_c-actual_c)
     return .7 * cost
 
 
