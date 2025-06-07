@@ -170,7 +170,7 @@ def _solve_up_to(
             continue
 
         if solved(grid):
-            print('Found solution', len(path), path)
+            print('Found a solution of length', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
@@ -305,13 +305,9 @@ def heuristic_up_to(grid: Grid, n):
 
 
 def recursive_solve(grid: Grid, n=0):
-    print('Recursing', n)
-    print_grid(grid)
-    print()
     if n > ROWS * COLS - 1:
         assert solved_up_to(grid, ROWS * COLS - 1)
         print('Solved path:')
-        print_grid(grid)
         yield []  # base case: end of path
         return
 
