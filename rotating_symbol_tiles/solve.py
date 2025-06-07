@@ -137,18 +137,6 @@ def find_all_solutions_up_to(grid: Grid, n: int, extra_moves_allowed) -> list:
     return solutions
 
 
-# def find_solution_up_to(grid: Grid, n: int) -> tuple[Grid, Path]:
-#
-#     def solved(grid, n=n):
-#         return solved_up_to(grid, n)
-#
-#     def heuristic(grid, n=n):
-#         return heuristic_up_to(grid, n)
-#
-#     solutions = _solve_up_to(grid, solved, heuristic, find_all_solutions=False)
-#     return solutions[0]
-
-
 def _solve_up_to(
     grid: Grid,
     solved: Callable[[Grid], bool],
