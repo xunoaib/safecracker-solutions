@@ -46,10 +46,49 @@ ROTATION_SEQUENCE = [
 ]
 
 
+def generate_num_order():
+    '''Generates a tile ID to position mapping.
+    Since other functions depend on incremental IDs (ie: "solving tiles up to
+    n"), this allows us to redefine which coordinates correspond to each number
+    (for custom ordering of solved tiles).
+    '''
+
+    ROW = (
+        (0, 1, 2, 3, 4),
+        (5, 6, 7, 8, 9),
+        (10, 11, 12, 13, 14),
+        (15, 16, 17, 18, 19),
+        (20, 21, 22, 23, 24),
+    )
+    COL = tuple(zip(*ROW))
+    order = list(range(25))
+    # ORDER = COL[0] + COL[1] + COL[2] + COL[3] + COL[4]
+    # order = [v for row in ROW[::-1] for v in row][::-1]
+    # empty = [3, 4, 9, 15, 20, 21]
+
+    # order = [0, 1, 2, 5, 6, 7, 8, 10, 11, 12,
+    #          13, 14, 15, 16, 17, 18, 19, 22, 23, 24] + empty
+
+    # order = [0, 1, 2, 3, 4, 9, 8, 7, 6, 5, 10, 11,
+    #          12, 13, 14, 19, 18, 17, 16, 15, 20, 21, 22, 23, 24]
+
+    assert len(set(order)) == len(order)
+    assert all(0 <= x <= 24 for x in order)
+
+    return tuple(order)
+
+
+# NOTE: uncomment and tweak to change incremental solve order
+# ORDER = generate_num_order()
+ORDER = tuple(range(ROWS*COLS))
+
+
 def num_to_coord(idx: int) -> tuple[int, int]:
     '''Returns the goal position of a coordinate given its number'''
     assert idx != -1, 'Num should be a positive index (not -1)'
-    return divmod(idx, COLS)
+    # return divmod(idx, COLS)
+    r, c = divmod(ORDER[idx], COLS)
+    return r, c
 
 
 def dist(src, tar):
