@@ -266,18 +266,12 @@ def heuristic_up_to(grid: Grid, n):
     '''Heuristic cost function only considering tiles from 0 through n'''
 
     cost = 0
-    for i in range(n+1):
-        r, c = divmod(i, COLS)
-        if grid[r][c] != GOAL[r][c]:
-            val = GOAL[r][c]
-            if val == -1:
-                cost += 0  # NOTE: this ignores -1 cost!
-                cost += min(abs(tarr-r) + abs(tarc-c)
-                            for tarr, tarc in ALL_COORDS if grid[tarr][tarc] == -1)
-            else:
-                tarr, tarc = GOAL_POSITIONS[val]
-                cost += abs(tarr-r) + abs(tarc-c)
-    return .7 * cost
+    for r, c in ALL_COORDS:
+        val = grid[r][c]
+        if 0 <= val <= n:
+            tarr, tarc = GOAL_POSITIONS[val]
+            cost += abs(tarr-r) + abs(tarc-c)
+    return .5 * cost
 
 
 @cache
