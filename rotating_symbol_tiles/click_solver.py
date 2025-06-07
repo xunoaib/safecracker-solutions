@@ -12,6 +12,7 @@ from evdev import UInput
 from evdev import ecodes as e
 from pynput.keyboard import Key, Listener
 from pynput.mouse import Controller as MouseController
+from solve import BEST_KNOWN_SOLUION
 
 PIXEL_DIST = 84  # might require tweaking on other displays
 PAUSE_FOR_DIALOGUE = '-p' in sys.argv
@@ -20,24 +21,6 @@ PAUSE_FOR_DIALOGUE = '-p' in sys.argv
 def sub(a, b):
     return (b[0] - a[0], b[1] - a[1])
 
-
-# output copied from solver
-
-# solution = (
-#     9, 1, 2, 4, 1, 0, 7, 2, 9, 14, 15, 4, 0, 1, 6, 6, 2, 6, 6, 11, 15, 11, 6,
-#     6, 9, 13, 9, 13, 9, 5, 0, 0, 6, 13, 13, 14, 12, 12, 13, 13, 13, 15, 11, 11,
-#     14, 13, 12, 15, 15, 15, 12, 13, 14, 14, 14, 15, 10, 2, 1, 6, 2, 2, 2, 3, 3,
-#     3, 1, 2, 3, 7, 7, 7, 11, 15, 11, 11, 7, 15, 15, 4, 4, 4, 8, 4, 0, 12, 12,
-#     13, 14, 14, 12, 13, 14, 14, 12, 12, 12, 13, 13, 13, 12, 3, 3, 3, 2, 3, 2,
-#     3, 3, 3, 2, 2, 2, 3, 3, 0, 1, 3, 2, 0, 0, 0, 13, 13, 14, 15, 13, 13, 15,
-#     15, 15, 13, 14, 15, 15, 14, 14, 14, 15, 13, 13, 13, 12, 12, 12
-# )
-
-solution = (
-    14, 13, 12, 12, 8, 4, 0, 3, 3, 2, 1, 1, 7, 6, 6, 2, 3, 3, 11, 7, 3, 6, 6,
-    5, 4, 4, 6, 6, 5, 5, 15, 14, 14, 10, 6, 15, 15, 11, 7, 10, 7, 3, 10, 9, 8,
-    8, 12, 9, 12, 9, 10, 11, 14, 10, 15, 10, 15, 15, 12, 13, 14, 14
-)
 
 mouse = MouseController()
 
@@ -49,7 +32,7 @@ def on_press(key):
     if Key.shift in pressed_keys and hasattr(key, 'char') and key.char == 'E':
         print("Shift + E pressed. Starting click sequence...")
         time.sleep(1)
-        steps = (0, ) + solution
+        steps = (0, ) + BEST_KNOWN_SOLUION
         for i in range(len(steps) - 1):
             m1, m2 = steps[i], steps[i + 1]
             r1, c1 = divmod(m1, 4)
