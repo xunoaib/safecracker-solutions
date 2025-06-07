@@ -37,19 +37,29 @@ knobs = [(r, c) for r in range(ROWS - 1) for c in range(COLS - 1)]
 
 
 def render():
-    '''Reconstruct and display the full grid image with knobs and text'''
+    '''Reconstruct and display the full grid image with knobs and gradient-colored text'''
     grid_img = np.zeros_like(img)
     for r in range(ROWS):
         for c in range(COLS):
             tile = tiles[r][c].copy()
-            text = str(IDS[r][c])
+            id_val = IDS[r][c]
+
+            # Normalize ID to 0.0–1.0
+            norm = id_val / 24.0
+
+            # Use HSV to RGB mapping for gradient (blue to red)
+            hsv = np.uint8([[[int(240 * (1 - norm)), 255, 255]]])  # Hue: 240→0
+            rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)[0][0]
+            color = tuple(int(x) for x in rgb)
+
+            text = str('x' if id_val == -1 else id_val)
             text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1,
                                         2)[0]
             text_x = (tile_w - text_size[0]) // 2
             text_y = (tile_h + text_size[1]) // 2
             cv2.putText(
                 tile, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                (0, 0, 255), 2, cv2.LINE_AA
+                color, 2, cv2.LINE_AA
             )
 
             grid_img[r * tile_h:(r + 1) * tile_h,
