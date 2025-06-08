@@ -12,17 +12,13 @@
 
 using Grid = std::array<std::array<int, 5>, 5>;
 
-// Coordinates for each 2x2 intersection (total 16 possible 2x2 blocks in 5x5
-// grid)
 const std::vector<std::pair<int, int>> ROTATIONS = {
     {0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2}, {1, 3},
     {2, 0}, {2, 1}, {2, 2}, {2, 3}, {3, 0}, {3, 1}, {3, 2}, {3, 3},
 };
 
-// Tiles to be marked as blank (-1)
 const std::unordered_set<int> BLANK_IDS = {3, 4, 9, 15, 20, 21};
 
-// Print the grid
 void print_grid(const Grid &grid) {
     for (auto &row : grid) {
         for (auto val : row) {
@@ -36,7 +32,6 @@ void print_grid(const Grid &grid) {
     std::cout << "\n";
 }
 
-// Rotate a 2x2 block clockwise
 void rotate(Grid &grid, int r, int c) {
     int temp = grid[r][c];
     grid[r][c] = grid[r + 1][c];
@@ -45,19 +40,16 @@ void rotate(Grid &grid, int r, int c) {
     grid[r][c + 1] = temp;
 }
 
-// Create the solved state
 Grid create_goal() {
     Grid grid;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
         for (int j = 0; j < 5; ++j) {
             int id = i * 5 + j;
             grid[i][j] = BLANK_IDS.count(id) ? -1 : id;
         }
-    }
     return grid;
 }
 
-// Shuffle the grid by applying random rotations
 Grid shuffle_grid(const Grid &goal, int steps = 12) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -71,7 +63,6 @@ Grid shuffle_grid(const Grid &goal, int steps = 12) {
     return shuffled;
 }
 
-// For hashing a grid state
 struct GridHasher {
     std::size_t operator()(const Grid &g) const {
         std::size_t h = 0;
@@ -82,7 +73,15 @@ struct GridHasher {
     }
 };
 
-int heuristic(const Grid &a, const Grid &goal) {
+std::pair<int, int> find_tile(const Grid &grid, int tile) {
+    for (int i = 0; i < 5; ++i)
+        for (int j = 0; j < 5; ++j)
+            if (grid[i][j] == tile)
+                return {i, j};
+    return {-1, -1};
+}
+
+int heuristic(const Grid &a, const Grid &goal, int target_tile) {
     std::unordered_map<int, std::pair<int, int>> goal_pos;
     std::vector<std::pair<int, int>> goal_blanks, current_blanks;
 
@@ -99,19 +98,15 @@ int heuristic(const Grid &a, const Grid &goal) {
         }
 
     int h = 0;
-
-    // Sum of Manhattan distances for all non-blank tiles
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
         for (int j = 0; j < 5; ++j) {
             int val = a[i][j];
-            if (val != -1 && goal_pos.count(val)) {
+            if (val != -1 && val <= target_tile && goal_pos.count(val)) {
                 auto [gi, gj] = goal_pos[val];
                 h += std::abs(i - gi) + std::abs(j - gj);
             }
         }
-    }
 
-    // Sum of distances from each goal -1 to the nearest current -1
     int blank_distance = 0;
     std::vector<bool> used(current_blanks.size(), false);
     for (const auto &[gi, gj] : goal_blanks) {
@@ -136,57 +131,100 @@ int heuristic(const Grid &a, const Grid &goal) {
     return static_cast<int>(0.5 * h + 0.5 * blank_distance);
 }
 
-// A* to find shortest path to solution
-std::vector<std::pair<int, int>> solve(const Grid &start, const Grid &goal) {
-    using State =
-        std::tuple<int, int, Grid,
-                   std::vector<std::pair<int, int>>>; // f, g, grid, path
-    auto cmp = [](const State &a, const State &b) {
-        return std::get<0>(a) > std::get<0>(b);
-    };
-
-    std::priority_queue<State, std::vector<State>, decltype(cmp)> pq(cmp);
-    std::unordered_set<Grid, GridHasher> visited;
-
-    int h0 = heuristic(start, goal);
-    pq.emplace(h0, 0, start, std::vector<std::pair<int, int>>{});
-    visited.insert(start);
-
-    while (!pq.empty()) {
-        auto [f, g, state, path] = pq.top();
-        pq.pop();
-
-        if (state == goal)
-            return path;
-
-        for (auto [r, c] : ROTATIONS) {
-            Grid new_state = state;
-            rotate(new_state, r, c);
-            if (!visited.count(new_state)) {
-                auto new_path = path;
-                new_path.emplace_back(r, c);
-                int g_new = g + 1;
-                int f_new = g_new + heuristic(new_state, goal);
-                pq.emplace(f_new, g_new, new_state, new_path);
-                visited.insert(new_state);
+bool rotation_touches_solved(int r, int c, const Grid &grid, const Grid &goal,
+                             int locked_up_to) {
+    for (int dr = 0; dr < 2; ++dr)
+        for (int dc = 0; dc < 2; ++dc) {
+            int val = grid[r + dr][c + dc];
+            if (val != -1 && val <= locked_up_to) {
+                auto [gi, gj] = find_tile(goal, val);
+                if (r + dr != gi || c + dc != gj)
+                    return true;
             }
+        }
+    return false;
+}
+
+std::vector<std::pair<int, int>> solve_one_by_one(Grid start,
+                                                  const Grid &goal) {
+    std::vector<std::pair<int, int>> full_path;
+
+    for (int target = 0; target <= 24; ++target) {
+        std::cout << "Solving " << target << std::endl;
+        if (BLANK_IDS.count(target))
+            continue;
+
+        auto is_solved = [&]() {
+            auto [ri, ci] = find_tile(start, target);
+            auto [rg, cg] = find_tile(goal, target);
+            return ri == rg && ci == cg;
+        };
+
+        if (is_solved())
+            continue;
+
+        using State =
+            std::tuple<int, int, Grid, std::vector<std::pair<int, int>>>;
+        auto cmp = [](const State &a, const State &b) {
+            return std::get<0>(a) > std::get<0>(b);
+        };
+
+        std::priority_queue<State, std::vector<State>, decltype(cmp)> pq(cmp);
+        std::unordered_set<Grid, GridHasher> visited;
+
+        int h0 = heuristic(start, goal, target);
+        pq.emplace(h0, 0, start, std::vector<std::pair<int, int>>{});
+        visited.insert(start);
+
+        bool solved = false;
+        while (!pq.empty()) {
+            auto [f, g, state, path] = pq.top();
+            pq.pop();
+
+            if (find_tile(state, target) == find_tile(goal, target)) {
+                start = state;
+                full_path.insert(full_path.end(), path.begin(), path.end());
+                solved = true;
+                break;
+            }
+
+            for (auto [r, c] : ROTATIONS) {
+                if (rotation_touches_solved(r, c, state, goal, target - 1))
+                    continue;
+
+                Grid new_state = state;
+                rotate(new_state, r, c);
+                if (!visited.count(new_state)) {
+                    auto new_path = path;
+                    new_path.emplace_back(r, c);
+                    int g_new = g + 1;
+                    int f_new = g_new + heuristic(new_state, goal, target);
+                    pq.emplace(f_new, g_new, new_state, new_path);
+                    visited.insert(new_state);
+                }
+            }
+        }
+
+        if (!solved) {
+            std::cout << "Failed to solve tile " << target << '\n';
+            break;
         }
     }
 
-    return {}; // No solution found
+    return full_path;
 }
 
 int main() {
     Grid goal = create_goal();
-    Grid start = shuffle_grid(goal);
+    Grid start = shuffle_grid(goal, 12);
 
     std::cout << "Initial state:\n";
     print_grid(start);
     std::cout << "Goal state:\n";
     print_grid(goal);
 
-    auto solution = solve(start, goal);
-    std::cout << "Solution in " << solution.size() << " moves:\n";
+    auto solution = solve_one_by_one(start, goal);
+    std::cout << "Solved in " << solution.size() << " moves:\n";
     for (auto [r, c] : solution)
         std::cout << "Rotate at (" << r << ", " << c << ")\n";
 
