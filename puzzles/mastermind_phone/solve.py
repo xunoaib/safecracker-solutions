@@ -164,12 +164,12 @@ def _best_guess(candidates):
     if len(candidates) == 1:
         return candidates[0]
 
-    best = (float('inf'), None)
+    best = (float('inf'), True, None)
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
-        best = min(best, (score, guess))
-    if guess := best[1]:
-        return best[1]
+        best = min(best, (score, guess not in candidates, guess))
+    if guess := best[-1]:
+        return best[-1]
     raise Exception('No best guess!')
 
 
