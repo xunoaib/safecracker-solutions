@@ -1,24 +1,7 @@
 import re
 from collections import defaultdict
 
-
-def wrap_label(label, width=16):
-    return '\n'.join(label[i:i + width] for i in range(0, len(label), width))
-
-
-# === Lookup Dictionaries ===
-
-
-def enum_lookup(enum_type):
-    return {e.name.lower(): e for e in enum_type}
-
-
-def sanitize(s):
-    return s.strip().lower().replace('-', '_').replace(' ', '_')
-
-
-# === Dependency Graph ===
-# objective mapped to requirements
+# objectives mapped to their requirements
 dependency_graph = defaultdict(set)
 
 # === Input Text ===
@@ -145,8 +128,8 @@ def parse_colon_block(text):
         if ':' not in line:
             continue
         lhs, rhs = map(str.strip, line.split(':', 1))
-        goal = sanitize(lhs)
-        reqs = [sanitize(x) for x in rhs.split(', ') if x.strip()]
+        goal = lhs
+        reqs = [x for x in rhs.split(', ') if x.strip()]
         for req in reqs:
             dependency_graph[goal].add(req)
 
@@ -157,8 +140,8 @@ def parse_arrow_block(text):
         if '=>' not in line:
             continue
         lhs, rhs = map(str.strip, line.split('=>'))
-        inputs = [sanitize(x) for x in re.split(r'\+|,', lhs)]
-        outputs = [sanitize(x) for x in re.split(r'\+|,', rhs)]
+        inputs = [x for x in re.split(r'\+|,', lhs)]
+        outputs = [x for x in re.split(r'\+|,', rhs)]
         for out in outputs:
             for inp in inputs:
                 dependency_graph[out].add(inp)
@@ -169,11 +152,11 @@ parse_colon_block(REQS_TEXT)
 
 for reward_source, items in REWARDS.items():
     for item in items:
-        dependency_graph[sanitize(item)].add(sanitize(reward_source))
+        dependency_graph[item].add(reward_source)
 
 for goal, reqs in GOAL_REQUIREMENTS.items():
     for req in reqs:
-        dependency_graph[sanitize(goal)].add(sanitize(req))
+        dependency_graph[goal].add(req)
 
 
 def main():
