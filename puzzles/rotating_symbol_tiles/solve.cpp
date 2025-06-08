@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <climits>
 #include <cmath>
 #include <iostream>
 #include <queue>
@@ -81,15 +82,25 @@ struct GridHasher {
     }
 };
 
-// Heuristic: sum of Manhattan distances for all non-blank tiles
 int heuristic(const Grid &a, const Grid &goal) {
     std::unordered_map<int, std::pair<int, int>> goal_pos;
+    std::vector<std::pair<int, int>> goal_blanks, current_blanks;
+
     for (int i = 0; i < 5; ++i)
-        for (int j = 0; j < 5; ++j)
-            if (goal[i][j] != -1)
-                goal_pos[goal[i][j]] = {i, j};
+        for (int j = 0; j < 5; ++j) {
+            int val_goal = goal[i][j];
+            int val_cur = a[i][j];
+            if (val_goal == -1)
+                goal_blanks.emplace_back(i, j);
+            else
+                goal_pos[val_goal] = {i, j};
+            if (val_cur == -1)
+                current_blanks.emplace_back(i, j);
+        }
 
     int h = 0;
+
+    // Sum of Manhattan distances for all non-blank tiles
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
             int val = a[i][j];
@@ -99,7 +110,30 @@ int heuristic(const Grid &a, const Grid &goal) {
             }
         }
     }
-    return h * 0.5;
+
+    // Sum of distances from each goal -1 to the nearest current -1
+    int blank_distance = 0;
+    std::vector<bool> used(current_blanks.size(), false);
+    for (const auto &[gi, gj] : goal_blanks) {
+        int min_dist = INT_MAX;
+        int best_idx = -1;
+        for (size_t k = 0; k < current_blanks.size(); ++k) {
+            if (used[k])
+                continue;
+            const auto &[ci, cj] = current_blanks[k];
+            int dist = std::abs(gi - ci) + std::abs(gj - cj);
+            if (dist < min_dist) {
+                min_dist = dist;
+                best_idx = k;
+            }
+        }
+        if (best_idx != -1) {
+            used[best_idx] = true;
+            blank_distance += min_dist;
+        }
+    }
+
+    return static_cast<int>(0.5 * h + 0.5 * blank_distance);
 }
 
 // A* to find shortest path to solution
