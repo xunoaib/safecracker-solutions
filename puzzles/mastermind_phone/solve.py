@@ -19,10 +19,13 @@ ALL_POSSIBLE_CODES = list(product(range(1, 10), repeat=4))
 class Guesser:
     '''Accepts guesses and responses and generates possible candidates'''
 
-    def __init__(self, first_response: tuple[int, ...] = (1, 2, 3, 4)):
+    def __init__(
+        self,
+        fixed_responses: tuple[tuple[int, ...]] = ((1, 2, 3, 4), (5, 6, 7, 8))
+    ):
         self.responses = []
         self.filters = []
-        self.first_response = first_response
+        self.fixed_responses = fixed_responses
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
         # if isinstance(response, str):
@@ -40,8 +43,10 @@ class Guesser:
         return candidates
 
     def best_guess(self) -> tuple:
-        if not self.responses and self.first_response:
-            return self.first_response
+        if self.fixed_responses:
+            response = self.fixed_responses[0]
+            self.fixed_responses = self.fixed_responses[1:]
+            return response
         return _best_guess(self.candidates())
 
     def clear_responses(self):
