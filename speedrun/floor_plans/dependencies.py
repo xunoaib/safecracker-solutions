@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+import re
 from collections import defaultdict
 
 FLOORS = ['basement', 'ground', 'second', 'loft']
@@ -36,9 +36,9 @@ ITEMS = [
     'screen_key_card_reader',
 ]
 
-DEPS = '''
+DEPS_TEXT = '''
 rotating safe => three museum puzzles
-components => workshop
+resistor + 8_pin_circuit + 4_pin_circuit + transistor => workshop
 three museum puzzles => library
 magnetic_card => service corridor
 steering_wheel => laundry room
@@ -47,7 +47,7 @@ lever => loft_queens
 t-shaped key => piston
 '''
 
-DOORS = '''
+DOORS_TEXT = '''
 museum => small corridor
 dining room + brass_key => main landing
 main landing => hall
@@ -87,69 +87,45 @@ REWARDS = {
     'polybius': ['triple_key_2'],
     'rotating_symbol_tiles': ['l_eq_e_paper', 'access_triple_museum'],
     'snooker': ['fountain_plug', 'lever'],
-    'study_keypad': [],
+    'study_keypad': ['access_service_hall'],
     'tile_elimination': [],
-    'upstairs_wheels': [],
-    'workshop_dials': [],
-    'workshop_keypad': [],
+    'upstairs_wheels': ['access_loft'],
+    'workshop_dials': ['access_boudoir'],
+    'workshop_keypad': ['red_magnetic_card'],
     'driving': ['6821_paper']
 }
 
+DEPENDENCIES = {
+    'access_library':
+    ('museum_square_numbers', 'tile_elimination', 'currency_sudoku'),
+}
 
-def load_floor_graph(fname, prefix):
-    with open(fname) as f:
-        data = json.load(f)
-
-    graph = defaultdict(set)
-    for a, b in data['links']:
-        a = f'{prefix}{a}'
-        b = f'{prefix}{b}'
-        graph[a].add(b)
-        graph[b].add(a)
-
-    return dict(graph)
+dependency_graph = defaultdict(set)
 
 
-def load_complete_graph():
-    graphs = {}
-    for floor in FLOORS:
-        graphs |= load_floor_graph(f'floor_{floor}_nodes.json', floor[0])
-    return graphs
+def parse_arrow_block(text):
+    for line in text.strip().splitlines():
+        if '=>' not in line:
+            continue
+        lhs, rhs = map(str.strip, line.split('=>'))
+        inputs = [x.strip() for x in re.split(r'\+|,', lhs)]
+        outputs = [x.strip() for x in re.split(r'\+|,', rhs)]
+        for out in outputs:
+            for inp in inputs:
+                dependency_graph[out].add(inp)
 
 
-def merge_nodes(graph, n, m):
-    '''Collapses identical nodes n and m which are expected to link floors.
-    The new node id will be named: <n>_<m>
-    '''
+parse_arrow_block(DEPS_TEXT)
+parse_arrow_block(DOORS_TEXT)
 
-    new_id = f'{n}_{m}'
-    graph[new_id] = set()
+for reward_source, items in REWARDS.items():
+    for item in items:
+        dependency_graph[item].add(reward_source)
 
-    for node in (n, m):
-        for other in graph[node]:
-            graph[other].remove(node)
-            graph[other].add(new_id)
-            graph[new_id].add(other)
+for goal, reqs in DEPENDENCIES.items():
+    for req in reqs:
+        dependency_graph[goal].add(req)
 
-    del graph[n]
-    del graph[m]
-
-
-def main():
-    graph = load_complete_graph()
-
-    to_merge = [
-        ('b5', 'g4'),
-        ('g5', 's35'),
-        ('g10', 's15'),
-        ('s20', 'l3'),
-    ]
-
-    for a, b in to_merge:
-        merge_nodes(graph, a, b)
-
-    print(graph)
-
-
-if __name__ == '__main__':
-    main()
+# print(dependency_graph)
+for goal, reqs in dependency_graph.items():
+    print(reqs, goal)
