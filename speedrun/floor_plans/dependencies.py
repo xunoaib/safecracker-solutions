@@ -1,10 +1,7 @@
-import re
 from collections import defaultdict
 
 # objectives mapped to their requirements
 dependency_graph = defaultdict(set)
-
-# === Input Text ===
 
 # X requires Y
 REQS_TEXT = '''
@@ -109,18 +106,6 @@ REWARDS = {
     't_shaped_cabinet': ['piston'],
 }
 
-# Goal => Requirements
-GOAL_REQUIREMENTS = {
-    # 'access_library':
-    # ('museum_square_numbers', 'tile_elimination', 'currency_sudoku'),
-    # 'access_boudoir': ('workshop_dials', ),
-    # 'study_keypad':
-    # ('resistor', 'transistor', '8_pin_circuit', '4_pin_circuit'),
-    # 'access_loft': ('steering_wheel', )
-}
-
-# === Parsing Logic ===
-
 
 def parse_colon_block(text):
     '''goal: <comma-delimited list of requirements>'''
@@ -136,18 +121,16 @@ def parse_colon_block(text):
             dependency_graph[goal].add(req)
 
 
-def parse_arrow_block(text):
-    '''puzzle: list of unlocks'''
-    for line in text.strip().splitlines():
-        if '=>' not in line:
-            continue
-        lhs, rhs = map(str.strip, line.split('=>'))
-        inputs = [x for x in re.split(r'\+|,', lhs)]
-        outputs = [x for x in re.split(r'\+|,', rhs)]
-        for out in outputs:
-            for inp in inputs:
-                dependency_graph[out].add(inp)
-
+# def parse_arrow_block(text):
+#     for line in text.strip().splitlines():
+#         if '=>' not in line:
+#             continue
+#         lhs, rhs = map(str.strip, line.split('=>'))
+#         inputs = [x for x in re.split(r'\+|,', lhs)]
+#         outputs = [x for x in re.split(r'\+|,', rhs)]
+#         for out in outputs:
+#             for inp in inputs:
+#                 dependency_graph[out].add(inp)
 
 # parse_arrow_block(DEPS_TEXT)
 parse_colon_block(REQS_TEXT)
@@ -156,16 +139,13 @@ for reward_source, items in REWARDS.items():
     for item in items:
         dependency_graph[item].add(reward_source)
 
-for goal, reqs in GOAL_REQUIREMENTS.items():
-    for req in reqs:
-        dependency_graph[goal].add(req)
+# for goal, reqs in GOAL_REQUIREMENTS.items():
+#     for req in reqs:
+#         dependency_graph[goal].add(req)
 
 
 def main():
     for goal, reqs in dependency_graph.items():
-        # for req in reqs:
-        #     print(f'{req}: {goal}')
-        # print(', '.join(sorted(reqs)), '\033[92m=>\033[0m', goal)
         print(
             goal.ljust(23), '\033[92mrequires\033[0m  ',
             ', '.join(sorted(reqs))
