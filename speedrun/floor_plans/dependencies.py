@@ -1,76 +1,9 @@
 import re
 from collections import defaultdict
-from enum import Enum, auto
 
 
 def wrap_label(label, width=16):
     return '\n'.join(label[i:i + width] for i in range(0, len(label), width))
-
-
-class Item(Enum):
-    T_SHAPED_KEY = auto()
-    PISTON = auto()
-    RESISTOR = auto()
-    PAPER_4298 = auto()
-    DOUBLE_KEY = auto()
-    L_EQ_E_PAPER = auto()
-    FOUNTAIN_PLUG = auto()
-    PIN_8_CIRCUIT = auto()
-    PHOTO = auto()
-    PIN_4_CIRCUIT = auto()
-    LASER_LETTER = auto()
-    TRANSISTOR = auto()
-    SMALL_GOLD_KEY = auto()
-    MAGNETIC_CARD = auto()
-    TRIPLE_KEY_1 = auto()
-    TRIPLE_KEY_2 = auto()
-    TRIPLE_KEY_3 = auto()
-    TRIPLE_KEY_4 = auto()
-    GPS_KEYCARD = auto()
-    BRASS_KEY = auto()
-    SPECIAL_PIPE_KEY = auto()
-    CARVED_STONE_BLOCK = auto()
-    SNOOKER_RULES = auto()
-    GOLD_KEYCARD = auto()
-    LEVER = auto()
-    PAPER_6821 = auto()
-    STEERING_WHEEL = auto()
-    SMALL_IRON_KEY = auto()
-    SCREEN_KEY_CARD_READER = auto()
-
-
-class RewardSource(Enum):
-    DOUBLE_DOORS = auto()
-    BASEMENT_WIRES = auto()
-    BASEMENT_KNOBS = auto()
-    BASEMENT_WATER = auto()
-    BOUDOIR_SLIDES = auto()
-    CAESAR_WHEEL = auto()
-    MASTERMIND_PHONE = auto()
-    COLORED_WIRES = auto()
-    CALL_SARAH = auto()
-    OFF_BUTTON = auto()
-    CONCENTRIC_CIRCLES = auto()
-    CURRENCY_SUDOKU = auto()
-    DIRECTIONAL_KEYPAD = auto()
-    FOUNTAIN = auto()
-    KITCHEN_DUMBWAITER = auto()
-    LASER = auto()
-    LIBRARY_KEYPAD = auto()
-    LOFT_LOOP_PIPES = auto()
-    LOFT_QUEENS = auto()
-    MAGNET_BALL = auto()
-    MUSEUM_SQUARE_NUMBERS = auto()
-    PICTURE_SWAPPING = auto()
-    POLYBIUS = auto()
-    ROTATING_SYMBOL_TILES = auto()
-    SNOOKER = auto()
-    STUDY_KEYPAD = auto()
-    TILE_ELIMINATION = auto()
-    UPSTAIRS_WHEELS = auto()
-    WORKSHOP_DIALS = auto()
-    WORKSHOP_KEYPAD = auto()
-    DRIVING = auto()
 
 
 # === Lookup Dictionaries ===
@@ -78,10 +11,6 @@ class RewardSource(Enum):
 
 def enum_lookup(enum_type):
     return {e.name.lower(): e for e in enum_type}
-
-
-ITEM_LOOKUP = enum_lookup(Item)
-REWARD_LOOKUP = enum_lookup(RewardSource)
 
 
 def sanitize(s):
