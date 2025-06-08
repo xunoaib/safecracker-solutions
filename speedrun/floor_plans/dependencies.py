@@ -176,10 +176,11 @@ REWARDS = {
     'upstairs_wheels': ['access_loft'],
     'workshop_dials': ['access_boudoir'],
     'workshop_keypad': ['red_magnetic_card'],
-    'driving': ['6821_paper']
+    'driving': ['6821_paper'],
 }
 
-DEPENDENCIES = {
+# Goal => Requirements
+GOAL_REQUIREMENTS = {
     'access_library':
     ('museum_square_numbers', 'tile_elimination', 'currency_sudoku')
 }
@@ -205,7 +206,7 @@ for reward_source, items in REWARDS.items():
     for item in items:
         dependency_graph[sanitize(item)].add(sanitize(reward_source))
 
-for goal, reqs in DEPENDENCIES.items():
+for goal, reqs in GOAL_REQUIREMENTS.items():
     for req in reqs:
         dependency_graph[sanitize(goal)].add(sanitize(req))
 
