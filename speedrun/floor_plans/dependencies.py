@@ -1,41 +1,95 @@
-#!/usr/bin/env python3
 import re
 from collections import defaultdict
+from enum import Enum, auto
 
-FLOORS = ['basement', 'ground', 'second', 'loft']
+# === Enums ===
 
-ITEMS = [
-    't_shaped_key',
-    'piston'
-    'resistor',
-    '4298_paper',
-    'double_key',
-    'l_eq_e_paper',
-    'fountain_plug',
-    '8_pin_circuit',
-    'photo',
-    '4_pin_circuit',
-    'laser_letter',
-    'transistor',
-    'small_gold_key',
-    'magnetic_card',
-    'triple_key_1',
-    'triple_key_2',
-    'triple_key_3',
-    'triple_key_4',
-    'gps_keycard',
-    'brass_key',
-    'special_pipe_key',
-    'carved_stone_block',
-    'snooker_rules',
-    'chip_card',  # gold
-    'lever',
-    '6821_paper',
-    'steering_wheel',
-    'small_iron_key',
-    'screen_key_card_reader',
-]
 
+class Item(Enum):
+    T_SHAPED_KEY = auto()
+    PISTON = auto()
+    RESISTOR = auto()
+    PAPER_4298 = auto()
+    DOUBLE_KEY = auto()
+    L_EQ_E_PAPER = auto()
+    FOUNTAIN_PLUG = auto()
+    PIN_8_CIRCUIT = auto()
+    PHOTO = auto()
+    PIN_4_CIRCUIT = auto()
+    LASER_LETTER = auto()
+    TRANSISTOR = auto()
+    SMALL_GOLD_KEY = auto()
+    MAGNETIC_CARD = auto()
+    TRIPLE_KEY_1 = auto()
+    TRIPLE_KEY_2 = auto()
+    TRIPLE_KEY_3 = auto()
+    TRIPLE_KEY_4 = auto()
+    GPS_KEYCARD = auto()
+    BRASS_KEY = auto()
+    SPECIAL_PIPE_KEY = auto()
+    CARVED_STONE_BLOCK = auto()
+    SNOOKER_RULES = auto()
+    CHIP_CARD = auto()
+    LEVER = auto()
+    PAPER_6821 = auto()
+    STEERING_WHEEL = auto()
+    SMALL_IRON_KEY = auto()
+    SCREEN_KEY_CARD_READER = auto()
+
+
+class RewardSource(Enum):
+    DOUBLE_DOORS = auto()
+    BASEMENT_WIRES = auto()
+    BASEMENT_KNOBS = auto()
+    BASEMENT_WATER = auto()
+    BOUDOIR_SLIDES = auto()
+    CAESAR_WHEEL = auto()
+    MASTERMIND_PHONE = auto()
+    COLORED_WIRES = auto()
+    CALL_SARAH = auto()
+    OFF_BUTTON = auto()
+    CONCENTRIC_CIRCLES = auto()
+    CURRENCY_SUDOKU = auto()
+    DIRECTIONAL_KEYPAD = auto()
+    FOUNTAIN = auto()
+    KITCHEN_DUMBWAITER = auto()
+    LASER = auto()
+    LIBRARY_KEYPAD = auto()
+    LOFT_LOOP_PIPES = auto()
+    LOFT_QUEENS = auto()
+    MAGNET_BALL = auto()
+    MUSEUM_SQUARE_NUMBERS = auto()
+    PICTURE_SWAPPING = auto()
+    POLYBIUS = auto()
+    ROTATING_SYMBOL_TILES = auto()
+    SNOOKER = auto()
+    STUDY_KEYPAD = auto()
+    TILE_ELIMINATION = auto()
+    UPSTAIRS_WHEELS = auto()
+    WORKSHOP_DIALS = auto()
+    WORKSHOP_KEYPAD = auto()
+    DRIVING = auto()
+
+
+# === Lookup Dictionaries ===
+
+
+def enum_lookup(enum_type):
+    return {e.name.lower(): e for e in enum_type}
+
+
+ITEM_LOOKUP = enum_lookup(Item)
+REWARD_LOOKUP = enum_lookup(RewardSource)
+
+
+def sanitize(s):
+    return s.strip().lower().replace('-', '_').replace(' ', '_')
+
+
+# === Dependency Graph ===
+dependency_graph = defaultdict(set)
+
+# === Input Text ===
 DEPS_TEXT = '''
 rotating safe => three museum puzzles
 resistor + 8_pin_circuit + 4_pin_circuit + transistor => workshop
@@ -44,21 +98,7 @@ magnetic_card => service corridor
 steering_wheel => laundry room
 carved_stone_block => polybius
 lever => loft_queens
-t-shaped key => piston
-'''
-
-DOORS_TEXT = '''
-museum => small corridor
-dining room + brass_key => main landing
-main landing => hall
-west corridor => kitchen
-colored_wires + pipe key => yellow room
-piston + basement_water => double key
-double key => violet room
-small gold key + violet room => small iron key + screen_key_card_reader
-small iron key => mastermind_phone
-chip_card => boudoir
-triple keys x4 => door_digits
+t_shaped_key => piston
 '''
 
 REWARDS = {
@@ -97,10 +137,10 @@ REWARDS = {
 
 DEPENDENCIES = {
     'access_library':
-    ('museum_square_numbers', 'tile_elimination', 'currency_sudoku'),
+    ('museum_square_numbers', 'tile_elimination', 'currency_sudoku')
 }
 
-dependency_graph = defaultdict(set)
+# === Parsing Logic ===
 
 
 def parse_arrow_block(text):
@@ -108,24 +148,23 @@ def parse_arrow_block(text):
         if '=>' not in line:
             continue
         lhs, rhs = map(str.strip, line.split('=>'))
-        inputs = [x.strip() for x in re.split(r'\+|,', lhs)]
-        outputs = [x.strip() for x in re.split(r'\+|,', rhs)]
+        inputs = [sanitize(x) for x in re.split(r'\+|,', lhs)]
+        outputs = [sanitize(x) for x in re.split(r'\+|,', rhs)]
         for out in outputs:
             for inp in inputs:
                 dependency_graph[out].add(inp)
 
 
 parse_arrow_block(DEPS_TEXT)
-parse_arrow_block(DOORS_TEXT)
 
 for reward_source, items in REWARDS.items():
     for item in items:
-        dependency_graph[item].add(reward_source)
+        dependency_graph[sanitize(item)].add(sanitize(reward_source))
 
 for goal, reqs in DEPENDENCIES.items():
     for req in reqs:
-        dependency_graph[goal].add(req)
+        dependency_graph[sanitize(goal)].add(sanitize(req))
 
-# print(dependency_graph)
+# === Output ===
 for goal, reqs in dependency_graph.items():
-    print(reqs, goal)
+    print(f"{goal} depends on {sorted(reqs)}")
