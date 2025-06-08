@@ -2,51 +2,9 @@ import re
 from collections import defaultdict
 from enum import Enum, auto
 
-import matplotlib.pyplot as plt
-import networkx as nx
-# You need pygraphviz installed: pip install pygraphviz
-from networkx.drawing.nx_agraph import graphviz_layout
-
 
 def wrap_label(label, width=16):
     return '\n'.join(label[i:i + width] for i in range(0, len(label), width))
-
-
-def visualize_dependency_graph_left_to_right(dependency_graph):
-    G = nx.DiGraph()
-
-    # Add edges
-    for target, sources in dependency_graph.items():
-        for source in sources:
-            G.add_edge(wrap_label(source), wrap_label(target))
-
-    # Use Graphviz layout (dot) with Left-to-Right direction
-    pos = graphviz_layout(
-        G, prog='dot', args='-Grankdir=LR -Gnodesep=0.6 -Granksep=1.0'
-    )
-
-    plt.figure(figsize=(20, 12))
-    nx.draw(
-        G,
-        pos,
-        with_labels=True,
-        node_size=2000,
-        node_color='lightyellow',
-        font_size=9,
-        font_weight='bold',
-        edgecolors='black',
-        arrows=True,
-        arrowsize=12,
-        arrowstyle='-|>'
-    )
-
-    plt.title("Left-to-Right Dependency Graph", fontsize=14)
-    plt.axis('off')
-    plt.tight_layout()
-    plt.show()
-
-
-# === Enums ===
 
 
 class Item(Enum):
@@ -73,7 +31,7 @@ class Item(Enum):
     SPECIAL_PIPE_KEY = auto()
     CARVED_STONE_BLOCK = auto()
     SNOOKER_RULES = auto()
-    CHIP_CARD = auto()
+    GOLD_KEYCARD = auto()
     LEVER = auto()
     PAPER_6821 = auto()
     STEERING_WHEEL = auto()
@@ -152,7 +110,7 @@ REWARDS = {
     'basement_water': ['piston'],
     'boudoir_slides': ['triple_key_3'],
     'caesar_wheel': ['8_pin_circuit', 'photo'],
-    'mastermind_phone': ['chip_card', 'letter_from_margaret'],
+    'mastermind_phone': ['gold_keycard', 'letter_from_margaret'],
     'colored_wires': ['access_yellow_room'],
     'call_sarah': ['steering_wheel'],
     'off_button': ['magnetic_card', 'snooker_rules'],
@@ -182,13 +140,29 @@ REWARDS = {
 # Goal => Requirements
 GOAL_REQUIREMENTS = {
     'access_library':
-    ('museum_square_numbers', 'tile_elimination', 'currency_sudoku')
+    ('museum_square_numbers', 'tile_elimination', 'currency_sudoku'),
+    'access_boudoir': ('workshop_dials', ),
+    'study_keypad':
+    ('resistor', 'transistor', '8_pin_circuit', '4_pin_circuit'),
 }
 
 # === Parsing Logic ===
 
 
+def parse_colon_block(text):
+    '''goal: <comma-delimited list of requirements>'''
+    for line in text.strip().splitlines():
+        if ':' not in line:
+            continue
+        lhs, rhs = map(str.strip, line.split(':', 1))
+        goal = sanitize(lhs)
+        reqs = [sanitize(x) for x in rhs.split(',') if x.strip()]
+        for req in reqs:
+            dependency_graph[goal].add(req)
+
+
 def parse_arrow_block(text):
+    '''puzzle: list of unlocks'''
     for line in text.strip().splitlines():
         if '=>' not in line:
             continue
@@ -212,6 +186,7 @@ for goal, reqs in GOAL_REQUIREMENTS.items():
 
 # === Output ===
 for goal, reqs in dependency_graph.items():
-    print(f"{goal} depends on {sorted(reqs)}")
-
-visualize_dependency_graph_left_to_right(dependency_graph)
+    # print(f"{goal} depends on {sorted(reqs)}")
+    for req in reqs:
+        print(f'{req}: {goal}')
+        pass
