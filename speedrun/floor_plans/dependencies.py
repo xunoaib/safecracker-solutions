@@ -28,6 +28,7 @@ basement_water: piston, access_rest_of_basement
 basement_wires: access_rest_of_basement
 concentric_circles: access_start
 mastermind_phone: access_second_floor, iron_key
+off_button: access_yellow_room
 
 # Room Access Conditions
 
@@ -43,6 +44,7 @@ access_violet_room: double_key, access_second_floor
 access_rest_of_basement: basement_knobs, access_service_hall
 access_library: solve_triple_museum, access_second_floor
 access_second_floor: brass_key
+end: door_digits
 
 # Puzzle Accessibility
 
@@ -104,7 +106,7 @@ REWARDS = {
     'workshop_keypad': ['red_magnetic_card'],
     'driving': ['6821_paper'],
     'music_box': ['iron_key', 'screen_card_reader'],
-    't_shaped_cabinet': ['fountain_plug'],
+    't_shaped_cabinet': ['piston'],
 }
 
 # Goal => Requirements
