@@ -13,7 +13,7 @@ polybius: carved_stone_block, access_second_floor
 colored_wires: special_pipe_key, access_second_floor
 loft_queens: lever, access_second_floor
 workshop_dials: gold_keycard, access_workshop
-music_box: access_violet_room
+music_box: access_violet_room, small_gold_key
 door_digits: access_violet_room, triple_key_1, triple_key_2, triple_key_3, triple_key_4
 solve_triple_museum: access_triple_museum, museum_square_numbers, tile_elimination, currency_sudoku
 t_shaped_cabinet: t_shaped_key
