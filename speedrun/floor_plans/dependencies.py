@@ -27,7 +27,7 @@ study_keypad: red_magnetic_card, access_fountain
 basement_water: piston, access_rest_of_basement
 basement_wires: access_rest_of_basement
 concentric_circles: access_start
-mastermind_phone: access_second_floor
+mastermind_phone: access_second_floor, iron_key
 
 # Room Access Conditions
 
