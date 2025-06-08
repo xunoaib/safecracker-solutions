@@ -2,6 +2,50 @@ import re
 from collections import defaultdict
 from enum import Enum, auto
 
+import matplotlib.pyplot as plt
+import networkx as nx
+# You need pygraphviz installed: pip install pygraphviz
+from networkx.drawing.nx_agraph import graphviz_layout
+
+
+def wrap_label(label, width=16):
+    return '\n'.join(label[i:i + width] for i in range(0, len(label), width))
+
+
+def visualize_dependency_graph_left_to_right(dependency_graph):
+    G = nx.DiGraph()
+
+    # Add edges
+    for target, sources in dependency_graph.items():
+        for source in sources:
+            G.add_edge(wrap_label(source), wrap_label(target))
+
+    # Use Graphviz layout (dot) with Left-to-Right direction
+    pos = graphviz_layout(
+        G, prog='dot', args='-Grankdir=LR -Gnodesep=0.6 -Granksep=1.0'
+    )
+
+    plt.figure(figsize=(20, 12))
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_size=2000,
+        node_color='lightyellow',
+        font_size=9,
+        font_weight='bold',
+        edgecolors='black',
+        arrows=True,
+        arrowsize=12,
+        arrowstyle='-|>'
+    )
+
+    plt.title("Left-to-Right Dependency Graph", fontsize=14)
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+
 # === Enums ===
 
 
@@ -168,3 +212,5 @@ for goal, reqs in DEPENDENCIES.items():
 # === Output ===
 for goal, reqs in dependency_graph.items():
     print(f"{goal} depends on {sorted(reqs)}")
+
+visualize_dependency_graph_left_to_right(dependency_graph)
