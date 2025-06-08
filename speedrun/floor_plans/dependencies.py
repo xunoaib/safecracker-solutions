@@ -56,7 +56,6 @@ picture_swapping: access_service_hall
 basement_knobs: access_service_hall
 
 boudoir_slides: access_boudoir
-off_button: access_violet_room
 
 currency_sudoku: access_triple_museum
 tile_elimination: access_triple_museum
@@ -151,6 +150,9 @@ def main():
             ', '.join(sorted(reqs))
         )
 
+
+dependency_graph['access_start']
+dependency_graph = dict(dependency_graph)
 
 if __name__ == '__main__':
     main()
