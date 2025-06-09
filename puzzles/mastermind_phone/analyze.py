@@ -290,30 +290,36 @@ def main():
         # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
 
+            # add guess/response to knowledge base
+            last_guess = guesser.consume_best_guess()
+            guesser.add(last_guess, string_to_response(response))
+            print(f'>>> Adding guess {last_guess}/{response} to KB')
+
             if response == 'cccc':
                 print('Solved, congrats!')
                 notify('Solved, congrats! 🥳')
                 # reset guesser
                 guesser = create_guesser()
+                state = State(verbose=False)
                 time.sleep(10)
                 notifications = 0
             else:
-                guess = guesser.best_guess()
-                guesser.add(guess, string_to_response(response))
-                print(
-                    '\033[92;1mGuess: ',
-                    *guesser.best_guess(),
-                    '\033[0m',
-                    sep=''
-                )
+                new_guess = guesser.peek_best_guess()
+                new_guess_str = ''.join(map(str, new_guess))
+                num_candidates = len(guesser.candidates())
 
-                guess_str = ''.join(map(str, guesser.best_guess()))
-                prefix = 'Guess: ' if len(
-                    guesser.candidates()
-                ) > 1 else 'Solution: '
-                notify(prefix + guess_str)
+                if num_candidates == 1:
+                    text = f'Solution: {new_guess_str}'
+                else:
+                    text = f'Guess: {
+                        new_guess_str} ({num_candidates} candidates)'
+
+                print(f'\033[92;1m{text}\033[0m')
+
+                notify(text)
                 notifications += 1
 
+        # first guess
         elif all(
             [
                 notifications == 0,
@@ -322,8 +328,9 @@ def main():
             ]
         ):
             # suggest a first guess
-            print('Guess: ', *guesser.best_guess(), sep='')
-            notify('Guess: ' + ''.join(map(str, guesser.best_guess())))
+            guess = guesser.peek_best_guess()
+            print('Guess: ', *guess, sep='')
+            notify('Guess: ' + ''.join(map(str, guess)))
             notifications += 1
 
         if SHOW_VIEW:

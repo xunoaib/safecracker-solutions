@@ -21,10 +21,11 @@ class Guesser:
 
     def __init__(
         self,
-        fixed_responses: tuple[tuple[int, ...]] = ((1, 2, 3, 4), (5, 6, 7, 8))
+        fixed_responses: tuple[tuple[int, ...],
+                               ...] = ((1, 2, 3, 4), (5, 6, 7, 8))
     ):
-        self.responses = []
-        self.filters = []
+        self.responses: list[tuple] = []
+        self.filters: list[Callable] = []
         self.fixed_responses = fixed_responses
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
@@ -42,8 +43,15 @@ class Guesser:
                 candidates.append(candidate)
         return candidates
 
-    def best_guess(self) -> tuple:
+    def peek_best_guess(self) -> tuple:
+        '''Queries the next best guess without consuming it'''
         if self.fixed_responses:
+            return self.fixed_responses[0]
+        return _best_guess(self.candidates())
+
+    def consume_best_guess(self) -> tuple:
+        if self.fixed_responses:
+            print('Popping fixed response', self.fixed_responses)
             response = self.fixed_responses[0]
             self.fixed_responses = self.fixed_responses[1:]
             return response
@@ -79,7 +87,7 @@ class AutomaticDataSource(DataSource):
     '''Provides a guess and accepts feedback from the user'''
 
     def get(self, guesser: Guesser):
-        guess = guesser.best_guess()
+        guess = guesser.consume_best_guess()
         assert guess is not None
 
         print('Guess: ', *guess, sep='')
@@ -168,7 +176,7 @@ def _best_guess(candidates):
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
         best = min(best, (score, guess not in candidates, guess))
-    if guess := best[-1]:
+    if best[-1] is not None:
         return best[-1]
     raise Exception('No best guess!')
 
