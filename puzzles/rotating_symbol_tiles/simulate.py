@@ -107,6 +107,9 @@ def render():
 
 def rotate_clockwise(r, c):
     '''Rotate 4 tiles and their labels clockwise around the knob at (r, c)'''
+    # print(r, c)
+    print(r * (COLS - 1) + c, end=' ', flush=True)
+
     A = tiles[r][c]
     B = tiles[r][c + 1]
     C = tiles[r + 1][c + 1]
