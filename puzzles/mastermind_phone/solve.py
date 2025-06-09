@@ -19,14 +19,12 @@ ALL_POSSIBLE_CODES = list(product(range(1, 10), repeat=4))
 class Guesser:
     '''Accepts guesses and responses and generates possible candidates'''
 
-    def __init__(self, first_response: tuple[int, ...] = (1, 2, 3, 4)):
-        self.responses = []
-        self.filters = []
-        self.first_response = first_response
+    def __init__(self, fixed_responses: tuple[tuple[int, ...], ...] = tuple()):
+        self.responses: list[tuple] = []
+        self.filters: list[Callable] = []
+        self.fixed_responses = fixed_responses
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
-        # if isinstance(response, str):
-        #     response = string_to_response(response)
         self.responses.append((guess, response))
 
     def add_filter(self, func: Callable):
@@ -39,9 +37,18 @@ class Guesser:
                 candidates.append(candidate)
         return candidates
 
-    def best_guess(self) -> tuple:
-        if not self.responses and self.first_response:
-            return self.first_response
+    def peek_best_guess(self) -> tuple:
+        '''Queries the next best guess without consuming it'''
+        if self.fixed_responses:
+            return self.fixed_responses[0]
+        return _best_guess(self.candidates())
+
+    def consume_best_guess(self) -> tuple:
+        if self.fixed_responses:
+            print('Popping fixed response', self.fixed_responses)
+            response = self.fixed_responses[0]
+            self.fixed_responses = self.fixed_responses[1:]
+            return response
         return _best_guess(self.candidates())
 
     def clear_responses(self):
@@ -74,7 +81,7 @@ class AutomaticDataSource(DataSource):
     '''Provides a guess and accepts feedback from the user'''
 
     def get(self, guesser: Guesser):
-        guess = guesser.best_guess()
+        guess = guesser.consume_best_guess()
         assert guess is not None
 
         print('Guess: ', *guess, sep='')
@@ -159,19 +166,20 @@ def _best_guess(candidates):
     if len(candidates) == 1:
         return candidates[0]
 
-    best = (float('inf'), None)
+    best = (float('inf'), True, None)
     for guess in ALL_POSSIBLE_CODES:
         score = score_guess(guess, candidates)
-        best = min(best, (score, guess))
-    if guess := best[1]:
-        return best[1]
+        best = min(best, (score, guess not in candidates, guess))
+    if best[-1] is not None:
+        return best[-1]
     raise Exception('No best guess!')
 
 
 def create_guesser():
     '''Creates and a configures a most informed guesser'''
 
-    g = Guesser()
+    # g = Guesser(((1, 2, 3, 4), (5, 6, 7, 8)))
+    g = Guesser(((1, 2, 3, 4), ))
 
     # add prior knowledge that the last digit is always 9
     g.add_filter(lambda c: c[-1] == 9)

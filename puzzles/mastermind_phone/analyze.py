@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import time
 
 import cv2
@@ -7,7 +8,8 @@ import mss
 import numpy as np
 from solve import create_guesser, string_to_response
 
-ENABLE_POPUP_NOTIFICATIONS = True
+ENABLE_POPUP_NOTIFICATIONS = '-n' in sys.argv
+SHOW_VIEW = '-v' in sys.argv
 
 INCORRECT = '0'
 CORRECT = '1'
@@ -242,11 +244,14 @@ def notify(message: str):
 
 
 def main():
+    print('Pass -n to show popup notifications')
+    print('Pass -v to show live opencv view')
 
-    print(
-        'Press "f" when all lights are off to save a reference frame (ss.jpg)'
-    )
-    print('Press "r" to select the region containing lights')
+    if SHOW_VIEW in sys.argv:
+        print(
+            'Press "f" when all lights are off to save a reference frame (ss.jpg)'
+        )
+        print('Press "r" to select the region containing lights')
 
     # relative coords (to primary monitor)
     region = {'left': 1296, 'top': 216, 'width': 636, 'height': 252}
@@ -285,30 +290,36 @@ def main():
         # update state machine, and retrieve any emitted response
         if response := state.update(result, int(time.time() * 1000)):
 
+            # add guess/response to knowledge base
+            last_guess = guesser.consume_best_guess()
+            guesser.add(last_guess, string_to_response(response))
+            print(f'>>> Adding guess {last_guess}/{response} to KB')
+
             if response == 'cccc':
                 print('Solved, congrats!')
                 notify('Solved, congrats! 🥳')
                 # reset guesser
                 guesser = create_guesser()
+                state = State(verbose=False)
                 time.sleep(10)
                 notifications = 0
             else:
-                guess = guesser.best_guess()
-                guesser.add(guess, string_to_response(response))
-                print(
-                    '\033[92;1mGuess: ',
-                    *guesser.best_guess(),
-                    '\033[0m',
-                    sep=''
-                )
+                new_guess = guesser.peek_best_guess()
+                new_guess_str = ''.join(map(str, new_guess))
+                num_candidates = len(guesser.candidates())
 
-                guess_str = ''.join(map(str, guesser.best_guess()))
-                prefix = 'Guess: ' if len(
-                    guesser.candidates()
-                ) > 1 else 'Solution: '
-                notify(prefix + guess_str)
+                if num_candidates == 1:
+                    text = f'Solution: {new_guess_str}'
+                else:
+                    text = f'Guess: {
+                        new_guess_str} ({num_candidates} candidates)'
+
+                print(f'\033[92;1m{text}\033[0m')
+
+                notify(text)
                 notifications += 1
 
+        # first guess
         elif all(
             [
                 notifications == 0,
@@ -317,48 +328,59 @@ def main():
             ]
         ):
             # suggest a first guess
-            print('Guess: ', *guesser.best_guess(), sep='')
-            notify('Guess: ' + ''.join(map(str, guesser.best_guess())))
+            guess = guesser.peek_best_guess()
+            text = 'Guess: ' + ''.join(map(str, guess))
+            print(f'\033[92;1m{text}\033[0m')
+            notify(text)
             notifications += 1
 
-        for (x, y, w, h), status in matches:
-            color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+        if SHOW_VIEW:
 
-        # draw status text
-        # color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
-        color = (0, 0, 255)
-        text1 = f'% match: {percent_black:.4f}'
-        text2 = f'code: {state.history[-1]}'
-        text3 = f'mode: {state.mode}'
-        text4 = f'resp: {state.response or ""}'
-        for y, text in zip([30, 55, 80, 105], [text1, text2, text3, text4]):
-            cv2.putText(
-                frame, text, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2
-            )
+            for (x, y, w, h), status in matches:
+                color = (0, 255, 0) if status == CORRECT else (0, 0, 255)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
 
-        cv2.imshow('Live Screen Difference', frame)
+            # draw status text
+            # color = (0, 255, 0) if percent_black > PERCENT_MATCH else (0, 0, 255)
+            color = (0, 0, 255)
+            text1 = f'% match: {percent_black:.4f}'
+            text2 = f'code: {state.history[-1]}'
+            text3 = f'mode: {state.mode}'
+            text4 = f'resp: {state.response or ""}'
+            for y, text in zip(
+                [30, 55, 80, 105], [text1, text2, text3, text4]
+            ):
+                cv2.putText(
+                    frame, text, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color,
+                    2
+                )
 
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
-        elif key == ord('s'):
-            filename = f'diff_frame_{int(time.time())}.png'
-            cv2.imwrite(filename, diff_gray)
-            print(f'Saved: {filename}')
-        elif key == ord('r'):
-            region = select_screen_region()
-            print(f"Selected new region: {region}")
-        elif key == ord('f'):
-            print('Saving fullscreen subtractive frame')
-            with mss.mss() as sct:
-                screenshot = sct.grab(sct.monitors[MONITOR_ID])
-                img = np.array(screenshot)
-                img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-                cv2.imwrite('ss.jpg', img)
+            cv2.imshow('Live Screen Difference', frame)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+            elif key == ord('s'):
+                filename = f'diff_frame_{int(time.time())}.png'
+                cv2.imwrite(filename, diff_gray)
+                print(f'Saved: {filename}')
+            elif key == ord('r'):
+                region = select_screen_region()
+                print(f"Selected new region: {region}")
+            elif key == ord('f'):
+                print('Saving fullscreen subtractive frame')
+                with mss.mss() as sct:
+                    screenshot = sct.grab(sct.monitors[MONITOR_ID])
+                    img = np.array(screenshot)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                    cv2.imwrite('ss.jpg', img)
 
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('interrupted')
+        exit(1)
