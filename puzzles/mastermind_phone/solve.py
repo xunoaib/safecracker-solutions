@@ -19,11 +19,7 @@ ALL_POSSIBLE_CODES = list(product(range(1, 10), repeat=4))
 class Guesser:
     '''Accepts guesses and responses and generates possible candidates'''
 
-    def __init__(
-        self,
-        fixed_responses: tuple[tuple[int, ...],
-                               ...] = ((1, 2, 3, 4), (5, 6, 7, 8))
-    ):
+    def __init__(self, fixed_responses: tuple[tuple[int, ...], ...] = tuple()):
         self.responses: list[tuple] = []
         self.filters: list[Callable] = []
         self.fixed_responses = fixed_responses
@@ -184,7 +180,8 @@ def _best_guess(candidates):
 def create_guesser():
     '''Creates and a configures a most informed guesser'''
 
-    g = Guesser()
+    # g = Guesser(((1, 2, 3, 4), (5, 6, 7, 8)))
+    g = Guesser(((1, 2, 3, 4), ))
 
     # add prior knowledge that the last digit is always 9
     g.add_filter(lambda c: c[-1] == 9)
