@@ -25,8 +25,6 @@ class Guesser:
         self.fixed_responses = fixed_responses
 
     def add(self, guess: tuple[int, ...], response: tuple[int, ...]):
-        # if isinstance(response, str):
-        #     response = string_to_response(response)
         self.responses.append((guess, response))
 
     def add_filter(self, func: Callable):
