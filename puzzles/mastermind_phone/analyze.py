@@ -329,8 +329,9 @@ def main():
         ):
             # suggest a first guess
             guess = guesser.peek_best_guess()
-            print('Guess: ', *guess, sep='')
-            notify('Guess: ' + ''.join(map(str, guess)))
+            text = 'Guess: ' + ''.join(map(str, guess))
+            print(f'\033[92;1m{text}\033[0m')
+            notify(text)
             notifications += 1
 
         if SHOW_VIEW:
