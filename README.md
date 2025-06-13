@@ -1,4 +1,4 @@
-![image](puzzles/https://github.com/user-attachments/assets/96023364-1da8-410a-82e6-8fc6a6f9900f)
+![image](https://github.com/user-attachments/assets/96023364-1da8-410a-82e6-8fc6a6f9900f)
 
 # Safecracker Solutions
 
