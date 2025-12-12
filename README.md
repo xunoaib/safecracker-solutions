@@ -7,7 +7,7 @@ This is a repository of my code-based solutions to various puzzles found in the 
 ## Puzzles
 
 - [Small Corridor - Red, Green, and Blue Circles](puzzles/concentric_circles)
-- [Museum - Dollar Safe](puzzles/rotating_symbol_tiles) ⭐
+- [Museum - Dollar Safe](puzzles/rotating_symbol_tiles)
 - [Museum - Currency](puzzles/currency_sudoku)
 - [Museum - Square Numbers](puzzles/museum_square_numbers)
 - [Museum - Tile Elimination](puzzles/tile_elimination)

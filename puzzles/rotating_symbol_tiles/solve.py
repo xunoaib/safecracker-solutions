@@ -9,13 +9,9 @@ from typing import Callable
 
 Grid = tuple[tuple[int, ...], ...]
 
-# 54 moves (manual improvement)
+# 54 moves
 BEST_KNOWN_SOLUION = (12, 12, 13, 13, 4, 4, 9, 9, 14, 14, 14, 9, 10, 10, 15, 15, 15, 10, 9, 8, 9, 9, 10, 0,
                       5, 6, 6, 11, 6, 11, 11, 0, 4, 4, 5, 5, 5, 1, 0, 0, 7, 2, 1, 6, 7, 7, 3, 3, 2, 1, 1, 7, 6, 3)
-
-# # 56 moves
-# BEST_KNOWN_SOLUION = (14, 13, 12, 12, 8, 4, 0, 3, 3, 2, 1, 1, 7, 7, 5, 2, 2, 5, 6, 3, 7, 7, 3, 6, 5, 4, 4, 7, 6, 5, 5, 15, 15, 11, 6, 6, 9, 10, 7, 12, 12, 9, 14, 13, 10, 12, 13, 13, 11, 14, 15, 15, 14, 14, 10, 13)
-
 
 ROWS = COLS = 5
 ALL_COORDS = tuple((r, c) for r in range(ROWS) for c in range(COLS))
@@ -163,7 +159,7 @@ def _solve_up_to(
             continue
 
         if solved(grid):
-            # print('Found a solution of length', len(path), path)
+            print('Found a solution of length', len(path), path)
             if not find_all_solutions:
                 return grid, path
             solutions.append((grid, path))
@@ -171,10 +167,10 @@ def _solve_up_to(
         if max_moves is not None and len(path) > max_moves:
             continue
 
-        # if len(path) > max_len:
-        #     max_len = len(path)
-        #     elapsed = time() - start_time
-        #     print(f'{elapsed:>4.1f}s  New max length', max_len)
+        if len(path) > max_len:
+            max_len = len(path)
+            elapsed = time() - start_time
+            print(f'{elapsed:>4.1f}s  New max length', max_len)
 
         for move in MOVES:
             new_grid = rotate(grid, move)
@@ -311,15 +307,17 @@ def recursive_solve(grid: Grid, n=0):
         yield []  # base case: end of path
         return
 
-    # Customize extra moves allowed based on current level
-    if n < 3:
-        extra_moves_allowed = 2
-    elif n < 6:
-        extra_moves_allowed = 0
-    elif n < 10:
-        extra_moves_allowed = 0
-    elif n >= 10:
-        extra_moves_allowed = 0
+    extra_moves_allowed = 0
+
+    # # Customize extra moves allowed based on current level
+    # if n < 3:
+    #     extra_moves_allowed = 2
+    # elif n < 6:
+    #     extra_moves_allowed = 0
+    # elif n < 10:
+    #     extra_moves_allowed = 0
+    # elif n >= 10:
+    #     extra_moves_allowed = 0
 
     solutions = find_all_solutions_up_to(
         grid, n, extra_moves_allowed=extra_moves_allowed)
@@ -343,7 +341,7 @@ def recursive_solve(grid: Grid, n=0):
 
 def solve_incremental_multi():
 
-    for final_path in recursive_solve(INIT):
+    for final_path in recursive_solve(INIT, 1):
 
         print('\033[92mFinal path length:', len(final_path), '\033[0m')
         print('\033[92mMoves:', final_path, '\033[0m')
