@@ -2,7 +2,7 @@
 
 # Safecracker Solutions
 
-This is a repository of my code-based solutions to various puzzles found in the [Safecracker](puzzles/https://store.steampowered.com/app/3260/Safecracker_The_Ultimate_Puzzle_Adventure/) adventure game.
+This is a repository of my code-based solutions to various puzzles found in the [Safecracker](https://store.steampowered.com/app/3260/Safecracker_The_Ultimate_Puzzle_Adventure/) adventure game.
 
 ## Puzzles
 
