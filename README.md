@@ -195,6 +195,9 @@ This is a repository of my code-based solutions to various puzzles found in the 
 </tr>
 </table>
 
+<details>
+<summary>Full list of puzzles</summary>
+
 - [Small Corridor - Red, Green, and Blue Circles](puzzles/concentric_circles)
 - [Museum - Dollar Safe](puzzles/rotating_symbol_tiles)
 - [Museum - Currency](puzzles/currency_sudoku)
@@ -224,3 +227,5 @@ This is a repository of my code-based solutions to various puzzles found in the 
 - [Blue Bedroom - Mastermind Phone](puzzles/mastermind_phone)
 - [Boudoir - Sliding Puzzle](puzzles/boudoir_slides)
 - [Violet Bedroom - Final Safe](puzzles/door_digits)
+
+</details>
