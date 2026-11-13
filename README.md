@@ -6,6 +6,195 @@ This is a repository of my code-based solutions to various puzzles found in the 
 
 ## Puzzles
 
+<table>
+<tr>
+<td align="center">
+  <a href="puzzles/concentric_circles">
+    <img src="puzzles/concentric_circles/ss.jpg" width="150" alt="Small Corridor - Red, Green, and Blue Circles"><br>
+    <sub>Small Corridor - Red, Green, and Blue Circles</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/rotating_symbol_tiles">
+    <img src="puzzles/rotating_symbol_tiles/ss.jpg" width="150" alt="Museum - Dollar Safe"><br>
+    <sub>Museum - Dollar Safe</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/currency_sudoku">
+    <img src="puzzles/currency_sudoku/ss.jpg" width="150" alt="Museum - Currency"><br>
+    <sub>Museum - Currency</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/museum_square_numbers">
+    <img src="puzzles/museum_square_numbers/ss.jpg" width="150" alt="Museum - Square Numbers"><br>
+    <sub>Museum - Square Numbers</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/tile_elimination">
+    <img src="puzzles/tile_elimination/ss.jpg" width="150" alt="Museum - Tile Elimination"><br>
+    <sub>Museum - Tile Elimination</sub>
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center">
+  <a href="puzzles/caesar_wheel">
+    <img src="puzzles/caesar_wheel/ss.jpg" width="150" alt="Main Sitting Room - Cipher Disk"><br>
+    <sub>Main Sitting Room - Cipher Disk</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/magnet_ball">
+    <img src="puzzles/magnet_ball/ss.jpg" width="150" alt="Study - Magnet Ball"><br>
+    <sub>Study - Magnet Ball</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/study_keypad">
+    <img src="puzzles/study_keypad/ss.jpg" width="150" alt="Study - Worn Keypad"><br>
+    <sub>Study - Worn Keypad</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/directional_keypad">
+    <img src="puzzles/directional_keypad/ss.jpg" width="150" alt="Office - Arrow Keypad"><br>
+    <sub>Office - Arrow Keypad</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/workshop_keypad">
+    <img src="puzzles/workshop_keypad/ss.jpg" width="150" alt="Workshop - Broken Keypad"><br>
+    <sub>Workshop - Broken Keypad</sub>
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center">
+  <a href="puzzles/laser">
+    <img src="puzzles/laser/ss.jpg" width="150" alt="Workshop - Laser Safe"><br>
+    <sub>Workshop - Laser Safe</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/workshop_dials">
+    <img src="puzzles/workshop_dials/ss.jpg" width="150" alt="Workshop - Dials"><br>
+    <sub>Workshop - Dials</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/basement_knobs">
+    <img src="puzzles/basement_knobs/ss.jpg" width="150" alt="Basement - Electrical Panel"><br>
+    <sub>Basement - Electrical Panel</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/basement_graph">
+    <img src="puzzles/basement_graph/ss.jpg" width="150" alt="Basement - Node Maze"><br>
+    <sub>Basement - Node Maze</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/basement_water">
+    <img src="puzzles/basement_water/ss.jpg" width="150" alt="Basement - Water Pistons"><br>
+    <sub>Basement - Water Pistons</sub>
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center">
+  <a href="puzzles/kitchen_dumbwaiter">
+    <img src="puzzles/kitchen_dumbwaiter/ss.jpg" width="150" alt="Kitchen - Dumbwaiter"><br>
+    <sub>Kitchen - Dumbwaiter</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/picture_swapping">
+    <img src="puzzles/picture_swapping/ss.jpg" width="150" alt="Dining Room - Picture Swapping"><br>
+    <sub>Dining Room - Picture Swapping</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/colored_wires">
+    <img src="puzzles/colored_wires/ss.jpg" width="150" alt="West Corridor - Laser Door"><br>
+    <sub>West Corridor - Laser Door</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/snooker">
+    <img src="puzzles/snooker/ss.jpg" width="150" alt="Game Room - Snooker"><br>
+    <sub>Game Room - Snooker</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/fountain">
+    <img src="puzzles/fountain/ss.jpg" width="150" alt="Winter Garden - Fountain"><br>
+    <sub>Winter Garden - Fountain</sub>
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center">
+  <a href="puzzles/library_keypad">
+    <img src="puzzles/library_keypad/ss.jpg" width="150" alt="Library - Code Detection Safe"><br>
+    <sub>Library - Code Detection Safe</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/call_sarah">
+    <img src="puzzles/call_sarah/ss.jpg" width="150" alt="Library - Sarah Safe"><br>
+    <sub>Library - Sarah Safe</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/upstairs_wheels">
+    <img src="puzzles/upstairs_wheels/ss.jpg" width="150" alt="East Corridor - Metal Wheel Door"><br>
+    <sub>East Corridor - Metal Wheel Door</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/loft_loop_pipes">
+    <img src="puzzles/loft_loop_pipes/ss.jpg" width="150" alt="Loft - Pipe Loop"><br>
+    <sub>Loft - Pipe Loop</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/loft_queens">
+    <img src="puzzles/loft_queens/ss.jpg" width="150" alt="Loft - Six Queens"><br>
+    <sub>Loft - Six Queens</sub>
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center">
+  <a href="puzzles/polybius">
+    <img src="puzzles/polybius/ss.jpg" width="150" alt="Dressing Room - Polybius"><br>
+    <sub>Dressing Room - Polybius</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/mastermind_phone">
+    <img src="puzzles/mastermind_phone/ss.jpg" width="150" alt="Blue Bedroom - Mastermind Phone"><br>
+    <sub>Blue Bedroom - Mastermind Phone</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/boudoir_slides">
+    <img src="puzzles/boudoir_slides/ss.jpg" width="150" alt="Boudoir - Sliding Puzzle"><br>
+    <sub>Boudoir - Sliding Puzzle</sub>
+  </a>
+</td>
+<td align="center">
+  <a href="puzzles/door_digits">
+    <img src="puzzles/door_digits/ss.jpg" width="150" alt="Violet Bedroom - Final Safe"><br>
+    <sub>Violet Bedroom - Final Safe</sub>
+  </a>
+</td>
+</tr>
+</table>
+
 - [Small Corridor - Red, Green, and Blue Circles](puzzles/concentric_circles)
 - [Museum - Dollar Safe](puzzles/rotating_symbol_tiles)
 - [Museum - Currency](puzzles/currency_sudoku)
