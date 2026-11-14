@@ -201,8 +201,10 @@ Route planning (mapping each floor into a graph and working out puzzle/item depe
 </tr>
 </table>
 
+---
+
 <details>
-<summary>Full list of puzzles</summary>
+<summary><strong>Full list of puzzles</strong></summary>
 
 - [Small Corridor - Red, Green, and Blue Circles](puzzles/rgb_rings)
 - [Museum - Dollar Safe](puzzles/museum_dollar_safe)
