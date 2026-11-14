@@ -8,7 +8,7 @@ All solutions are optimal, requiring the minimum number of moves, with the excep
 
 Route planning (mapping each floor into a graph and working out puzzle/item dependencies) lives in [`speedrun/floor_plans`](speedrun/floor_plans).
 
-[![Watch my speedrun](https://img.shields.io/badge/YouTube-Watch%20my%20speedrun-green?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=vJlBIFfI_qo)
+[![Watch my speedrun](https://img.shields.io/badge/YouTube-Watch%20my%20speedrun-green?style=for-the-badge&logo=youtube)](https://youtu.be/vJlBIFfI_qo?si=-g6iAu-xa23Un1_T&t=26)
 
 ## Puzzles
 
