@@ -4,7 +4,9 @@
 
 This is a repository of my code-based solutions to various puzzles found in the [Safecracker: The Ultimate Puzzle Adventure](https://store.steampowered.com/app/3260/Safecracker_The_Ultimate_Puzzle_Adventure/) game.
 
-All solutions are optimal - requiring the minimum number of moves - with the exception of the Dollar Safe, whose optimal solution is still unknown.
+All solutions are optimal, requiring the minimum number of moves, with the exception of the Dollar Safe, whose optimal solution is still unknown.
+
+Route planning (mapping each floor into a graph and working out puzzle/item dependencies) lives in [`speedrun/floor_plans`](speedrun/floor_plans).
 
 [![Watch my speedrun](https://img.shields.io/badge/YouTube-Watch%20my%20speedrun-green?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=vJlBIFfI_qo)
 
