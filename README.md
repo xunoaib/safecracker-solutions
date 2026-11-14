@@ -6,6 +6,8 @@ This is a repository of my code-based solutions to various puzzles found in the 
 
 All solutions are optimal - requiring the minimum number of moves - with the exception of the Dollar Safe, whose optimal solution is still unknown.
 
+[![Watch my speedrun](https://img.shields.io/badge/YouTube-Watch%20my%20speedrun-green?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=vJlBIFfI_qo)
+
 ## Puzzles
 
 <table>
