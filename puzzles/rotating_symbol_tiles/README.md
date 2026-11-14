@@ -15,4 +15,13 @@ A 5x5 grid of tiles (corners missing, forming a plus shape) where clicking one o
 
 **Note:** This is the best solution I could find, and may not be optimal.
 
+An even better solution (46 moves), found via AI optimizations on the above approach (code not included in this repo):
+
+```
+ 0  0  4  4  2  1 12 12 13 14 15 14 10  6  1
+ 0  0 15  3  3  2  1  1  7  6  6  2  3  7  6
+11  6 10  9 14  9  9  5  5 14 13 14 13 12  9
+13
+```
+
 ![Screenshot](ss.jpg)
