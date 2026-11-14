@@ -1,4 +1,4 @@
-# Final Safe
+# Violet Bedroom: Final Safe
 
 [← Previous: Boudoir - Sliding Puzzle](../boudoir_slides)
 

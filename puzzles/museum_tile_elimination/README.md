@@ -1,4 +1,4 @@
-# Museum: White Squares Elimination
+# Museum: Tile Elimination
 
 [← Previous: Museum - Square Numbers](../museum_square_numbers) | [Next: Main Sitting Room - Cipher Disk →](../caesar_wheel)
 

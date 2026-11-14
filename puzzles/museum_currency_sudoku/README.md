@@ -1,6 +1,6 @@
 # Museum: Currency
 
-[← Previous: Museum - Dollar Safe](../rotating_symbol_tiles) | [Next: Museum - Square Numbers →](../museum_square_numbers)
+[← Previous: Museum - Dollar Safe](../museum_dollar_safe) | [Next: Museum - Square Numbers →](../museum_square_numbers)
 
 ## Solution
 

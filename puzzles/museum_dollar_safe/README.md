@@ -1,6 +1,6 @@
-# Museum: Slider Safe
+# Museum: Dollar Safe
 
-[← Previous: Small Corridor - Red, Green, and Blue Circles](../concentric_circles) | [Next: Museum - Currency →](../currency_sudoku)
+[← Previous: Small Corridor - Red, Green, and Blue Circles](../rgb_rings) | [Next: Museum - Currency →](../museum_currency_sudoku)
 
 ## Solution
 

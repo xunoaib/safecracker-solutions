@@ -1,4 +1,4 @@
-# Basement: Store Room
+# Basement: Water Pistons
 
 [← Previous: Basement - Node Maze](../basement_graph) | [Next: Kitchen - Dumbwaiter →](../kitchen_dumbwaiter)
 

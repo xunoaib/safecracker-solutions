@@ -1,6 +1,6 @@
 # Museum: Square Numbers
 
-[← Previous: Museum - Currency](../currency_sudoku) | [Next: Museum - Tile Elimination →](../tile_elimination)
+[← Previous: Museum - Currency](../museum_currency_sudoku) | [Next: Museum - Tile Elimination →](../museum_tile_elimination)
 
 ## Solution
 

@@ -11,20 +11,20 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
 <table>
 <tr>
 <td align="center">
-  <a href="puzzles/concentric_circles">
-    <img src="puzzles/concentric_circles/ss.jpg" width="150" alt="Small Corridor - Red, Green, and Blue Circles"><br>
+  <a href="puzzles/rgb_rings">
+    <img src="puzzles/rgb_rings/ss.jpg" width="150" alt="Small Corridor - Red, Green, and Blue Circles"><br>
     <sub>Small Corridor - Red, Green, and Blue Circles</sub>
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/rotating_symbol_tiles">
-    <img src="puzzles/rotating_symbol_tiles/ss.jpg" width="150" alt="Museum - Dollar Safe"><br>
+  <a href="puzzles/museum_dollar_safe">
+    <img src="puzzles/museum_dollar_safe/ss.jpg" width="150" alt="Museum - Dollar Safe"><br>
     <sub>Museum - Dollar Safe</sub>
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/currency_sudoku">
-    <img src="puzzles/currency_sudoku/ss.jpg" width="150" alt="Museum - Currency"><br>
+  <a href="puzzles/museum_currency_sudoku">
+    <img src="puzzles/museum_currency_sudoku/ss.jpg" width="150" alt="Museum - Currency"><br>
     <sub>Museum - Currency</sub>
   </a>
 </td>
@@ -35,8 +35,8 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/tile_elimination">
-    <img src="puzzles/tile_elimination/ss.jpg" width="150" alt="Museum - Tile Elimination"><br>
+  <a href="puzzles/museum_tile_elimination">
+    <img src="puzzles/museum_tile_elimination/ss.jpg" width="150" alt="Museum - Tile Elimination"><br>
     <sub>Museum - Tile Elimination</sub>
   </a>
 </td>
@@ -49,8 +49,8 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/magnet_ball">
-    <img src="puzzles/magnet_ball/ss.jpg" width="150" alt="Study - Magnet Ball"><br>
+  <a href="puzzles/study_magnet_ball">
+    <img src="puzzles/study_magnet_ball/ss.jpg" width="150" alt="Study - Magnet Ball"><br>
     <sub>Study - Magnet Ball</sub>
   </a>
 </td>
@@ -61,8 +61,8 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/directional_keypad">
-    <img src="puzzles/directional_keypad/ss.jpg" width="150" alt="Office - Arrow Keypad"><br>
+  <a href="puzzles/office_keypad">
+    <img src="puzzles/office_keypad/ss.jpg" width="150" alt="Office - Arrow Keypad"><br>
     <sub>Office - Arrow Keypad</sub>
   </a>
 </td>
@@ -75,8 +75,8 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
 </tr>
 <tr>
 <td align="center">
-  <a href="puzzles/laser">
-    <img src="puzzles/laser/ss.jpg" width="150" alt="Workshop - Laser Safe"><br>
+  <a href="puzzles/workshop_laser">
+    <img src="puzzles/workshop_laser/ss.jpg" width="150" alt="Workshop - Laser Safe"><br>
     <sub>Workshop - Laser Safe</sub>
   </a>
 </td>
@@ -145,8 +145,8 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
   </a>
 </td>
 <td align="center">
-  <a href="puzzles/call_sarah">
-    <img src="puzzles/call_sarah/ss.jpg" width="150" alt="Library - Sarah Safe"><br>
+  <a href="puzzles/library_sarah_safe">
+    <img src="puzzles/library_sarah_safe/ss.jpg" width="150" alt="Library - Sarah Safe"><br>
     <sub>Library - Sarah Safe</sub>
   </a>
 </td>
@@ -200,17 +200,17 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
 <details>
 <summary>Full list of puzzles</summary>
 
-- [Small Corridor - Red, Green, and Blue Circles](puzzles/concentric_circles)
-- [Museum - Dollar Safe](puzzles/rotating_symbol_tiles)
-- [Museum - Currency](puzzles/currency_sudoku)
+- [Small Corridor - Red, Green, and Blue Circles](puzzles/rgb_rings)
+- [Museum - Dollar Safe](puzzles/museum_dollar_safe)
+- [Museum - Currency](puzzles/museum_currency_sudoku)
 - [Museum - Square Numbers](puzzles/museum_square_numbers)
-- [Museum - Tile Elimination](puzzles/tile_elimination)
+- [Museum - Tile Elimination](puzzles/museum_tile_elimination)
 - [Main Sitting Room - Cipher Disk](puzzles/caesar_wheel)
-- [Study - Magnet Ball](puzzles/magnet_ball)
+- [Study - Magnet Ball](puzzles/study_magnet_ball)
 - [Study - Worn Keypad](puzzles/study_keypad)
-- [Office - Arrow Keypad](puzzles/directional_keypad)
+- [Office - Arrow Keypad](puzzles/office_keypad)
 - [Workshop - Broken Keypad](puzzles/workshop_keypad)
-- [Workshop - Laser Safe](puzzles/laser)
+- [Workshop - Laser Safe](puzzles/workshop_laser)
 - [Workshop - Dials](puzzles/workshop_dials)
 - [Basement - Electrical Panel](puzzles/basement_knobs)
 - [Basement - Node Maze](puzzles/basement_graph)
@@ -221,7 +221,7 @@ All solutions are optimal - requiring the minimum number of moves - with the exc
 - [Game Room - Snooker](puzzles/snooker)
 - [Winter Garden - Fountain](puzzles/fountain)
 - [Library - Code Detection Safe](puzzles/library_keypad)
-- [Library - Sarah Safe](puzzles/call_sarah)
+- [Library - Sarah Safe](puzzles/library_sarah_safe)
 - [East Corridor - Metal Wheel Door](puzzles/upstairs_wheels)
 - [Loft - Pipe Loop](puzzles/loft_loop_pipes)
 - [Loft - Six Queens](puzzles/loft_queens)

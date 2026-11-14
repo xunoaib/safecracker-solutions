@@ -1,6 +1,6 @@
-# Workshop: Malfunctioning Keypad
+# Workshop: Broken Keypad
 
-[← Previous: Office - Arrow Keypad](../directional_keypad) | [Next: Workshop - Laser Safe →](../laser)
+[← Previous: Office - Arrow Keypad](../office_keypad) | [Next: Workshop - Laser Safe →](../workshop_laser)
 
 ## Solution
 

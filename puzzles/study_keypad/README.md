@@ -1,6 +1,6 @@
-# Study Keypad
+# Study: Worn Keypad
 
-[← Previous: Study - Magnet Ball](../magnet_ball) | [Next: Office - Arrow Keypad →](../directional_keypad)
+[← Previous: Study - Magnet Ball](../study_magnet_ball) | [Next: Office - Arrow Keypad →](../office_keypad)
 
 ## Solution
 

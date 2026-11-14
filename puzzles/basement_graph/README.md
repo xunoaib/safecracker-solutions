@@ -1,4 +1,4 @@
-# Basement: Wine Cellar
+# Basement: Node Maze
 
 [← Previous: Basement - Electrical Panel](../basement_knobs) | [Next: Basement - Water Pistons →](../basement_water)
 

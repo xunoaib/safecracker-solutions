@@ -1,4 +1,4 @@
-# Laser Door
+# West Corridor: Laser Door
 
 [← Previous: Dining Room - Picture Swapping](../picture_swapping) | [Next: Game Room - Snooker →](../snooker)
 

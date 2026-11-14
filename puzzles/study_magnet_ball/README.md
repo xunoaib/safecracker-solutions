@@ -1,4 +1,4 @@
-# Magnetized Metal Ball
+# Study: Magnet Ball
 
 [← Previous: Main Sitting Room - Cipher Disk](../caesar_wheel) | [Next: Study - Worn Keypad →](../study_keypad)
 

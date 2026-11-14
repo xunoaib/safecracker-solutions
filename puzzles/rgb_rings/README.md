@@ -1,6 +1,6 @@
-# Small Corridor: Concentric Circles
+# Small Corridor: Red, Green, and Blue Circles
 
-[Next: Museum - Dollar Safe →](../rotating_symbol_tiles)
+[Next: Museum - Dollar Safe →](../museum_dollar_safe)
 
 ## Solution
 

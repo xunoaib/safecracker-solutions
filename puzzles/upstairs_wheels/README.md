@@ -1,6 +1,6 @@
-# East Corridor: Wheel Metal Door
+# East Corridor: Metal Wheel Door
 
-[← Previous: Library - Sarah Safe](../call_sarah) | [Next: Loft - Pipe Loop →](../loft_loop_pipes)
+[← Previous: Library - Sarah Safe](../library_sarah_safe) | [Next: Loft - Pipe Loop →](../loft_loop_pipes)
 
 ## Solution
 

@@ -1,6 +1,6 @@
 # Workshop: Walter Dials
 
-[← Previous: Workshop - Laser Safe](../laser) | [Next: Basement - Electrical Panel →](../basement_knobs)
+[← Previous: Workshop - Laser Safe](../workshop_laser) | [Next: Basement - Electrical Panel →](../basement_knobs)
 
 ## Solution
 

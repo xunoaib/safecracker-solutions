@@ -1,4 +1,4 @@
-# Museum: White Squares
+# Office: Arrow Keypad
 
 [← Previous: Study - Worn Keypad](../study_keypad) | [Next: Workshop - Broken Keypad →](../workshop_keypad)
 

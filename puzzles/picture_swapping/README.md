@@ -1,4 +1,4 @@
-# Dining Room: Photo Swapping
+# Dining Room: Picture Swapping
 
 [← Previous: Kitchen - Dumbwaiter](../kitchen_dumbwaiter) | [Next: West Corridor - Laser Door →](../colored_wires)
 

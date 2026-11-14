@@ -1,6 +1,6 @@
-# Library Code Detection Safe
+# Library: Code Detection Safe
 
-[← Previous: Winter Garden - Fountain](../fountain) | [Next: Library - Sarah Safe →](../call_sarah)
+[← Previous: Winter Garden - Fountain](../fountain) | [Next: Library - Sarah Safe →](../library_sarah_safe)
 
 ## Solution
 
