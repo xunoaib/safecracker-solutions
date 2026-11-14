@@ -2,8 +2,6 @@
 
 [← Previous: Workshop - Dials](../workshop_dials) | [Next: Basement - Node Maze →](../basement_graph)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 **Objective:** Rotate the red knobs so that power (entering from the right side) reaches all 7 bulbs on the left side of the puzzle.
@@ -16,3 +14,5 @@
 **Solution:**
 I didn't end up solving this one with code (though I hope to).
 The solution is a bit cheeky: **Rotate the knobs until every knob is pointing down.**
+
+![Screenshot](ss.jpg)

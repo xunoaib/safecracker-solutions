@@ -2,8 +2,6 @@
 
 [← Previous: Study - Worn Keypad](../study_keypad) | [Next: Workshop - Broken Keypad →](../workshop_keypad)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 Each tile on the 4x4 keypad shows an arrow and a repeat count telling you how many tiles to jump in that direction (the red button marked as the goal). Start at the one tile nothing else points to, then follow the chain of jumps -- the order you land on each (row, col) is the press order:
@@ -26,3 +24,5 @@ Each tile on the 4x4 keypad shows an arrow and a repeat count telling you how ma
 14 (2, 0)
 15 (2, 3)
 ```
+
+![Screenshot](ss.jpg)

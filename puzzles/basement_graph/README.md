@@ -2,8 +2,6 @@
 
 [← Previous: Basement - Electrical Panel](../basement_knobs) | [Next: Basement - Water Pistons →](../basement_water)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 **Objective:** Find a path from the upper left node to the final node which sticks out on the right.
@@ -18,3 +16,5 @@ U U U UL
 UL UL D R
 R R
 ```
+
+![Screenshot](ss.jpg)

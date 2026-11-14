@@ -2,8 +2,6 @@
 
 [← Previous: Basement - Node Maze](../basement_graph) | [Next: Kitchen - Dumbwaiter →](../kitchen_dumbwaiter)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 **Objective:** Fill the middle container with exactly 4 units of water.
@@ -16,3 +14,5 @@ Right > Middle > Left > Right
 Middle > Left
 Right > Middle > Left
 ```
+
+![Screenshot](ss.jpg)

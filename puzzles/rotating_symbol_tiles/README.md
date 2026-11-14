@@ -2,8 +2,6 @@
 
 [← Previous: Small Corridor - Red, Green, and Blue Circles](../concentric_circles) | [Next: Museum - Currency →](../currency_sudoku)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 A 5x5 grid of tiles (corners missing, forming a plus shape) where clicking one of 16 intersection points rotates the surrounding 2x2 block of four tiles one quarter-turn clockwise. Each number below (0-15) is an intersection point -- row `n // 4`, column `n % 4` of the 4x4 grid of click points, counting from the top-left. Click them in this order (54 moves):
@@ -16,3 +14,5 @@ A 5x5 grid of tiles (corners missing, forming a plus shape) where clicking one o
 ```
 
 **Note:** This is the best solution I could find, and may not be optimal.
+
+![Screenshot](ss.jpg)

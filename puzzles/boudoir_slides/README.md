@@ -2,8 +2,6 @@
 
 [← Previous: Blue Bedroom - Mastermind Phone](../mastermind_phone) | [Next: Violet Bedroom - Final Safe →](../door_digits)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 **Objective:** Free the key block by sliding it to an opening on the right edge.
@@ -23,3 +21,5 @@ j right x1    l left x1     H down x1     k right x3
 D up x1       C up x3       B up x1       l left x3
 D down x1     k left x2     F down x3     j right x2
 ```
+
+![Screenshot](ss.jpg)

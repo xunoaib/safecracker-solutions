@@ -2,8 +2,6 @@
 
 [← Previous: Museum - Dollar Safe](../rotating_symbol_tiles) | [Next: Museum - Square Numbers →](../museum_square_numbers)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 A 4x4 grid where each cell cycles through 5 states (blank, then four currency symbols) when clicked. Four cells are pre-filled as givens. Solve it like a Sudoku square so each row and column contains all four currency symbols exactly once:
@@ -23,3 +21,5 @@ Equivalently, the number of times to click each blank cell to cycle to the right
 1 . 4 2
 . 2 1 3
 ```
+
+![Screenshot](ss.jpg)

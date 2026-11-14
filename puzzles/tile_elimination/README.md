@@ -2,8 +2,6 @@
 
 [← Previous: Museum - Square Numbers](../museum_square_numbers) | [Next: Main Sitting Room - Cipher Disk →](../caesar_wheel)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 Starting on the marked tile, jump between white tiles (1 or 2 tiles away, in any of the 4 directions), eliminating the tile you leave, until none remain. Move order (distance + direction):
@@ -17,3 +15,5 @@ Starting on the marked tile, jump between white tiles (1 or 2 tiles away, in any
  U  2D   D   L
  D
 ```
+
+![Screenshot](ss.jpg)

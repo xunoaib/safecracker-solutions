@@ -2,8 +2,6 @@
 
 [← Previous: Study - Magnet Ball](../magnet_ball) | [Next: Office - Arrow Keypad →](../directional_keypad)
 
-![Screenshot](ss.jpg)
-
 ## Solution
 
 Wear patterns on the keypad narrow the code down to the digits 3, 4, and 8 in some order.
@@ -11,3 +9,5 @@ Wear patterns on the keypad narrow the code down to the digits 3, 4, and 8 in so
 **Solution:** `834`
 
 (If that hadn't matched, we'd try the other permutations: 348, 384, 438, 483, 843.)
+
+![Screenshot](ss.jpg)
