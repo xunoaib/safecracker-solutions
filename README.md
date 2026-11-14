@@ -2,7 +2,9 @@
 
 # Safecracker Solutions
 
-This is a repository of my code-based solutions to various puzzles found in the [Safecracker](https://store.steampowered.com/app/3260/Safecracker_The_Ultimate_Puzzle_Adventure/) adventure game.
+This is a repository of my code-based solutions to various puzzles found in the [Safecracker: The Ultimate Puzzle Adventure](https://store.steampowered.com/app/3260/Safecracker_The_Ultimate_Puzzle_Adventure/) game.
+
+All solutions are optimal - requiring the minimum number of moves - with the exception of the Dollar Safe, whose optimal solution is still unknown.
 
 ## Puzzles
 
