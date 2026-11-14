@@ -1,6 +1,6 @@
 # Museum: Dollar Safe
 
-[← Previous: Small Corridor - Red, Green, and Blue Circles](../rgb_rings) | [Next: Museum - Currency →](../museum_currency_sudoku)
+[← Previous: Small Corridor - Red, Green, and Blue Rings](../rgb_rings) | [Next: Museum - Currency →](../museum_currency_sudoku)
 
 ## Solution
 

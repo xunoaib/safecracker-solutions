@@ -16,8 +16,8 @@ Route planning (mapping each floor into a graph and working out puzzle/item depe
 <tr>
 <td align="center">
   <a href="puzzles/rgb_rings">
-    <img src="puzzles/rgb_rings/ss.jpg" width="150" alt="Small Corridor - Red, Green, and Blue Circles"><br>
-    <sub>Small Corridor - Red, Green, and Blue Circles</sub>
+    <img src="puzzles/rgb_rings/ss.jpg" width="150" alt="Small Corridor - Red, Green, and Blue Rings"><br>
+    <sub>Small Corridor - Red, Green, and Blue Rings</sub>
   </a>
 </td>
 <td align="center">
@@ -206,7 +206,7 @@ Route planning (mapping each floor into a graph and working out puzzle/item depe
 <details>
 <summary><strong>Full list of puzzles</strong></summary>
 
-- [Small Corridor - Red, Green, and Blue Circles](puzzles/rgb_rings)
+- [Small Corridor - Red, Green, and Blue Rings](puzzles/rgb_rings)
 - [Museum - Dollar Safe](puzzles/museum_dollar_safe)
 - [Museum - Currency](puzzles/museum_currency_sudoku)
 - [Museum - Square Numbers](puzzles/museum_square_numbers)

@@ -1,4 +1,4 @@
-# Small Corridor: Red, Green, and Blue Circles
+# Small Corridor: Red, Green, and Blue Rings
 
 [Next: Museum - Dollar Safe →](../museum_dollar_safe)
 
